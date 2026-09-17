@@ -1,0 +1,325 @@
+import { notFound } from "next/navigation";
+import { getApplicantDetail } from "@/lib/verification";
+import { groupEndorsementItems, isLadderTierKey } from "@/lib/pilot-endorsements";
+import { computeLadder, EQUIPMENT_LABELS, INSTRUCTOR_RATING_REFERENCE_TEXT, type Equipment } from "@/lib/pilot-progress";
+import LadderTiers from "@/components/ladder-tiers";
+import Avatar from "@/components/avatar";
+import ApplicantReviewActions from "./applicant-review-actions";
+import ApplicantTrainingTypeEditor from "./applicant-training-type-editor";
+import PilotEndorsementToggle from "./pilot-endorsement-toggle";
+import AdminProfileEditor from "./admin-profile-editor";
+
+const ALL_EQUIPMENT: Equipment[] = ["pg", "ppg", "ppt"];
+
+function Row({ label, value }: { label: string; value: React.ReactNode }) {
+  return (
+    <div className="grid grid-cols-3 gap-2 py-1.5 text-sm">
+      <dt className="text-slate-500">{label}</dt>
+      <dd className="col-span-2 text-slate-900">{value || <span className="text-slate-300">—</span>}</dd>
+    </div>
+  );
+}
+
+function DocLink({
+  userId,
+  filename,
+  label,
+}: {
+  userId: string;
+  filename: string | null;
+  label: string;
+}) {
+  if (!filename) {
+    return (
+      <div className="flex items-center justify-between rounded-md border border-dashed border-slate-300 px-3 py-2 text-sm text-slate-400">
+        {label} <span>not provided</span>
+      </div>
+    );
+  }
+  return (
+    <a
+      href={`/api/uploads/${userId}/${filename}`}
+      target="_blank"
+      rel="noreferrer"
+      className="flex items-center justify-between rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50"
+    >
+      {label} <span className="text-red-600">View →</span>
+    </a>
+  );
+}
+
+function ConsentBadge({ signed, at, name }: { signed: boolean; at: Date | null; name: string | null }) {
+  return signed ? (
+    <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800">
+      Signed by {name} on {at?.toLocaleDateString()}
+    </span>
+  ) : (
+    <span className="inline-flex items-center gap-1 rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800">
+      Not signed
+    </span>
+  );
+}
+
+export default async function ApplicantReviewPage({
+  params,
+}: PageProps<"/admin/applicants/[id]">) {
+  const { id } = await params;
+  const detail = await getApplicantDetail(id);
+  if (!detail || (detail.applicant.role !== "student" && detail.applicant.role !== "pilot")) {
+    notFound();
+  }
+  const { applicant, pilot, student } = detail;
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center gap-3">
+        <Avatar
+          userId={applicant.id}
+          filename={applicant.profilePictureFile}
+          name={applicant.name}
+          size={48}
+        />
+        <div>
+          <h1 className="text-xl font-semibold text-slate-900">{applicant.name}</h1>
+          <p className="mt-1 text-sm text-slate-500">
+            {applicant.role === "pilot" ? "Pilot" : "Student"} application &middot; Apex No.{" "}
+            {applicant.apexNumber}
+            {(pilot?.profile?.sahpaNumber || student?.profile?.sahpaNumber) && (
+              <>
+                {" "}
+                &middot; SACAA No. {pilot?.profile?.sahpaNumber ?? student?.profile?.sahpaNumber}
+              </>
+            )}
+            {" "}&middot; submitted {applicant.createdAt.toLocaleDateString()}
+          </p>
+        </div>
+      </div>
+
+      {applicant.accountStatus !== "pending_verification" && (
+        <div className="rounded-md bg-slate-100 px-3 py-2 text-sm text-slate-600">
+          Already reviewed -- status: <span className="font-medium">{applicant.accountStatus}</span>
+          {applicant.rejectionReason ? ` (${applicant.rejectionReason})` : ""}
+        </div>
+      )}
+
+      <div className="rounded-xl border border-slate-200 bg-white p-5">
+        <h2 className="mb-2 text-sm font-semibold text-slate-900">Personal details</h2>
+        <dl className="divide-y divide-slate-100">
+          <Row
+            label="Full name"
+            value={`${applicant.title ?? ""} ${applicant.name} ${
+              applicant.nickname ? `"${applicant.nickname}"` : ""
+            }`.trim()}
+          />
+          <Row label="Initials" value={applicant.initials} />
+          <Row label="ID / Passport No." value={applicant.idPassportNumber} />
+          <Row label="Date of birth" value={applicant.dob?.toLocaleDateString()} />
+          <Row label="Sex" value={applicant.sex} />
+          <Row label="Email" value={applicant.email} />
+          <Row label="Cell number" value={applicant.phone} />
+          <Row label="Alt. contact number" value={applicant.altPhone} />
+          <Row label="Next of kin" value={applicant.nokName} />
+          <Row label="Next of kin contact" value={applicant.nokContactNo} />
+          <Row label="Postal address" value={applicant.postalAddress} />
+          <Row label="Home address" value={applicant.homeAddress} />
+          <Row label="Club / school" value={applicant.clubName} />
+        </dl>
+      </div>
+
+      <div className="rounded-xl border border-slate-200 bg-white p-5">
+        <h2 className="mb-2 text-sm font-semibold text-slate-900">Documents</h2>
+        <div className="space-y-2">
+          <DocLink userId={applicant.id} filename={applicant.idPassportFile} label="ID / Passport copy" />
+          <DocLink userId={applicant.id} filename={applicant.profilePictureFile} label="Profile picture" />
+          {applicant.role === "pilot" && (
+            <DocLink
+              userId={applicant.id}
+              filename={pilot?.profile.caaLicenceFile ?? null}
+              label="Current CAA licence"
+            />
+          )}
+          {applicant.role === "student" && (
+            <DocLink
+              userId={applicant.id}
+              filename={student?.profile.popFile ?? null}
+              label="Proof of payment"
+            />
+          )}
+        </div>
+        {applicant.role === "student" && student?.profile.invoiceRequestedAt && (
+          <p className="mt-2 rounded-md bg-amber-50 px-3 py-2 text-xs text-amber-800">
+            This student requested an invoice on{" "}
+            {student.profile.invoiceRequestedAt.toLocaleDateString()}.
+          </p>
+        )}
+        <div className="mt-4">
+          <AdminProfileEditor
+            userId={applicant.id}
+            isPilot={applicant.role === "pilot"}
+            name={applicant.name}
+            idPassportNumber={applicant.idPassportNumber}
+            phone={applicant.phone}
+            altPhone={applicant.altPhone}
+            nokName={applicant.nokName}
+            nokContactNo={applicant.nokContactNo}
+            postalAddress={applicant.postalAddress}
+            homeAddress={applicant.homeAddress}
+            clubName={applicant.clubName}
+            pilot={
+              pilot
+                ? {
+                    callSign: pilot.profile.callSign,
+                    sahpaNumber: pilot.profile.sahpaNumber,
+                    sahpaExpiryDate: pilot.profile.sahpaExpiryDate,
+                  }
+                : null
+            }
+          />
+        </div>
+      </div>
+
+      <div className="rounded-xl border border-slate-200 bg-white p-5">
+        <h2 className="mb-2 text-sm font-semibold text-slate-900">Consent &amp; indemnity</h2>
+        <div className="flex flex-wrap gap-3">
+          <ConsentBadge
+            signed={applicant.consentSigned}
+            at={applicant.consentSignedAt}
+            name={applicant.consentSignedName}
+          />
+          <ConsentBadge
+            signed={applicant.indemnitySigned}
+            at={applicant.indemnitySignedAt}
+            name={applicant.indemnitySignedName}
+          />
+        </div>
+        {(applicant.role === "student" || applicant.role === "pilot") &&
+          (!applicant.consentSigned || !applicant.indemnitySigned) && (
+            <p className="mt-3 rounded-md bg-amber-50 px-3 py-2 text-xs text-amber-800">
+              This account is blocked from the rest of the app until both are signed -- they&apos;ll
+              see a sign-here screen instead of their dashboard next time they log in (usual for an
+              account added directly here rather than through the public sign-up form).
+            </p>
+          )}
+      </div>
+
+      {applicant.role === "student" && (
+        <div className="rounded-xl border border-slate-200 bg-white p-5">
+          <h2 className="mb-2 text-sm font-semibold text-slate-900">Student details</h2>
+          <p className="mb-2 text-xs text-slate-500">
+            What this student signed up to train toward -- gates which exams they see once
+            approved. Adjust it here if it needs correcting before (or after) approval.
+          </p>
+          <ApplicantTrainingTypeEditor
+            studentUserId={applicant.id}
+            trainingType={student?.profile.trainingType ?? null}
+          />
+        </div>
+      )}
+
+      {applicant.role === "pilot" && pilot && (
+        <div className="rounded-xl border border-slate-200 bg-white p-5">
+          <h2 className="mb-2 text-sm font-semibold text-slate-900">Pilot details</h2>
+          <dl className="divide-y divide-slate-100">
+            <Row label="Call sign (self-declared)" value={pilot.profile.callSign} />
+            <Row label="SACAA License No." value={pilot.profile.sahpaNumber} />
+            <Row label="SACAA License expiry" value={pilot.profile.sahpaExpiryDate?.toLocaleDateString()} />
+          </dl>
+
+          {applicant.accountStatus === "active" && (
+            <div className="mt-4 space-y-3">
+              <h3 className="text-sm font-medium text-slate-700">
+                Ratings &amp; progress (CAR Part 106 ladder)
+              </h3>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                {ALL_EQUIPMENT.map((eq) => (
+                  <LadderTiers
+                    key={eq}
+                    equipmentLabel={EQUIPMENT_LABELS[eq]}
+                    tiers={computeLadder(eq, pilot.endorsements)}
+                    actionFor={(t) => {
+                      const row = pilot.endorsements.find((e) => e.key === t.key);
+                      if (!row) return null;
+                      return (
+                        <PilotEndorsementToggle
+                          endorsementId={row.id}
+                          verified={row.verified}
+                          declined={row.declined}
+                        />
+                      );
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
+          <p className="mb-1 mt-4 text-sm font-medium text-slate-700">
+            Declared licences, add-ons, instructor &amp; display ratings
+          </p>
+          {/* Ladder-tier items (Basic/Intermediate/Sport/Tandem) are
+             excluded here ONLY once the ladder section above is actually
+             showing (accountStatus === "active") -- otherwise this flat
+             list would repeat a second Verify control for the exact same
+             row. For a still-pending applicant the ladder cards aren't
+             rendered at all yet (see the accountStatus check above), so
+             this list stays the ONLY place a reviewer can see what they
+             declared -- filtering here too would hide PG/PPG/PPT Basic
+             from the review entirely before first approval. */}
+          {(() => {
+            const nonLadderEndorsements =
+              applicant.accountStatus === "active"
+                ? pilot.endorsements.filter((e) => !isLadderTierKey(e.key))
+                : pilot.endorsements;
+            return nonLadderEndorsements.length === 0 ? (
+              <p className="text-sm text-slate-400">None declared.</p>
+            ) : (
+              <div className="space-y-2">
+                {groupEndorsementItems(nonLadderEndorsements).map(({ group, items }) => (
+                <div key={group}>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                    {group}
+                  </p>
+                  <div className="mt-1 flex flex-wrap items-center gap-1.5">
+                    {items.map((e) => (
+                      <span
+                        key={e.id}
+                        className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium ${
+                          e.verified
+                            ? "bg-green-100 text-green-800"
+                            : e.declined
+                              ? "bg-red-100 text-red-800"
+                              : "bg-slate-100 text-slate-600"
+                        }`}
+                        title={e.declined && e.declineReason ? `Declined: ${e.declineReason}` : undefined}
+                      >
+                        {e.label} {e.verified ? "✓" : e.declined ? "✕" : ""}
+                        {applicant.accountStatus === "active" && (
+                          <PilotEndorsementToggle
+                            endorsementId={e.id}
+                            verified={e.verified}
+                            declined={e.declined}
+                          />
+                        )}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ))}
+              {applicant.accountStatus === "active" && (
+                <p className="pt-1 text-[11px] text-slate-400">{INSTRUCTOR_RATING_REFERENCE_TEXT}</p>
+              )}
+              </div>
+            );
+          })()}
+        </div>
+      )}
+
+      {applicant.accountStatus === "pending_verification" && (
+        <ApplicantReviewActions
+          userId={applicant.id}
+          endorsementKeys={pilot?.endorsements.map((e) => e.key) ?? []}
+        />
+      )}
+    </div>
+  );
+}

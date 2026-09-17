@@ -1,0 +1,1 @@
+ALTER TABLE `flight_log_entries` ADD `instructor_user_id` text REFERENCES users(id);

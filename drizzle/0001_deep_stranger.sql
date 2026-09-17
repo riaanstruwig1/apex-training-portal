@@ -1,0 +1,1 @@
+ALTER TABLE `flight_log_entries` ADD `instructor_comment` text;

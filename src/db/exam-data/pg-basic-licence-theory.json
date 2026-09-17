@@ -1,0 +1,2929 @@
+{
+  "sections": [
+    {
+      "letter": "A",
+      "name": "GENERAL",
+      "questions": [
+        {
+          "code": "A.1",
+          "letter": "A",
+          "num": 1,
+          "sub": null,
+          "prompt": "Why use a log book?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "To log airtime so overall club records can be updated annually",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "To record progress, support licence renewals, and serve as proof of experience, sign-offs and licences received",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "C",
+              "text": "It's optional — only used by pilots wanting to enter competitions",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "To provide proof of insurance cover under the SAHPA third-party policy",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 3
+        },
+        {
+          "code": "A.2a",
+          "letter": "A",
+          "num": 2,
+          "sub": "a",
+          "prompt": "What is a reportable accident/incident?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Any hard landing, regardless of whether injury, damage, or a lesson resulted",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Any occurrence that happens on a SAHPA-registered site during a competition",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Only an occurrence resulting in serious injury requiring hospitalisation",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Any occurrence involving injury to the pilot or a third party, or property damage, or any incident — even without injury or damage — from which a lesson could be learnt",
+              "image": null,
+              "correct": true
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "A.2b",
+          "letter": "A",
+          "num": 2,
+          "sub": "b",
+          "prompt": "Why should accidents and incidents be reported?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "So the pilot involved can be disciplined and have their licence reviewed",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "It's only required when a third party threatens legal action",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "So the Club's insurance broker can adjust premiums for the site",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "So that SAHPA can analyse trends, identify weaknesses in general flying skills, and educate other pilots",
+              "image": null,
+              "correct": true
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "A.3",
+          "letter": "A",
+          "num": 3,
+          "sub": null,
+          "prompt": "Which paragliding official in the local Club should be notified and given the report after an accident or incident?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "The most senior pilot on site at the time",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "The Club Licensing & Safety Officer",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "C",
+              "text": "The Club Chairperson",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "The SACAA regional inspector, directly",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "A.4a",
+          "letter": "A",
+          "num": 4,
+          "sub": "a",
+          "prompt": "State the procedures for flying at a Club or other established site, for the first time — but also any other time.",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Contact the person in control of the site for permission, check and adhere to site rules/grading, heed advice on turbulence/wind hazards, and fly only when local pilots are present",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "Register with SAHPA head office in advance and carry proof of registration on the day",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Obtain permission from the landowner only on the first visit — no further checks are needed on repeat visits",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Simply check the wind direction and launch — established sites don't need further checks",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 3
+        },
+        {
+          "code": "A.4b",
+          "letter": "A",
+          "num": 4,
+          "sub": "b",
+          "prompt": "State the procedures for attempting to establish a new site which has not been flown before.",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Obtain permission from landowners at both take-off and landing areas, negotiate requirements/agreements with all parties (with SAHPA's help if necessary), check for controlled airspace in the vicinity, check local by-laws, and have the site graded by an experienced senior pilot",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "Obtain landowner permission for the take-off area only, since landing areas are normally open land",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Fly the site solo first to assess conditions, then report back to SAHPA for retrospective approval",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Simply inform the local Club chairperson and proceed once the weather looks suitable",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 4
+        },
+        {
+          "code": "A.5",
+          "letter": "A",
+          "num": 5,
+          "sub": null,
+          "prompt": "How does the sign-off system operate?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "It is a system whereby SAHPA signs off equipment as airworthy each year",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "It permits a pilot to fly at a site graded higher than their current licence, under the supervision of a qualified pilot, until site-specific requirements are met",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "C",
+              "text": "It allows a pilot to skip licence upgrade exams if signed off by two senior pilots",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "It allows a pilot to self-certify competency without instructor supervision",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 2
+        },
+        {
+          "code": "A.6",
+          "letter": "A",
+          "num": 6,
+          "sub": null,
+          "prompt": "Why does the South African Hang Gliding & Paragliding Association (SAHPA) exist, and what are the advantages of being a member of SAHPA?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "SAHPA keeps the sport self-regulated (avoiding direct SACAA control) and provides third-party liability insurance, a safety-oriented licensing system, international recognition through Aero Club/FAI affiliation, and communication through a regular newsletter",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "SAHPA's main role is to manufacture and certify paragliding equipment sold in South Africa",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "SAHPA exists purely to organise national competitions and record badge flights",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "SAHPA is a government body responsible for issuing all paragliding pilot licences directly under Part 61",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 5
+        }
+      ]
+    },
+    {
+      "letter": "B",
+      "name": "AIRFLOW",
+      "questions": [
+        {
+          "code": "B.7a",
+          "letter": "B",
+          "num": 7,
+          "sub": "a",
+          "prompt": "A 30 kph wind blows over the hillside profile below. Which of the four diagrams (A–D) correctly shows the resulting airflow and turbulence?",
+          "type": "image",
+          "options": [
+            {
+              "label": "A",
+              "text": null,
+              "image": "cae065076c2ffdc04ce538d51254d7acaa2b3365.jpg",
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": null,
+              "image": "cfb1da922cbd1af793e55aa5f5f4ba0473549f0a.jpg",
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": null,
+              "image": "623c305d80e13d8e75bb55636438b49fff75c0e4.jpg",
+              "correct": true
+            },
+            {
+              "label": "D",
+              "text": null,
+              "image": "953d0e0e3b15f2c3aa35919f7808e4fe0cd31fdc.jpg",
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 1.25,
+          "print_prompt": "Indicate the airflow and turbulence when a 30 kph wind blows over the hillside profile below."
+        },
+        {
+          "code": "B.7b",
+          "letter": "B",
+          "num": 7,
+          "sub": "b",
+          "prompt": "A 30 kph wind blows over the cliff / escarpment profile below. Which of the four diagrams (A–D) correctly shows the resulting airflow and turbulence?",
+          "type": "image",
+          "options": [
+            {
+              "label": "A",
+              "text": null,
+              "image": "8b0a6f39d13bd83be62664295c4897e2264ec9ef.jpg",
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": null,
+              "image": "41b0f080827d5f58fa535d55aee871294ffdaadb.jpg",
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": null,
+              "image": "39ec1bdcda8e91bb571648740fba08ba01a7748b.jpg",
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": null,
+              "image": "ed97e7c9160256427ea82d8afd56d6a8a4efe748.jpg",
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 1.25,
+          "print_prompt": "Indicate the airflow and turbulence when a 30 kph wind blows over the cliff / escarpment profile below."
+        },
+        {
+          "code": "B.7c",
+          "letter": "B",
+          "num": 7,
+          "sub": "c",
+          "prompt": "A 30 kph wind blows over the rounded hill profile below. Which of the four diagrams (A–D) correctly shows the resulting airflow and turbulence?",
+          "type": "image",
+          "options": [
+            {
+              "label": "A",
+              "text": null,
+              "image": "8becbb16b92e46eafba8ad27df20749abc2e69fa.jpg",
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": null,
+              "image": "e97e89cc366d6428462cbb51661b3b69181747d8.jpg",
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": null,
+              "image": "7687ae60446168aea55af806e769ceb57461d0d0.jpg",
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": null,
+              "image": "b753cf435cb40bd19e0024f11ce1074d29d20cec.jpg",
+              "correct": true
+            }
+          ],
+          "stem_image": null,
+          "marks": 1.25,
+          "print_prompt": "Indicate the airflow and turbulence when a 30 kph wind blows over the rounded hill profile below."
+        },
+        {
+          "code": "B.7d",
+          "letter": "B",
+          "num": 7,
+          "sub": "d",
+          "prompt": "A 30 kph wind blows over the terrain profile below (house, small rise and tree). Which of the four diagrams (A–D) correctly shows the resulting airflow and turbulence?",
+          "type": "image",
+          "options": [
+            {
+              "label": "A",
+              "text": null,
+              "image": "9544cfdda24f7142f61db037ab0c89c509058b9c.jpg",
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": null,
+              "image": "9565902539827fb81d6524a425c1b27ca34e94c1.jpg",
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": null,
+              "image": "be5cfb1f1929052315987f0557688a65d68126c5.jpg",
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": null,
+              "image": "6b4ed37912744f0bf07a929caaa56d728c0aef33.jpg",
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 1.25,
+          "print_prompt": "Indicate the airflow and turbulence when a 30 kph wind blows over the terrain profile below (house, small rise and tree)."
+        },
+        {
+          "code": "B.8a",
+          "letter": "B",
+          "num": 8,
+          "sub": "a",
+          "prompt": "A 30 kph wind blows over the contour map below. Which of the four diagrams (A–D) correctly marks the area(s) of possible penetration difficulties?",
+          "type": "image",
+          "options": [
+            {
+              "label": "A",
+              "text": null,
+              "image": "54ba9d0824581868e74c16ded19d49d4ecea8c34.jpg",
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": null,
+              "image": "5b4dec8e4ac6af2e6d37b00faf4fde85af688874.jpg",
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": null,
+              "image": "efdbc11089c41cff89303653e9c597f5b685455a.jpg",
+              "correct": true
+            },
+            {
+              "label": "D",
+              "text": null,
+              "image": "05fa873c6e3fde6cc6c133a2873fe7138f736c70.jpg",
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 3,
+          "print_prompt": "Indicate a 30 kph wind blowing over the contour map below, and mark the area(s) of possible penetration difficulties."
+        },
+        {
+          "code": "B.8b",
+          "letter": "B",
+          "num": 8,
+          "sub": "b",
+          "prompt": "A 30 kph wind blows over the isolated hill (knoll) below. Which of the four diagrams (A–D) correctly shows the resulting airflow pattern?",
+          "type": "image",
+          "options": [
+            {
+              "label": "A",
+              "text": null,
+              "image": "d1c2a3627392d1930eb67ea0050a4e151425b82d.jpg",
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": null,
+              "image": "52ff73c76087a1828f8b9534dba5524a58654643.jpg",
+              "correct": true
+            },
+            {
+              "label": "C",
+              "text": null,
+              "image": "713f3bad9ad707db17fc3df07194889db9c22d9d.jpg",
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": null,
+              "image": "05393d627136b3e25afff4a626fd58fbba9e6818.jpg",
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 1,
+          "print_prompt": "Indicate a 30 kph wind blowing over the isolated hill (knoll) below, and show the resulting airflow pattern."
+        },
+        {
+          "code": "B.9",
+          "letter": "B",
+          "num": 9,
+          "sub": null,
+          "prompt": "Shade in the lift area on the hill/ridge profile below. Which of the four diagrams (A–D) correctly shows where the lift is?",
+          "type": "image",
+          "options": [
+            {
+              "label": "A",
+              "text": null,
+              "image": "63c598fc9e6d9439a0968e95b1a48614f11c1d89.jpg",
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": null,
+              "image": "c92dd4a840b30e048e6fe40c8b145e14d02de7e4.jpg",
+              "correct": true
+            },
+            {
+              "label": "C",
+              "text": null,
+              "image": "41d494af0969b5a3c1e60a73d1f31cf947b0a791.jpg",
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": null,
+              "image": "767b244714b85d7912467b87acb53cdf75c5af56.jpg",
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 1,
+          "print_prompt": "Shade in the lift area on the hill/ridge profile below."
+        },
+        {
+          "code": "B.10",
+          "letter": "B",
+          "num": 10,
+          "sub": null,
+          "prompt": "How can you judge if the air is turbulent BEFORE take-off?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "By waiting until another pilot reports a collapse before assuming turbulence is present",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "By checking the METAR report for the nearest airfield before driving to the site",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "By judging cloud cover — turbulence is only present under overcast skies",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "By feeling on your face and body whether the wind is gusty or variable in direction, and by watching visual indicators such as smoke, streamers, or other pilots already flying",
+              "image": null,
+              "correct": true
+            }
+          ],
+          "stem_image": null,
+          "marks": 3
+        },
+        {
+          "code": "B.11",
+          "letter": "B",
+          "num": 11,
+          "sub": null,
+          "prompt": "State five visual references which could be used to assess wind SPEED and DIRECTION before take-off.",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Smoke, foliage movement, dust being blown around, ripples on water, and windsocks/streamers/flags",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "Cloud base height, cloud type, cloud colour, cloud speed, and cloud shadow only",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "GPS ground speed readings from other pilots already airborne",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Altitude, temperature, humidity, dew point, and pressure",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 5
+        },
+        {
+          "code": "B.12",
+          "letter": "B",
+          "num": 12,
+          "sub": null,
+          "prompt": "Describe wind gradient.",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "The slowing down of wind speed as the surface of the earth is approached, caused by friction with the ground and obstacles on it",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "The sudden reversal of wind direction behind a ridge",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "The increase in wind speed as altitude increases away from any surface friction",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "The change in wind direction caused by the earth's rotation (Coriolis effect)",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 3
+        },
+        {
+          "code": "B.13",
+          "letter": "B",
+          "num": 13,
+          "sub": null,
+          "prompt": "Describe the effects of wind gradient on a paraglider while soaring above (higher than) the ridge (not to be confused with venturi effect).",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Wind gradient causes the glider to accelerate forward due to increased lift, with no penetration risk",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Wind gradient only affects gliders below 10 m AGL and has no effect once soaring above ridge height",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Wind speed increases quite dramatically the higher you climb above the ridge (wind gradient), which can cause penetration difficulties and even blow the pilot backwards over the ridge into rotor/venturi areas or obstacles",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "D",
+              "text": "Wind speed decreases the higher you climb above the ridge, improving penetration",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 3
+        },
+        {
+          "code": "B.14",
+          "letter": "B",
+          "num": 14,
+          "sub": null,
+          "prompt": "In the above case, what safety precautions should one take?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Climb as high as possible above the ridge to escape the turbulent surface layer",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Avoid flying when wind stronger than the glider's top speed is possible aloft, stay further out from the ridge and fly at best speed when climbing, use speed bar/gentle riser pressure to increase speed if penetration stops, and use wing tucks, B-line stall, or a sideways run to get into a lower wind-speed area if needed",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "C",
+              "text": "Apply full brakes immediately to reduce airspeed and avoid overshooting the ridge",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Fly directly downwind of the ridge to use the tailwind to escape the lift band",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 4
+        },
+        {
+          "code": "B.15",
+          "letter": "B",
+          "num": 15,
+          "sub": null,
+          "prompt": "What is a wind shadow, and where will you expect to find it?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "A calm zone found directly upwind of any obstacle",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "The area of increased wind speed found on the windward side of a ridge",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "A permanent no-fly zone declared by SAHPA around built-up areas",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "A sudden slowing down of wind speed — a severe form of wind gradient — found behind obstacles such as hills, trees, buildings or walls",
+              "image": null,
+              "correct": true
+            }
+          ],
+          "stem_image": null,
+          "marks": 2
+        },
+        {
+          "code": "B.16a",
+          "letter": "B",
+          "num": 16,
+          "sub": "a",
+          "prompt": "What would the effect of wind shadow be on a paraglider (what would it feel like), and why?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "The glider will feel like it's climbing rapidly as lift increases behind the obstacle",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "There is no noticeable effect — wind shadow only affects gliders on the ground",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "The glider will feel a sudden increase in brake pressure as airspeed drops",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "The ground will appear to rise very fast and suddenly, and ground speed will increase sharply, because the glider dives to maintain airspeed as it enters the lower wind speed",
+              "image": null,
+              "correct": true
+            }
+          ],
+          "stem_image": null,
+          "marks": 2
+        },
+        {
+          "code": "B.16b",
+          "letter": "B",
+          "num": 16,
+          "sub": "b",
+          "prompt": "What should the pilot do when flying into wind shadow?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Fly with 0–25% brakes (just enough to keep tension) for maximum speed, gently control any pendulum motion, and maintain airspeed while flying straight towards the exit/landing area",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "Turn immediately back towards the ridge to regain lift",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Release the brakes completely and let the glider surge forward on its own",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Apply full brakes immediately to slow the glider and reduce the dive",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 2
+        },
+        {
+          "code": "B.16c",
+          "letter": "B",
+          "num": 16,
+          "sub": "c",
+          "prompt": "What should the pilot not do, and why not?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Must not turn while in wind shadow, because turning always causes a full stall",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Must not use the speed bar, because it increases the risk of a front tuck",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Must not release the brakes at all, because the glider will surge uncontrollably",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Must not pull brakes in excess of 25%, because the sensation of the ground rising fast can cause an unintentional over-reaction, stalling the glider too high above the ground",
+              "image": null,
+              "correct": true
+            }
+          ],
+          "stem_image": null,
+          "marks": 2
+        },
+        {
+          "code": "B.17",
+          "letter": "B",
+          "num": 17,
+          "sub": null,
+          "prompt": "What dangers are associated with flying in severe turbulence?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "The only danger is increased fuel consumption on powered paragliders",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Severe turbulence has no real danger as long as the pilot stays above 50% brakes",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "The glider could suffer a partial or full collapse, the pilot could over-control or lose effective control, and there's a risk of inadvertently flying into obstacles",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "D",
+              "text": "Severe turbulence only affects landing accuracy, not in-flight control",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 2
+        },
+        {
+          "code": "B.18",
+          "letter": "B",
+          "num": 18,
+          "sub": null,
+          "prompt": "What must the pilot do when flying in turbulence?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Fly with some tension (approximately 25–50% brakes) to keep the glider stable, stay alert for tucks or collapses, and fly away from the mountain or other obstacles to gain height clearance",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "Head directly towards the nearest ridge for the shelter of its wind shadow",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Fly hands-up (0% brakes) to maximise speed and punch through the turbulence",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Apply full brakes to slow down as much as possible and ride out the turbulence",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 2
+        },
+        {
+          "code": "B.19a",
+          "letter": "B",
+          "num": 19,
+          "sub": "a",
+          "prompt": "Turbulence causes an A-symmetric tuck — what are the correct actions, and what are the associated dangers?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Turn immediately towards the deflated side to speed up re-inflation",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Release all brakes and let the glider self-correct without pilot input",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Counter-steer to maintain a safe direction away from obstacles (pulling both brakes to about 50% if unsure which side deflated), avoid over-controlling, keep flying into clear space, and pump the deflated side with firm, systematic pumps rather than correcting the deflation without counter-steering",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "D",
+              "text": "Immediately pull full brakes on both sides to force the glider to re-inflate",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 4
+        },
+        {
+          "code": "B.19b",
+          "letter": "B",
+          "num": 19,
+          "sub": "b",
+          "prompt": "A front tuck occurs while the speed bar was used or front risers were pulled — what is the correct action?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Release the speed bar or front risers, and counter the pendulum by pulling brakes to about 25–50% (not more than carabiner height) — just enough to keep the canopy comfortably overhead",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "Do nothing — a front tuck caused by speed bar use always self-corrects",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Push the speed bar further to fly out of the tuck faster",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Pull full brakes immediately to stall the glider and stop the tuck",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 2
+        },
+        {
+          "code": "B.19c",
+          "letter": "B",
+          "num": 19,
+          "sub": "c",
+          "prompt": "A full stall occurs due to deep brakes and/or turbulence — how should the recovery be effected, and what should be avoided?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Push the speed bar fully to accelerate out of the stall",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Let the brakes come up to zero or about 25%, then control the resulting pendulum by returning to no more than 50% brakes — without over-controlling, since the glider will pitch forward as it re-inflates to regain airspeed",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "C",
+              "text": "Hold the brakes fully down until the glider stops moving completely",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Immediately deploy the reserve parachute as the primary recovery method",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 4
+        }
+      ]
+    },
+    {
+      "letter": "C",
+      "name": "AERODYNAMICS",
+      "questions": [
+        {
+          "code": "C.20",
+          "letter": "C",
+          "num": 20,
+          "sub": null,
+          "prompt": "On the cross-section sketch of the paraglider wing below, indicate: Gravity, Drag, Lift, Relative Airflow and Chord Line. Which of the four diagrams (A–D) correctly places all the labels and vectors?",
+          "type": "image",
+          "options": [
+            {
+              "label": "A",
+              "text": null,
+              "image": "448685f7455519a4785769e6d078102a4bfdda0e.jpg",
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": null,
+              "image": "1c69ebdca930d1a85f20dad92ee21409070907ca.jpg",
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": null,
+              "image": "45c06df823a9a9624f8de47bf28a1521f48cfc60.jpg",
+              "correct": true
+            },
+            {
+              "label": "D",
+              "text": null,
+              "image": "1e520650e57a45d962e5428fe4cb98aeaf04279c.jpg",
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 6,
+          "print_prompt": "On the cross-section sketch of the paraglider wing below, indicate: Gravity, Drag, Lift, Relative Airflow and Chord Line."
+        },
+        {
+          "code": "C.21",
+          "letter": "C",
+          "num": 21,
+          "sub": null,
+          "prompt": "What causes a paraglider to move forward in flight?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Air pressure trapped inside the wing cells alone, independent of gravity",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "The pilot's weight pushing directly backward against the risers",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "The forward momentum from the launch run, sustained throughout the flight",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "The utilisation of an aerofoil shape, in combination with gravity",
+              "image": null,
+              "correct": true
+            }
+          ],
+          "stem_image": null,
+          "marks": 2
+        },
+        {
+          "code": "C.22a",
+          "letter": "C",
+          "num": 22,
+          "sub": "a",
+          "prompt": "The design of a paraglider is an aerofoil, but it is soft and formless on the ground. How is the shape formed, and maintained, during flight?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "By the rigid internal battens sewn into each rib of the wing",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "By the pilot's harness holding the risers in a fixed position",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "By the tension of the brake lines alone, regardless of airspeed",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "The aerofoil shape is formed when the wing is inflated by air, and the shape is maintained by air pressure inside the wing as long as the glider has sufficient airspeed",
+              "image": null,
+              "correct": true
+            }
+          ],
+          "stem_image": null,
+          "marks": 2
+        },
+        {
+          "code": "C.22b",
+          "letter": "C",
+          "num": 22,
+          "sub": "b",
+          "prompt": "Under what circumstances can the soft wing aerofoil collapse?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Only when the pilot deliberately pulls the B-lines",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "When airspeed drops below stall speed, when angle of attack becomes too high for forward flight, or when strong up/downdrafts distort the wing's shape",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "C",
+              "text": "Only during launch, never once airborne and at normal airspeed",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "When the glider is flown with hands fully up (0% brakes) in smooth air",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 2
+        },
+        {
+          "code": "C.23",
+          "letter": "C",
+          "num": 23,
+          "sub": null,
+          "prompt": "What happens when the brake (toggle/steering) lines of the paraglider are progressively pulled down during a flight?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Airspeed slows down as the angle of attack increases, until the airflow breaks away over the top of the wing and the glider eventually stalls",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "Nothing changes until both brakes are pulled to 100% simultaneously",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Airspeed increases as the wing's camber flattens out",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "The glider immediately turns in the direction of the pulled brake, with no change in speed",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 3
+        },
+        {
+          "code": "C.24a",
+          "letter": "C",
+          "num": 24,
+          "sub": "a",
+          "prompt": "What happens when the front risers are pushed or pulled, or the speed bar is used, on take-off or during flight?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Angle of attack decreases and airspeed increases — the glider flies faster",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "The glider immediately stalls due to reduced lift",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Angle of attack increases and the glider climbs steeply",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "There is no aerodynamic effect, only a change in pilot comfort",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 2
+        },
+        {
+          "code": "C.24b",
+          "letter": "C",
+          "num": 24,
+          "sub": "b",
+          "prompt": "What is a possible danger during the above?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "The leading edge can collapse and tuck under — a front tuck",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "The brake lines can become permanently tangled",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "The reserve parachute can deploy accidentally",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "The glider can enter an unrecoverable spin",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "C.25a",
+          "letter": "C",
+          "num": 25,
+          "sub": "a",
+          "prompt": "What is glide ratio?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Distance flown over height lost (L/D)",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "Height lost over time taken",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Total weight divided by wing area",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Airspeed divided by sink rate squared",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "C.25b",
+          "letter": "C",
+          "num": 25,
+          "sub": "b",
+          "prompt": "What is sink rate?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Distance flown over height lost",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Total weight of pilot and equipment divided by wing area",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Height lost over time taken (m/s or ft/min)",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "D",
+              "text": "The angle between the chord line and relative airflow",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "C.25c",
+          "letter": "C",
+          "num": 25,
+          "sub": "c",
+          "prompt": "What is wing loading?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Distance flown over height lost",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Height lost over time taken",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "The maximum speed achievable using the speed bar",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Total weight of pilot and equipment divided by the wing area (kg/m²)",
+              "image": null,
+              "correct": true
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "C.26a",
+          "letter": "C",
+          "num": 26,
+          "sub": "a",
+          "prompt": "What are the effects of a light wing loading (below manufacturer's specification)?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Worse sink rate and better recovery characteristics, with no change to airspeed",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Worse penetration in strong winds, lower airspeed, a lower stall speed, but improved sink rate, with poorer recovery characteristics and possible ground handling problems",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "C",
+              "text": "No measurable effect — wing loading only matters above manufacturer's specification",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Better penetration in strong winds and a higher stall speed",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 2
+        },
+        {
+          "code": "C.26b",
+          "letter": "C",
+          "num": 26,
+          "sub": "b",
+          "prompt": "What are the effects of a heavy wing loading (above manufacturer's specification)?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Better sink rate but worse recovery characteristics and harder ground handling",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Better penetration in strong winds, higher airspeed and better recovery characteristics, but a worse sink rate",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "C",
+              "text": "Worse penetration in strong winds and a lower airspeed",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "No change to penetration, airspeed, sink rate or recovery characteristics",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 2
+        },
+        {
+          "code": "C.27",
+          "letter": "C",
+          "num": 27,
+          "sub": null,
+          "prompt": "Illustrate: a) Yaw  b) Pitch  c) Roll — which of the following correctly matches each term to its rotation?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Yaw = the nose rising/falling; Pitch = the wing banking left/right; Roll = the nose swinging left/right",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Yaw = the wing banking left/right; Pitch = the nose swinging left/right; Roll = the nose rising/falling",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Yaw = rotation about the vertical axis (the nose swings left/right, seen from above); Pitch = rotation about the lateral, wingtip-to-wingtip axis (the nose rises/falls, seen from the side); Roll = rotation about the longitudinal, nose-to-tail axis (the wing banks left/right, seen from the front)",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "D",
+              "text": "Yaw, Pitch and Roll all describe the same side-to-side swinging motion, just viewed from different angles",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 3,
+          "print_prompt": "Illustrate: a) Yaw  b) Pitch  c) Roll"
+        },
+        {
+          "code": "C.28",
+          "letter": "C",
+          "num": 28,
+          "sub": null,
+          "prompt": "What is the ground speed when flying at 20 kph airspeed in: a) a 10 kph headwind, b) a 20 kph tailwind, c) a 30 kph headwind?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "a) 10 kph, b) 20 kph, c) 30 kph",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "a) 10 kph, b) 40 kph, c) 10 kph (the glider is moving backwards over the ground)",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "C",
+              "text": "a) 20 kph, b) 20 kph, c) 20 kph (wind has no effect on ground speed)",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "a) 30 kph, b) 0 kph, c) 50 kph",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 3
+        },
+        {
+          "code": "C.29",
+          "letter": "C",
+          "num": 29,
+          "sub": null,
+          "prompt": "When is the stall utilised to its maximum?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Immediately after launch, to gain height quickly",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "During a controlled descent through cloud",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "When entering an area of severe turbulence",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "On landing",
+              "image": null,
+              "correct": true
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "C.30",
+          "letter": "C",
+          "num": 30,
+          "sub": null,
+          "prompt": "Which two features contribute to stability in any paraglider?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "The elliptical shape of the wing and the pendulum weight of the pilot symmetrically suspended below it",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "The number of wing cells and the length of the brake lines",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "The length of the risers and the diameter of the carabiners",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "The colour of the canopy and the weight of the harness",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 2
+        }
+      ]
+    },
+    {
+      "letter": "D",
+      "name": "FLIGHT & CONTROL",
+      "questions": [
+        {
+          "code": "D.31a",
+          "letter": "D",
+          "num": 31,
+          "sub": "a",
+          "prompt": "Which four PRINCIPLES to check airworthiness must be followed during the daily equipment inspection?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Check manufacture date, warranty status, resale value, and last service date only",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Weigh the glider, measure line length, check colour fading, and confirm the registration number",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Ask another pilot to confirm the glider looks fine, check the weather, check personal fitness, and check fuel if using a paramotor",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Visual check (look carefully for wear, fraying or tears), physical check (pull on lines/stitching/attachments), do it systematically (same way every time), and be consistent (start over if interrupted)",
+              "image": null,
+              "correct": true
+            }
+          ],
+          "stem_image": null,
+          "marks": 8
+        },
+        {
+          "code": "D.31b",
+          "letter": "D",
+          "num": 31,
+          "sub": "b",
+          "prompt": "When should the daily equipment inspection be done?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Only when a lesson could be learnt",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Once a day before flying, and additionally whenever the glider may have suffered probable damage during the day",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "C",
+              "text": "Only before the very first flight on a brand-new glider",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Only once a week, regardless of how often you fly",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 2
+        },
+        {
+          "code": "D.31c",
+          "letter": "D",
+          "num": 31,
+          "sub": "c",
+          "prompt": "When should a paraglider be inspected by the manufacturer or distributor?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Half-yearly (or per the manufacturer's recommendations), and whenever the glider develops new problematic characteristics such as a tendency to parachutal stall or difficulty pulling",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "Only after a reportable accident involving a full collapse",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Only once, at the time of purchase",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Every time the glider is repacked into its bag",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 2
+        },
+        {
+          "code": "D.32a",
+          "letter": "D",
+          "num": 32,
+          "sub": "a",
+          "prompt": "What are the pre-flight checks (before pulling up for take-off), also known as the 5 point check?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Wing colour, canopy age, last repack date, brake line length, and harness brand",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Fuel, oil, spark plug, propeller, and throttle cable (only relevant to powered units)",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Harness (straps fastened and secure), helmet (on and secure), carabiners/connections (attached and locked), risers and lines (front risers in hand, lines untangled), the wind (straight and steady), and airspace (clear of other pilots)",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "D",
+              "text": "Weather forecast, landowner permission, club membership, insurance, and licence only",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 16
+        },
+        {
+          "code": "D.32b",
+          "letter": "D",
+          "num": 32,
+          "sub": "b",
+          "prompt": "What should the take-off/launch procedures DURING a forwards pull up be?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Pull up, check the glider is inflating correctly, run to build airspeed, and launch without jumping or sitting down into the harness too soon",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "Pull up, sit down into the harness immediately, then run once airborne",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Run first to build speed, then pull up once at full sprint",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Pull up, immediately look up to check the wing, then stop and reassess before running",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 3
+        },
+        {
+          "code": "D.33",
+          "letter": "D",
+          "num": 33,
+          "sub": null,
+          "prompt": "Why is take-off and landing executed into wind?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Because SACAA regulations require it regardless of aerodynamic benefit",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "To reduce ground speed",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "C",
+              "text": "To make radio communication with other pilots easier",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "To increase the visual reference points available to the pilot",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "D.34",
+          "letter": "D",
+          "num": 34,
+          "sub": null,
+          "prompt": "What should a pilot check for when visiting a new landing area before flying?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "The size of the field and any hazards on it, possible slope, obstacles on the approach path, obstacles beyond the field that could create rotor or turbulence, whether a windsock/streamer is present, and accessibility",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "The field's GPS coordinates and its distance from the nearest hospital only",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Only whether the landowner has given verbal permission",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Only the presence of a windsock — all other factors are irrelevant",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 5
+        },
+        {
+          "code": "D.35",
+          "letter": "D",
+          "num": 35,
+          "sub": null,
+          "prompt": "Arriving on site in strong wind conditions, what factors would determine whether you could have a safe flight?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Only the pilot's total number of logged flying hours, regardless of the site",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Only the time of day and the air temperature",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Only whether the club chairperson is present to authorise the flight",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "The pilot's experience (including site knowledge and gust-factor awareness), launch conditions, topography, the glider's design (top speed), and wing loading",
+              "image": null,
+              "correct": true
+            }
+          ],
+          "stem_image": null,
+          "marks": 4
+        },
+        {
+          "code": "D.36",
+          "letter": "D",
+          "num": 36,
+          "sub": null,
+          "prompt": "Why is it more dangerous to fly a high performance paraglider than an intermediate paraglider?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "High performance gliders are heavier, making them slower to react in turbulence",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "High performance gliders always have a lower stall speed, making stalls more dangerous",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "High performance gliders are simply larger, making them harder to launch in light wind",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "High performance gliders are more unstable (higher aspect ratio, faster speeds, higher angle of attack), more sensitive and twitchy, react faster when something goes wrong, often have thinner lines that break more easily, and have smaller cell openings that make re-inflation and ground handling more difficult",
+              "image": null,
+              "correct": true
+            }
+          ],
+          "stem_image": null,
+          "marks": 3
+        },
+        {
+          "code": "D.37a",
+          "letter": "D",
+          "num": 37,
+          "sub": "a",
+          "prompt": "What is the sequence of events when 80% brakes are suddenly applied, and immediately released again to zero position?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Nothing happens to the pilot's position — only the canopy's shape changes",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Applying brakes speeds up the canopy while the pilot stays still; releasing brakes has no further effect",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Applying brakes causes an immediate full stall; releasing brakes causes an immediate front tuck",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Applying brakes stops the canopy's forward motion (not the pilot's), the pilot swings forward and angle of attack sharply increases; releasing the brakes then swings the pilot backwards under the glider as the canopy accelerates forward and can overfly the pilot",
+              "image": null,
+              "correct": true
+            }
+          ],
+          "stem_image": null,
+          "marks": 4
+        },
+        {
+          "code": "D.37b",
+          "letter": "D",
+          "num": 37,
+          "sub": "b",
+          "prompt": "Why can this be dangerous?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "It can cause permanent damage to the brake lines only",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "It has no real danger — this is a normal, harmless part of every flight",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "If the pendulum motion isn't controlled, the overflying canopy can collapse, and if this happens near the ground the pilot can be slammed into it",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "D",
+              "text": "It causes the reserve parachute to deploy automatically",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 2
+        },
+        {
+          "code": "D.38",
+          "letter": "D",
+          "num": 38,
+          "sub": null,
+          "prompt": "In helping another pilot during the actual launch period, what are the duties of a helper?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Film the launch for the pilot's personal record and social media",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Help the pilot if they get into difficulty (e.g. being dragged, acting as an anchor), inform them if the glider isn't fully inflated, and stop them going over the edge when necessary",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "C",
+              "text": "Hold the brake lines for the pilot throughout the entire launch run",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Radio the Club chairperson to log the exact launch time",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 3
+        },
+        {
+          "code": "D.39a",
+          "letter": "D",
+          "num": 39,
+          "sub": "a",
+          "prompt": "What does \"PLF\" stand for?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Parachute Landing Fall",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "Pilot Landing Formation",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Post-Landing Flare",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Primary Landing Failure",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "D.39b",
+          "letter": "D",
+          "num": 39,
+          "sub": "b",
+          "prompt": "When is a PLF necessary?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Only when landing on water",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Every single landing, regardless of conditions",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "When a heavy or hard landing is expected (such as a fast downwind landing), when the glider deflates close to the ground, or when a reserve parachute has been deployed",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "D",
+              "text": "Only during competition landings, to improve accuracy scoring",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 2
+        },
+        {
+          "code": "D.40a",
+          "letter": "D",
+          "num": 40,
+          "sub": "a",
+          "prompt": "When should one deploy a reserve parachute?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Only below 50 m AGL, to guarantee a soft landing",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Only after landing, if the main canopy is damaged",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Only if instructed to do so by radio from the ground",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "In any mid-air emergency such as structural failure, an unflyable condition where the glider isn't recovering in time (collapse, spin, spiral), or a sudden pilot incapacity such as illness or eye problems",
+              "image": null,
+              "correct": true
+            }
+          ],
+          "stem_image": null,
+          "marks": 3
+        },
+        {
+          "code": "D.40b",
+          "letter": "D",
+          "num": 40,
+          "sub": "b",
+          "prompt": "How should one deploy a reserve parachute?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Look for the handle, grab and pull the container free of the harness, look for clear space (preferably towards the horizon), throw it as hard as possible, deflate and pull in the main glider if necessary to prevent re-inflation, and use a PLF for landing",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "Cut away the main glider first, then search for the reserve handle",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Throw the reserve gently downward so it doesn't tangle with the main lines",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Pull the handle and immediately release it — the reserve will deploy on its own",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 5
+        },
+        {
+          "code": "D.41",
+          "letter": "D",
+          "num": 41,
+          "sub": null,
+          "prompt": "What are the correct procedures when a paragliding accident occurs?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Wait for the pilot to regain consciousness before doing anything",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Contact the media to warn other pilots about the site conditions",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Move the injured pilot immediately to a more comfortable position before doing anything else",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Check on the pilot and how seriously they're injured, get medical/first-aid assistance if it's serious, ensure clear directions for the ambulance/rescue vehicle, stay with (or arrange for someone to stay with) the pilot to reassure them, assist with rescue only under the direction of a trained person, and submit a written accident report to the Club Licensing & Safety Officer or SAHPA office",
+              "image": null,
+              "correct": true
+            }
+          ],
+          "stem_image": null,
+          "marks": 3
+        }
+      ]
+    },
+    {
+      "letter": "E",
+      "name": "AIRLAW",
+      "questions": [
+        {
+          "code": "E.42",
+          "letter": "E",
+          "num": 42,
+          "sub": null,
+          "prompt": "What is the basic rule for determining who has right of way in the air?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Right is right (the pilot on the other's right has right of way)",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "Whichever pilot launched first has right of way",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Left has priority, as in road traffic rules",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Whichever pilot is higher has right of way",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "E.43a",
+          "letter": "E",
+          "num": 43,
+          "sub": "a",
+          "prompt": "In sketch (a) below, both paragliders are flying in the same general direction. Which glider has right of way?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Glider A",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Glider B",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "C",
+              "text": "Neither — both must give way and alter course",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Both have equal right of way",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": "5ffe3d7e6d92f0dc54c0d61f9d7d1af3bce604dc.jpg",
+          "marks": 1
+        },
+        {
+          "code": "E.43b",
+          "letter": "E",
+          "num": 43,
+          "sub": "b",
+          "prompt": "In sketch (b) below, the two paragliders are converging. Which glider has right of way?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Whichever glider is higher always has right of way",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Glider C",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Both have equal right of way",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Glider D",
+              "image": null,
+              "correct": true
+            }
+          ],
+          "stem_image": "d84098a25265a4170dc55615415787aa914f36d2.jpg",
+          "marks": 1
+        },
+        {
+          "code": "E.43c",
+          "letter": "E",
+          "num": 43,
+          "sub": "c",
+          "prompt": "In sketch (c) below, both paragliders are ridge soaring side by side. Which glider has right of way?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Both have equal right of way",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Glider F",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "C",
+              "text": "Glider E",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Whichever glider launched first always has right of way",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": "23676fd84719684b8052749a157504b26b65b5aa.jpg",
+          "marks": 1
+        },
+        {
+          "code": "E.43d",
+          "letter": "E",
+          "num": 43,
+          "sub": "d",
+          "prompt": "In sketch (d) below, glider G is ridge soaring close to the terrain while glider H is above. Which glider has right of way?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Glider H",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Both have equal right of way",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Glider G",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "D",
+              "text": "Whichever glider is flying fastest has right of way",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": "7378ff3a0d5bc50010387fce766638e171e15b06.jpg",
+          "marks": 1
+        },
+        {
+          "code": "E.44a",
+          "letter": "E",
+          "num": 44,
+          "sub": "a",
+          "prompt": "In situation (a) below, two paragliders are converging in open air. What is the correct action?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Both pilots should climb steeply to gain separation vertically instead of turning",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Both pilots should turn towards each other to pass as close as possible",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Both pilots should hold their exact course and let the other pilot take all avoiding action",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Both pilots should alter course early to increase separation, turning away from each other rather than continuing to converge",
+              "image": null,
+              "correct": true
+            }
+          ],
+          "stem_image": "4e851bfa7f865d840a36bdabcf542ba11cdb5db4.jpg",
+          "marks": 1
+        },
+        {
+          "code": "E.44b",
+          "letter": "E",
+          "num": 44,
+          "sub": "b",
+          "prompt": "In situation (b) below, the same converging situation occurs near a ridge. What is the correct action?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Both pilots should alter course early to increase separation — turning away from each other and away from the ridge rather than cutting it fine close to the terrain",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "Only the higher pilot needs to react; the lower pilot can ignore the situation",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Both pilots should fly closer to the ridge to give themselves more room over open air",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Both pilots should hold course, since proximity to the ridge overrides normal right-of-way rules",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": "48e5dfa785cecddbe7ddf2674ef02eefa82d21e4.jpg",
+          "marks": 1
+        },
+        {
+          "code": "E.44c",
+          "letter": "E",
+          "num": 44,
+          "sub": "c",
+          "prompt": "In situation (c) below, one paraglider is flying straight while a second approaches from below at an angle. What is the correct action?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "The pilot flying straight should assume the other pilot will always give way, and take no action at all",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "The pilot who has right of way should still stay alert and ready to avoid a collision; the other pilot should alter course to pass well clear, without cutting in front",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "C",
+              "text": "The approaching pilot should turn to cross directly in front of the straight-flying glider to pass as quickly as possible",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Both pilots should turn towards each other simultaneously to resolve the situation faster",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": "d15d022f5b1705f4a264a1abb604674a7658f7a5.jpg",
+          "marks": 1
+        },
+        {
+          "code": "E.44d",
+          "letter": "E",
+          "num": 44,
+          "sub": "d",
+          "prompt": "In situation (d) below, a pilot is considering looping back onto the ridge just ahead of an oncoming pilot who is close by. What is the correct action?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "The pilot should stop and hover in place until the oncoming pilot passes",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "The pilot should loop back onto the ridge immediately, since being first back to the ridge always has priority",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Proximity between the two pilots is irrelevant — the loop-back manoeuvre is always safe regardless of spacing",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Given how close the two pilots are, the pilot should not try to cut back onto the ridge in front of the oncoming pilot — that space should only be reclaimed once enough separation exists",
+              "image": null,
+              "correct": true
+            }
+          ],
+          "stem_image": "d598120f387f46a3ebf7b636a4a7c8530135bdcd.jpg",
+          "marks": 1
+        }
+      ]
+    },
+    {
+      "letter": "F",
+      "name": "COMMON SENSE",
+      "questions": [
+        {
+          "code": "F.45",
+          "letter": "F",
+          "num": 45,
+          "sub": null,
+          "prompt": "Irrespective of experience, why is it important to have an observer during take-off?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Anything can happen — an observer can help if something goes wrong, regardless of the pilot's experience level",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "It's only necessary in strong wind conditions",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "It is a SACAA legal requirement for every launch",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Only inexperienced pilots need an observer at launch",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "F.46",
+          "letter": "F",
+          "num": 46,
+          "sub": null,
+          "prompt": "What is the danger of attempting a cliff take-off?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "The only danger is the risk of losing personal belongings over the edge",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Cliff take-offs are illegal under SACAA regulations, but not otherwise dangerous",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Cliff take-offs are actually safer because there's more lift available",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "There is no space to abort if needed, and directly behind the cliff edge there will typically be rotor and/or no wind, making the take-off area dangerous",
+              "image": null,
+              "correct": true
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "F.47",
+          "letter": "F",
+          "num": 47,
+          "sub": null,
+          "prompt": "Of the two important factors of micro meteorology and glider handling ability, which is more crucial?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Both are equally crucial and cannot be ranked",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Glider handling ability",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Neither — equipment quality is more crucial than both",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Micro meteorology",
+              "image": null,
+              "correct": true
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "F.48a",
+          "letter": "F",
+          "num": 48,
+          "sub": "a",
+          "prompt": "What are the dangers associated with flying in the vicinity of cumulonimbus cloud?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Cumulonimbus clouds present no danger to paragliders, only to powered aircraft",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Cumulonimbus clouds are calm inside but dangerous only due to poor visibility",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Strong updrafts (\"cloud suck\"), a gust front as falling rain displaces air ahead of the cloud, and disorientation, hail, lightning and strong winds if caught inside",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "D",
+              "text": "The only danger is reduced radio range near the cloud",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 2
+        },
+        {
+          "code": "F.48b",
+          "letter": "F",
+          "num": 48,
+          "sub": "b",
+          "prompt": "What are the dangers associated with flying in the vicinity of orographic cloud?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Orographic cloud is always higher than paragliding altitudes and poses no risk",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Orographic cloud only affects powered paramotors, not paragliders",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Orographic cloud forms on the mountain and can happen suddenly, and a pilot could lose visibility as it forms and become disorientated",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "D",
+              "text": "Orographic cloud only forms slowly, giving pilots hours of warning",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 2
+        },
+        {
+          "code": "F.49",
+          "letter": "F",
+          "num": 49,
+          "sub": null,
+          "prompt": "When flying away on a cross country flight, what are the two most important observations that you will be making during the flight?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Wind direction and speed, and possible landing areas within glide range",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "The distance flown so far and your current altitude only",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "The time of day and remaining battery on your GPS/vario",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Cloud colour and the number of other pilots in the sky",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 2
+        },
+        {
+          "code": "F.50",
+          "letter": "F",
+          "num": 50,
+          "sub": null,
+          "prompt": "Why is it a rule that you attain an upright or standing posture in the harness on landing approach?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "So you can see the ground clearly, land on your feet, and run if necessary",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "So the reserve parachute handle is easier to reach",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "So the harness straps don't chafe during the flare",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "It's purely a comfort preference with no safety benefit",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 3
+        },
+        {
+          "code": "F.51",
+          "letter": "F",
+          "num": 51,
+          "sub": null,
+          "prompt": "Why would one report to the most senior pilot or site controller on a flying site prior to commencing any flying activity?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "It is only a courtesy with no practical benefit",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "To pay the site landing fee before flying",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "To get more information on conditions, local house thermals, and any dangers or warnings specific to the site",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "D",
+              "text": "To confirm insurance cover for the day",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 2
+        },
+        {
+          "code": "F.52",
+          "letter": "F",
+          "num": 52,
+          "sub": null,
+          "prompt": "What is the correct action to take in the event of an unavoidable landing on an obstacle?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Release the brakes completely just before impact",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Pull full brakes early to stop well before the obstacle",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Perform a PLF while still several metres in the air",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Flare as normal",
+              "image": null,
+              "correct": true
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        }
+      ]
+    }
+  ]
+}

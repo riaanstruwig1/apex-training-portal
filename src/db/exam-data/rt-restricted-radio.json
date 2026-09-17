@@ -1,0 +1,1360 @@
+{
+  "sections": [
+    {
+      "letter": "A",
+      "name": "Restricted Radio Theory",
+      "questions": [
+        {
+          "code": "Q.1",
+          "prompt": "What is the correct phonetic letter for \"S\"?",
+          "marks": 1,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Sierra",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "Siera",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Sieerra",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null
+        },
+        {
+          "code": "Q.2",
+          "prompt": "How do you pronounce the following in phonetic - 1500 Feet?",
+          "marks": 1,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Wun Five Zero Zero Feet",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Wun Fife Double Zero Feet",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Wun Fife Zero Zero Feet",
+              "image": null,
+              "correct": true
+            }
+          ],
+          "stem_image": null
+        },
+        {
+          "code": "Q.3",
+          "prompt": "Which Organisation is responsible for issuing of an official 4 letter designator that will represent a FIR, Sector or ATSU?",
+          "marks": 1,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "SACAA",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "C",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "ICAO",
+              "image": null,
+              "correct": true
+            }
+          ],
+          "stem_image": null
+        },
+        {
+          "code": "Q.4",
+          "prompt": "What is the meaning of \"FIR\"?",
+          "marks": 1,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Flight Information Route",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Flight Information Region",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "C",
+              "text": "Flight Information Range",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null
+        },
+        {
+          "code": "Q.5",
+          "prompt": "Which of the following selections is an example of controlled airspace?",
+          "marks": 1,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "ATZ Class C / TIBA",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "ATZ Class A / TMA",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "C",
+              "text": "ATZ Class D / FAP",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null
+        },
+        {
+          "code": "Q.6",
+          "prompt": "Which of the following sections is an example of uncontrolled airspace?",
+          "marks": 1,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "CTA / TMA",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "CTA / Airways",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "FAD / TIBA",
+              "image": null,
+              "correct": true
+            }
+          ],
+          "stem_image": null
+        },
+        {
+          "code": "Q.7",
+          "prompt": "What is the meaning of IMC?",
+          "marks": 1,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Cloud ceiling is not less than 1500 feet AGL, forward visibility is less than 3nm",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Cloud ceiling is not less that 1500 feet AGL, forward visibility is not less than 3km",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Cloud ceiling is less than 1500 feet AGL, forward visibility is less that 3nm",
+              "image": null,
+              "correct": true
+            }
+          ],
+          "stem_image": null
+        },
+        {
+          "code": "Q.8",
+          "prompt": "The term \"SVFR\" is an acronym meaning?",
+          "marks": 1,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Specific Visual Flight Rules",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Special Visual Flight Rules",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "C",
+              "text": "Secondary Visual Flight Rules",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null
+        },
+        {
+          "code": "Q.9",
+          "prompt": "The Pre-flight information bulletin includes the following documentation?",
+          "marks": 1,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "AIP Supplement and Notam",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "AIP & AIRRAC",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "CAR & CATS",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null
+        },
+        {
+          "code": "Q.10",
+          "prompt": "What is the international standard QNE Setting?",
+          "marks": 1,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Pressure altitude of 1013.2 kPa",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Altitude of 1013.2 Pa",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Pressure Altitude of 1013.2 hPa",
+              "image": null,
+              "correct": true
+            }
+          ],
+          "stem_image": null
+        },
+        {
+          "code": "Q.11",
+          "prompt": "1hpa is the equivalent of _____ up to 10000 Feet in reference?",
+          "marks": 1,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "30 meters",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "1 Atmosphere",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "30 Feet",
+              "image": null,
+              "correct": true
+            }
+          ],
+          "stem_image": null
+        },
+        {
+          "code": "Q.12",
+          "prompt": "A pilot of an aircraft will select their altimeter setting from QNE to QNH on passing?",
+          "marks": 1,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Transition Altitude",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Transition Limit",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Transition Level",
+              "image": null,
+              "correct": true
+            }
+          ],
+          "stem_image": null
+        },
+        {
+          "code": "Q.13",
+          "prompt": "A pilot of an aircraft will select their altimeter setting from QNE to QNH on passing?",
+          "marks": 1,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Above 1500 feet AGL entering the 25nm Radius of an Airport below Transition Level",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "Below 1500 feet AGL entering the 25nm Radius of an Airport",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Transition Altitude passing through Transition Level",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null
+        },
+        {
+          "code": "Q.14",
+          "prompt": "The Semicircular Rule is based on?",
+          "marks": 1,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "True Magnetic Track",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Magnetic Track",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "C",
+              "text": "Magnetic Variation Track",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null
+        },
+        {
+          "code": "Q.15",
+          "prompt": "What is one of the factors to consider when identifying that flight level to choose using the semi circular rule as a reference?",
+          "marks": 1,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "IMC or IFR",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "IMC or VMC",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "C",
+              "text": "Direction and below 1500 feet",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null
+        },
+        {
+          "code": "Q.16",
+          "prompt": "What is the meaning of \"SAR\"?",
+          "marks": 1,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Search and Rescue",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "Seek and Rescue",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Search and Recovery",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null
+        },
+        {
+          "code": "Q.17",
+          "prompt": "As powered paraglider pilot you are allowed to fly in the following airspace without a full Restricted Radio Licence?",
+          "marks": 1,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Class C, D, G",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Class A - C",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Class F and G",
+              "image": null,
+              "correct": true
+            }
+          ],
+          "stem_image": null
+        },
+        {
+          "code": "Q.18",
+          "prompt": "Frequency for Special Rules West is?",
+          "marks": 1,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "124.800MHz",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "125.800MHz",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "C",
+              "text": "125.400MHz",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null
+        },
+        {
+          "code": "Q.19",
+          "prompt": "General Airspace in South Africa falls under what Frequency unless flying in a FAD?",
+          "marks": 1,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "124.800MHz",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "125.800MHz",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "125.600MHz TIBA Frequency",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null
+        },
+        {
+          "code": "Q.20",
+          "prompt": "The term \"VHF\" means?",
+          "marks": 1,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Visual High Frequency",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Very High Frequency",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "C",
+              "text": "Variable High Frequency",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null
+        },
+        {
+          "code": "Q.21",
+          "prompt": "VHF Airband radio transmission is based on what type of transmission/reference?",
+          "marks": 1,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Line of Sight and AM Modulation",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "Line of Sight and FM Modulation",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Line of Coverage and AM Modulation",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null
+        },
+        {
+          "code": "Q.22",
+          "prompt": "The mandatory controlling point in a controlled circuit is?",
+          "marks": 1,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Downwind and Crosswind",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Crosswind, Downwind, Base and Final",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Downwind and Final",
+              "image": null,
+              "correct": true
+            }
+          ],
+          "stem_image": null
+        },
+        {
+          "code": "Q.23",
+          "prompt": "The term 'WILCO' means?",
+          "marks": 1,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Will Standby",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Will Comply",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "C",
+              "text": "Will Continue",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null
+        },
+        {
+          "code": "Q.24",
+          "prompt": "The radio strength table identifies?",
+          "marks": 1,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "The strength of the SQ transmission",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "The Transmission Strength of the transmitting party's radio",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "C",
+              "text": "The strength of the transmitting party's Squelch mode",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null
+        },
+        {
+          "code": "Q.25",
+          "prompt": "The term \"Correction\" means?",
+          "marks": 1,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "To cancel your own transmission",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "To correct your own transmission",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "C",
+              "text": "To cancel someone else's transmission",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null
+        },
+        {
+          "code": "Q.26",
+          "prompt": "The term \"Blind Broadcast\" means?",
+          "marks": 1,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "To broadcast your intentions at a controlled airfield that you are entering",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "To do a TIBA broadcast, in uncontrolled airspace",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "C",
+              "text": "To do a Blind TIBA Broadcast not identifying your call sign",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null
+        },
+        {
+          "code": "Q.27",
+          "prompt": "A blind broadcast includes the following?",
+          "marks": 1,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Pilot's Licence No.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "The aircraft speed in knots",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "The aircraft height, Alt or FL",
+              "image": null,
+              "correct": true
+            }
+          ],
+          "stem_image": null
+        },
+        {
+          "code": "Q.28",
+          "prompt": "A pilot experiencing an Emergency will Squawk?",
+          "marks": 1,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "7600",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "7500",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "7700",
+              "image": null,
+              "correct": true
+            }
+          ],
+          "stem_image": null
+        },
+        {
+          "code": "Q.29",
+          "prompt": "As Paraglider pilot you can fly under what conditions if approved by ATC?",
+          "marks": 1,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "SVFR conditions",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "IFR Approved",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Under Special IMC",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null
+        },
+        {
+          "code": "Q.30",
+          "prompt": "As Paraglider pilot you are allowed to fly over clouds?",
+          "marks": 1,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Yes, as long as the sky is covered with more than 3/8 of cloud",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "No, you must maintain visual contact with the ground",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "C",
+              "text": "Yes, as long as you have visual contact with the ground within a radius of 5nm",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null
+        },
+        {
+          "code": "Q.31",
+          "prompt": "As powered Paraglider pilots we broadcast our height in?",
+          "marks": 1,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Feet above ASL",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "Above Ground as QNE",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "FL above sea level",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null
+        },
+        {
+          "code": "Q.32",
+          "prompt": "A pilot experiencing an engine failure will make the following emergency broadcast?",
+          "marks": 1,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "PAN-PAN, PAN-PAN, PAN-PAN",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "MAYDAY-MAYDAY",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "MAYDAY, MAYDAY, MAYDAY",
+              "image": null,
+              "correct": true
+            }
+          ],
+          "stem_image": null
+        },
+        {
+          "code": "Q.33",
+          "prompt": "A pilot experiencing a medical emergency onboard will make the following emergency broadcast?",
+          "marks": 1,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "PAN-PAN, PAN-PAN, PAN-PAN",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "MAYDAY-MAYDAY",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "PAN, PAN, PAN",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null
+        },
+        {
+          "code": "Q.34",
+          "prompt": "The terminology for time \"Zulu\" time?",
+          "marks": 1,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Means start of day",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Means UTC time",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "C",
+              "text": "Means sunrise time",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null
+        },
+        {
+          "code": "Q.35",
+          "prompt": "The term QNH means?",
+          "marks": 1,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Altimeter sub-scale setting to obtain elevation when on the ground",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "Altimeter sub-scale setting to obtain elevation when in the air",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Altimeter sub-scale setting to obtain height when QNH set to 1013hPa",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null
+        },
+        {
+          "code": "Q.36",
+          "prompt": "The runway direction is indicated in?",
+          "marks": 1,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Magnetic track and direction of wind",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "True track and direction of flight",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Magnetic track and direction of landing",
+              "image": null,
+              "correct": true
+            }
+          ],
+          "stem_image": null
+        },
+        {
+          "code": "Q.37",
+          "prompt": "Reply to the following transmission from ATC: \"PPG negative, I say again hold your position\"",
+          "marks": 1,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Will hold my position, PPG",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Holding my position, PPG",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "C",
+              "text": "Copied and Holding, PPG",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null
+        },
+        {
+          "code": "Q.38",
+          "prompt": "The correct reply to an ATC instruction \"PPG turn base, report final\" is?",
+          "marks": 1,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Turn base, report final, PPG",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "Final next, PPG",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Turning base and will report final next, PPG",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null
+        },
+        {
+          "code": "Q.39",
+          "prompt": "A Paraglider pilot should communicate?",
+          "marks": 1,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Only when specifically communicated to, but must keep listening on the correct frequency",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Must broadcast intentions every 5-10 min and keep listening on correct frequency",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "C",
+              "text": "Only when taking off and landing",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null
+        },
+        {
+          "code": "Q.40",
+          "prompt": "In Aeronautical and Maritime RT terminology, the right side of an object is also referred to as?",
+          "marks": 1,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Starboard side",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "Port side",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Starport side",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null
+        },
+        {
+          "code": "Q.41",
+          "prompt": "The term \"correction\" is used on frequency when?",
+          "marks": 1,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "The user makes a mistake in their communication when transmitting on frequency",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "The user corrects a party when they make a mistake or error",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "The ATC makes a correction to a pilot's transmission",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null
+        },
+        {
+          "code": "Q.42",
+          "prompt": "General flying training area's frequency?",
+          "marks": 1,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "124.400MHz unless published differently",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "124.800MHz as published under the AIP",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "125.800MHz as published under AIC",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null
+        },
+        {
+          "code": "Q.43",
+          "prompt": "The term \"AIC\" means?",
+          "marks": 1,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Aviation Information Circular",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Aerodrome Information Circular",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Aeronautical Information Circular",
+              "image": null,
+              "correct": true
+            }
+          ],
+          "stem_image": null
+        },
+        {
+          "code": "Q.44",
+          "prompt": "An aircraft will not comply with the Semi-circular rule when?",
+          "marks": 1,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Inside the 25nm radius from an airfield above 1500 feet",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "When a PPG pilot flies IFR",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "When a pilot flies below 1500 feet",
+              "image": null,
+              "correct": true
+            }
+          ],
+          "stem_image": null
+        },
+        {
+          "code": "Q.45",
+          "prompt": "The definition of daytime is?",
+          "marks": 1,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "15 min before sunrise to 15 min after sunset",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "10 min before sunrise to 10 min after sunset",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "15 min before sunrise to 15 min after sunset, unless the sky is covered with more than 3/8 of cloud",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null
+        },
+        {
+          "code": "Q.46",
+          "prompt": "Navigational information is published under?",
+          "marks": 1,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "AIC, Enroute",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "AIP, Enroute",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "C",
+              "text": "NOTAMs, Enroute",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null
+        },
+        {
+          "code": "Q.47",
+          "prompt": "In SACAA all CAR's will be overridden by the CATS?",
+          "marks": 1,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "YES",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "NO",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "C",
+              "text": "If an appendix is published in the CATS",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null
+        },
+        {
+          "code": "Q.48",
+          "prompt": "Pilot Licensing falls under?",
+          "marks": 1,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Part 61 of the CATS",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Part 62 of the CATS under AIP",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "AIC",
+              "image": null,
+              "correct": true
+            }
+          ],
+          "stem_image": null
+        },
+        {
+          "code": "Q.49",
+          "prompt": "NOTAM's can be downloaded from?",
+          "marks": 1,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "ICAO Website",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Government Website",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "SACAA Website",
+              "image": null,
+              "correct": true
+            }
+          ],
+          "stem_image": null
+        },
+        {
+          "code": "Q.50",
+          "prompt": "The ICAO code for South Africa is?",
+          "marks": 1,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "FB",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "FC",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "FA",
+              "image": null,
+              "correct": true
+            }
+          ],
+          "stem_image": null
+        }
+      ]
+    }
+  ]
+}
