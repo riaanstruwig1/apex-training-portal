@@ -1,8 +1,9 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { asc } from "drizzle-orm";
 import { db } from "@/db";
 import { exams } from "@/db/schema";
 import { requireCFI } from "@/lib/auth/dal";
+import NewExamForm from "./new-exam-form";
 
 export default async function ExamsAdminPage() {
   await requireCFI();
@@ -11,14 +12,16 @@ export default async function ExamsAdminPage() {
 
   return (
     <div>
-      <h1 className="mb-1 text-xl font-semibold text-slate-900">Exam content</h1>
-      <p className="mb-6 max-w-2xl text-sm text-slate-500">
-        Fix wording on an exam&apos;s questions or answers here. You can only
-        change the text itself &mdash; the order of questions, which answer
-        is marked correct, and the marks each question is worth all stay
-        exactly as set up, so editing wording can&apos;t accidentally change
-        how the exam is scored.
-      </p>
+      <div className="mb-6 flex items-start justify-between gap-4">
+        <div>
+          <h1 className="mb-1 text-xl font-semibold text-slate-900">Exam content</h1>
+          <p className="max-w-2xl text-sm text-slate-500">
+            Add a new exam, or open an existing one to edit its questions,
+            answers, marks, and settings.
+          </p>
+        </div>
+      </div>
+      <NewExamForm />
       <div className="space-y-3">
         {allExams.map((e) => (
           <Link
@@ -37,3 +40,4 @@ export default async function ExamsAdminPage() {
     </div>
   );
 }
+
