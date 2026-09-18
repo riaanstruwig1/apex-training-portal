@@ -1,4 +1,4 @@
-// Note: deliberately no `import "server-only"` here -- this module is also
+﻿// Note: deliberately no `import "server-only"` here -- this module is also
 // loaded directly by the seed script via `tsx`, outside Next's bundler,
 // where the server-only guard throws unconditionally. It's never imported
 // from a "use client" file, so the guard isn't needed at runtime.
@@ -23,9 +23,12 @@ const sqlite = new DatabaseSync(dbPath);
 // across several parallel worker processes while collecting page data. Each
 // worker opens its own connection to the same file and tries to switch it to
 // WAL mode at roughly the same moment; SQLite briefly needs exclusive access
-// to do that, so without a busy_timeout the loser of that race gets an
-// immediate "database is locked" error instead of just waiting its turn.
-sqlite.exec("PRAGMA busy_timeout = 5000");
+// to do that, so without a generous busy_timeout the loser of that race gets
+// an immediate "database is locked" error instead of just waiting its turn.
+// 5s was occasionally too short once more routes joined the build's import
+// graph and more workers piled up at once; 30s costs nothing in practice
+// (actual waits are normally milliseconds) but gives everyone room to queue.
+sqlite.exec("PRAGMA busy_timeout = 30000");
 sqlite.exec("PRAGMA journal_mode = WAL");
 sqlite.exec("PRAGMA foreign_keys = ON");
 
