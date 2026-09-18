@@ -13,6 +13,13 @@ import {
   EXAM_CATEGORY_ORDER,
   type TrainingType,
 } from "@/lib/exams";
+import { getStudyMaterials } from "@/lib/actions/study-materials";
+
+function formatBytes(bytes: number | null): string {
+  if (!bytes) return "";
+  if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
 
 const TRAINING_TYPE_LABELS: Record<TrainingType, string> = {
   pg: "Paraglider (PG)",
@@ -26,11 +33,13 @@ function isExpired(d: Date): boolean {
 
 export default async function StudentDashboard() {
   const { user } = await requireStudent();
-  const [sections, logEntries, [profile]] = await Promise.all([
+  const [sections, logEntries, [profile], studyMaterialSlots] = await Promise.all([
     getStudentProgress(user.id),
     getLogbookEntries(user.id),
     db.select().from(studentProfiles).where(eq(studentProfiles.userId, user.id)).limit(1),
+    getStudyMaterials(),
   ]);
+  const studyMaterialItems = studyMaterialSlots.filter((s) => s.filename);
   const examSummaries = await getExamsForStudent(user.id, profile?.trainingType);
   // A category the student's training type puts in scope but that has no
   // exam content loaded yet (e.g. PPT, as of v15) -- shown as a "coming
@@ -101,74 +110,101 @@ export default async function StudentDashboard() {
         + Log a flight
       </Link>
 
-      {(examSummaries.length > 0 || missingExamCategories.length > 0) && (
-        <section>
-          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">
-            Exams
-          </h2>
-          <div className="space-y-3">
-            {missingExamCategories.map((cat) => (
-              <div
-                key={cat}
-                className="flex items-center justify-between rounded-xl border border-dashed border-slate-200 bg-slate-50 p-4"
-              >
-                <div>
-                  <div className="text-sm font-medium text-slate-500">
-                    {EXAM_CATEGORY_LABELS[cat]}
-                  </div>
-                  <span className="mt-1 inline-block rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-500">
-                    Content coming soon
-                  </span>
-                </div>
-              </div>
-            ))}
-            {examSummaries.map((e) => {
-              const statusLabel =
-                e.status === "not_started"
-                  ? "Not started"
-                  : e.status === "in_progress"
-                    ? `In progress — ${e.answeredCount} / ${e.totalQuestions} answered`
-                    : e.status === "submitted"
-                      ? "Submitted — awaiting verification"
-                      : e.passed
-                        ? `Verified — PASS (${e.scorePercent?.toFixed(0)}%)`
-                        : `Verified — FAIL (${e.scorePercent?.toFixed(0)}%)`;
-              const badgeColor =
-                e.status === "verified"
-                  ? e.passed
-                    ? "bg-green-100 text-green-800"
-                    : "bg-red-100 text-red-800"
-                  : e.status === "submitted"
-                    ? "bg-amber-100 text-amber-800"
-                    : "bg-slate-100 text-slate-600";
-
-              return (
-                <Link
-                  key={e.examId}
-                  href={`/student/exams/${e.examId}`}
-                  className="flex items-center justify-between rounded-xl border border-slate-200 bg-white p-4 hover:border-red-300"
-                >
-                  <div>
-                    <div className="text-sm font-medium text-slate-900">{e.title}</div>
-                    <span className={`mt-1 inline-block rounded-full px-2 py-0.5 text-xs font-medium ${badgeColor}`}>
-                      {statusLabel}
-                    </span>
-                  </div>
-                  {e.status !== "not_started" && e.status !== "submitted" && e.status !== "verified" && (
-                    <div className="h-2 w-24 overflow-hidden rounded-full bg-slate-100">
-                      <div
-                        className="h-full rounded-full bg-red-600"
-                        style={{
-                          width: `${e.totalQuestions ? (e.answeredCount / e.totalQuestions) * 100 : 0}%`,
-                        }}
-                      />
+      {(examSummaries.length > 0 || missingExamCategories.length > 0 || studyMaterialItems.length > 0) && (
+        <div className="grid gap-8 md:grid-cols-2">
+          {(examSummaries.length > 0 || missingExamCategories.length > 0) && (
+            <section>
+              <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">
+                Exams
+              </h2>
+              <div className="space-y-3">
+                {missingExamCategories.map((cat) => (
+                  <div
+                    key={cat}
+                    className="flex items-center justify-between rounded-xl border border-dashed border-slate-200 bg-slate-50 p-4"
+                  >
+                    <div>
+                      <div className="text-sm font-medium text-slate-500">
+                        {EXAM_CATEGORY_LABELS[cat]}
+                      </div>
+                      <span className="mt-1 inline-block rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-500">
+                        Content coming soon
+                      </span>
                     </div>
-                  )}
-                </Link>
-              );
-            })}
-          </div>
-        </section>
+                  </div>
+                ))}
+                {examSummaries.map((e) => {
+                  const statusLabel =
+                    e.status === "not_started"
+                      ? "Not started"
+                      : e.status === "in_progress"
+                        ? `In progress — ${e.answeredCount} / ${e.totalQuestions} answered`
+                        : e.status === "submitted"
+                          ? "Submitted — awaiting verification"
+                          : e.passed
+                            ? `Verified — PASS (${e.scorePercent?.toFixed(0)}%)`
+                            : `Verified — FAIL (${e.scorePercent?.toFixed(0)}%)`;
+                  const badgeColor =
+                    e.status === "verified"
+                      ? e.passed
+                        ? "bg-green-100 text-green-800"
+                        : "bg-red-100 text-red-800"
+                      : e.status === "submitted"
+                        ? "bg-amber-100 text-amber-800"
+                        : "bg-slate-100 text-slate-600";
+
+                  return (
+                    <Link
+                      key={e.examId}
+                      href={`/student/exams/${e.examId}`}
+                      className="flex items-center justify-between rounded-xl border border-slate-200 bg-white p-4 hover:border-red-300"
+                    >
+                      <div>
+                        <div className="text-sm font-medium text-slate-900">{e.title}</div>
+                        <span className={`mt-1 inline-block rounded-full px-2 py-0.5 text-xs font-medium ${badgeColor}`}>
+                          {statusLabel}
+                        </span>
+                      </div>
+                      {e.status !== "not_started" && e.status !== "submitted" && e.status !== "verified" && (
+                        <div className="h-2 w-24 overflow-hidden rounded-full bg-slate-100">
+                          <div
+                            className="h-full rounded-full bg-red-600"
+                            style={{
+                              width: `${e.totalQuestions ? (e.answeredCount / e.totalQuestions) * 100 : 0}%`,
+                            }}
+                          />
+                        </div>
+                      )}
+                    </Link>
+                  );
+                })}
+              </div>
+            </section>
+          )}
+
+          {studyMaterialItems.length > 0 && (
+            <section>
+              <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">
+                Study material
+              </h2>
+              <div className="space-y-3">
+                {studyMaterialItems.map((item) => (
+                  <a
+                    key={item.id}
+                    href={`/api/study-material/${item.filename}`}
+                    className="flex items-center justify-between rounded-xl border border-slate-200 bg-white p-4 hover:border-red-300"
+                  >
+                    <div>
+                      <div className="text-sm font-medium text-slate-900">{item.title}</div>
+                      <div className="text-xs text-slate-500">{formatBytes(item.fileSize)}</div>
+                    </div>
+                    <span className="text-sm font-medium text-red-600">Download</span>
+                  </a>
+                ))}
+              </div>
+            </section>
+          )}
+        </div>
       )}
 
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">

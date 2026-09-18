@@ -457,6 +457,30 @@ export const examAttempts = sqliteTable("exam_attempts", {
   mustPassSectionsOk: integer("must_pass_sections_ok", { mode: "boolean" }),
 });
 
+// ---------------------------------------------------------------------------
+// Study material: up to 8 CFI-managed downloads (notes, slide decks, etc.)
+// shown to every student alongside their exams. Fixed slots 1-8 rather than
+// a free-form list, matching how Riaan described it ("8 download buttons")
+// -- an empty slot (title/filename both null) just doesn't render a button.
+// ---------------------------------------------------------------------------
+
+export const studyMaterials = sqliteTable(
+  "study_materials",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    slot: integer("slot").notNull(), // 1-8, fixed position in the list
+    title: text("title"), // null = this slot is empty/unused
+    filename: text("filename"), // stored filename under data/uploads/study-material/
+    originalName: text("original_name"), // shown as the downloaded file's name
+    fileSize: integer("file_size"),
+    uploadedAt: integer("uploaded_at", { mode: "timestamp" }),
+    uploadedByUserId: text("uploaded_by_user_id").references(() => users.id),
+  },
+  (table) => [uniqueIndex("study_materials_slot_unique").on(table.slot)]
+);
+
 export const examAnswers = sqliteTable(
   "exam_answers",
   {
