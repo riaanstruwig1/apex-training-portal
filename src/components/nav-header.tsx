@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { logout } from "@/lib/actions/auth";
+import { BuildBadge } from "@/components/build-badge";
 
 function NavBadge({ count }: { count: number }) {
   if (count <= 0) return null;
@@ -104,6 +105,7 @@ export default function NavHeader({
           </Link>
         ))}
       </nav>
+      <BuildBadge className="border-t border-slate-100 px-4 py-1" />
     </header>
   );
 }

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import LoginForm from "./login-form";
+import { BuildBadge } from "@/components/build-badge";
 
 export default function LoginPage() {
   return (
@@ -31,6 +32,7 @@ export default function LoginPage() {
             Sign up
           </Link>
         </p>
+        <BuildBadge className="mt-6" />
       </div>
     </main>
   );
