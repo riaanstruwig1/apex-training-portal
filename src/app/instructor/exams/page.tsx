@@ -1,4 +1,4 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import { asc } from "drizzle-orm";
 import { db } from "@/db";
 import { exams } from "@/db/schema";
@@ -40,4 +40,3 @@ export default async function ExamsAdminPage() {
     </div>
   );
 }
-

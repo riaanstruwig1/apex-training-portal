@@ -1,4 +1,4 @@
-﻿"use server";
+"use server";
 
 import { eq, and, desc, inArray, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
@@ -543,4 +543,3 @@ export async function deleteExam(examId: string) {
   await db.delete(exams).where(eq(exams.id, examId));
   revalidatePath("/instructor/exams");
 }
-
