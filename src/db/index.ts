@@ -29,7 +29,21 @@ const sqlite = new DatabaseSync(dbPath);
 // graph and more workers piled up at once; 30s costs nothing in practice
 // (actual waits are normally milliseconds) but gives everyone room to queue.
 sqlite.exec("PRAGMA busy_timeout = 30000");
-sqlite.exec("PRAGMA journal_mode = WAL");
+try {
+  sqlite.exec("PRAGMA journal_mode = WAL");
+} catch (err) {
+  // Switching journal mode to WAL needs a brief moment of exclusive access,
+  // and in practice that doesn't wait for busy_timeout the way ordinary
+  // reads/writes do -- on Railway's build machine, with 30+ worker processes
+  // each importing this module at once purely to collect route metadata (no
+  // real queries), that exclusive moment is contested enough to fail outright
+  // instead of queueing. It's harmless to lose that race: WAL mode is stored
+  // in the database file itself, so once any one worker succeeds, the file
+  // stays in WAL mode for everyone else too, and a worker that loses the race
+  // just carries on in whatever journal mode is already active -- it doesn't
+  // need WAL for a build step that never touches real data.
+  console.warn("Could not switch SQLite to WAL mode (safe to ignore during build):", err);
+}
 sqlite.exec("PRAGMA foreign_keys = ON");
 
 export const db = drizzle(createNodeSqliteCallback(sqlite), { schema });
