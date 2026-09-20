@@ -72,80 +72,90 @@ export async function updateOwnProfile(
     return { error: shared.error.issues[0]?.message ?? "Invalid input." };
   }
 
-  try {
-    const profilePictureInput = formData.get("profilePictureFile");
-    const profilePictureFile =
-      profilePictureInput instanceof File
-        ? await saveUpload(user.id, "profile-picture", profilePictureInput)
-        : null;
-    const flightMedicalCertInput = formData.get("flightMedicalCertFile");
-    const flightMedicalCertFile =
-      flightMedicalCertInput instanceof File
-        ? await saveUpload(user.id, "flight-medical-cert", flightMedicalCertInput)
-        : null;
-
-    await db
-      .update(users)
-      .set({
-        phone: shared.data.phone || null,
-        altPhone: shared.data.altPhone || null,
-        nokName: shared.data.nokName || null,
-        nokContactNo: shared.data.nokContactNo || null,
-        postalAddress: shared.data.postalAddress || null,
-        homeAddress: shared.data.homeAddress || null,
-        clubName: shared.data.clubName || null,
-        medicalAid: shared.data.medicalAid || null,
-        medicalAidNo: shared.data.medicalAidNo || null,
-        bloodGroup: shared.data.bloodGroup || null,
-        allergies: shared.data.allergies || null,
-        ...(profilePictureFile ? { profilePictureFile } : {}),
-        ...(flightMedicalCertFile ? { flightMedicalCertFile } : {}),
-      })
-      .where(eq(users.id, user.id));
-
-    // A pilot (or a cfi/instructor who also carries a linked pilot profile)
-    // can additionally update their pilot-specific fields and re-upload
-    // their CAA licence.
-    if (user.role === "pilot" || user.role === "cfi" || user.role === "instructor") {
-      const [pilotProfile] = await db
-        .select({ id: pilotProfiles.id })
-        .from(pilotProfiles)
-        .where(eq(pilotProfiles.userId, user.id))
-        .limit(1);
-
-      if (pilotProfile) {
-        const pilotOnly = PilotOnlyProfileSchema.safeParse({
-          callSign: formData.get("callSign") || undefined,
-          sacaaNumber: formData.get("sacaaNumber") || undefined,
-          sahpaNumber: formData.get("sahpaNumber") || undefined,
-          sahpaExpiryDate: formData.get("sahpaExpiryDate") || undefined,
-        });
-        if (!pilotOnly.success) {
-          return { error: pilotOnly.error.issues[0]?.message ?? "Invalid input." };
-        }
-        const caaLicenceInput = formData.get("caaLicenceFile");
-        const caaLicenceFile =
-          caaLicenceInput instanceof File
-            ? await saveUpload(user.id, "caa-licence", caaLicenceInput)
-            : null;
-
-        await db
-          .update(pilotProfiles)
-          .set({
-            callSign: pilotOnly.data.callSign || null,
-            sacaaNumber: pilotOnly.data.sacaaNumber || null,
-            sahpaNumber: pilotOnly.data.sahpaNumber || null,
-            sahpaExpiryDate: pilotOnly.data.sahpaExpiryDate
-              ? new Date(pilotOnly.data.sahpaExpiryDate)
-              : null,
-            ...(caaLicenceFile ? { caaLicenceFile } : {}),
-          })
-          .where(eq(pilotProfiles.userId, user.id));
-      }
+  // Each upload succeeds or fails on its own -- previously one bad file
+  // (e.g. an unconvertible HEIC on flightMedicalCertFile) threw and aborted
+  // the whole db.update below, silently discarding a profilePictureFile
+  // that had already saved to disk successfully in the same submit (Notes4
+  // item 30: "profile picture not displaying" -- the most likely cause
+  // found on investigation 20 Sep 2026, since a plain single-file upload
+  // reproduces fine). uploadErrors collects failures to report without
+  // losing whatever did succeed.
+  const uploadErrors: string[] = [];
+  const currentUserId = user.id;
+  async function tryUpload(field: string, input: FormDataEntryValue | null): Promise<string | null> {
+    if (!(input instanceof File) || input.size === 0) return null;
+    try {
+      return await saveUpload(currentUserId, field, input);
+    } catch (err) {
+      uploadErrors.push(err instanceof UploadError ? err.message : `${field}: upload failed.`);
+      return null;
     }
-  } catch (err) {
-    if (err instanceof UploadError) return { error: err.message };
-    throw err;
+  }
+
+  const profilePictureFile = await tryUpload("profile-picture", formData.get("profilePictureFile"));
+  const flightMedicalCertFile = await tryUpload(
+    "flight-medical-cert",
+    formData.get("flightMedicalCertFile")
+  );
+
+  await db
+    .update(users)
+    .set({
+      phone: shared.data.phone || null,
+      altPhone: shared.data.altPhone || null,
+      nokName: shared.data.nokName || null,
+      nokContactNo: shared.data.nokContactNo || null,
+      postalAddress: shared.data.postalAddress || null,
+      homeAddress: shared.data.homeAddress || null,
+      clubName: shared.data.clubName || null,
+      medicalAid: shared.data.medicalAid || null,
+      medicalAidNo: shared.data.medicalAidNo || null,
+      bloodGroup: shared.data.bloodGroup || null,
+      allergies: shared.data.allergies || null,
+      ...(profilePictureFile ? { profilePictureFile } : {}),
+      ...(flightMedicalCertFile ? { flightMedicalCertFile } : {}),
+    })
+    .where(eq(users.id, user.id));
+
+  // A pilot (or a cfi/instructor who also carries a linked pilot profile)
+  // can additionally update their pilot-specific fields and re-upload
+  // their CAA licence.
+  if (user.role === "pilot" || user.role === "cfi" || user.role === "instructor") {
+    const [pilotProfile] = await db
+      .select({ id: pilotProfiles.id })
+      .from(pilotProfiles)
+      .where(eq(pilotProfiles.userId, user.id))
+      .limit(1);
+
+    if (pilotProfile) {
+      const pilotOnly = PilotOnlyProfileSchema.safeParse({
+        callSign: formData.get("callSign") || undefined,
+        sacaaNumber: formData.get("sacaaNumber") || undefined,
+        sahpaNumber: formData.get("sahpaNumber") || undefined,
+        sahpaExpiryDate: formData.get("sahpaExpiryDate") || undefined,
+      });
+      if (!pilotOnly.success) {
+        return { error: pilotOnly.error.issues[0]?.message ?? "Invalid input." };
+      }
+      const caaLicenceFile = await tryUpload("caa-licence", formData.get("caaLicenceFile"));
+
+      await db
+        .update(pilotProfiles)
+        .set({
+          callSign: pilotOnly.data.callSign || null,
+          sacaaNumber: pilotOnly.data.sacaaNumber || null,
+          sahpaNumber: pilotOnly.data.sahpaNumber || null,
+          sahpaExpiryDate: pilotOnly.data.sahpaExpiryDate
+            ? new Date(pilotOnly.data.sahpaExpiryDate)
+            : null,
+          ...(caaLicenceFile ? { caaLicenceFile } : {}),
+        })
+        .where(eq(pilotProfiles.userId, user.id));
+    }
+  }
+
+  if (uploadErrors.length > 0) {
+    return { error: uploadErrors.join(" ") };
   }
 
   revalidatePath("/pilot");
@@ -257,68 +267,68 @@ export async function adminUpdateProfile(
     return { error: parsed.error.issues[0]?.message ?? "Invalid input." };
   }
 
-  try {
-    const profilePictureInput = formData.get("profilePictureFile");
-    const profilePictureFile =
-      profilePictureInput instanceof File
-        ? await saveUpload(targetUserId, "profile-picture", profilePictureInput)
-        : null;
-    const idPassportInput = formData.get("idPassportFile");
-    const idPassportFile =
-      idPassportInput instanceof File
-        ? await saveUpload(targetUserId, "id-passport", idPassportInput)
-        : null;
-    const flightMedicalCertInput = formData.get("flightMedicalCertFile");
-    const flightMedicalCertFile =
-      flightMedicalCertInput instanceof File
-        ? await saveUpload(targetUserId, "flight-medical-cert", flightMedicalCertInput)
-        : null;
+  // See the matching comment in updateOwnProfile above: each upload now
+  // succeeds or fails independently so one bad file can't silently discard
+  // another that already saved to disk (Notes4 item 30).
+  const uploadErrors: string[] = [];
+  async function tryUpload(field: string, input: FormDataEntryValue | null): Promise<string | null> {
+    if (!(input instanceof File) || input.size === 0) return null;
+    try {
+      return await saveUpload(targetUserId, field, input);
+    } catch (err) {
+      uploadErrors.push(err instanceof UploadError ? err.message : `${field}: upload failed.`);
+      return null;
+    }
+  }
+
+  const profilePictureFile = await tryUpload("profile-picture", formData.get("profilePictureFile"));
+  const idPassportFile = await tryUpload("id-passport", formData.get("idPassportFile"));
+  const flightMedicalCertFile = await tryUpload(
+    "flight-medical-cert",
+    formData.get("flightMedicalCertFile")
+  );
+
+  await db
+    .update(users)
+    .set({
+      ...(parsed.data.name ? { name: parsed.data.name } : {}),
+      idPassportNumber: parsed.data.idPassportNumber || null,
+      phone: parsed.data.phone || null,
+      altPhone: parsed.data.altPhone || null,
+      nokName: parsed.data.nokName || null,
+      nokContactNo: parsed.data.nokContactNo || null,
+      postalAddress: parsed.data.postalAddress || null,
+      homeAddress: parsed.data.homeAddress || null,
+      clubName: parsed.data.clubName || null,
+      medicalAid: parsed.data.medicalAid || null,
+      medicalAidNo: parsed.data.medicalAidNo || null,
+      bloodGroup: parsed.data.bloodGroup || null,
+      allergies: parsed.data.allergies || null,
+      ...(profilePictureFile ? { profilePictureFile } : {}),
+      ...(idPassportFile ? { idPassportFile } : {}),
+      ...(flightMedicalCertFile ? { flightMedicalCertFile } : {}),
+    })
+    .where(eq(users.id, targetUserId));
+
+  if (target.role === "pilot" || target.role === "cfi" || target.role === "instructor") {
+    const caaLicenceFile = await tryUpload("caa-licence", formData.get("caaLicenceFile"));
 
     await db
-      .update(users)
+      .update(pilotProfiles)
       .set({
-        ...(parsed.data.name ? { name: parsed.data.name } : {}),
-        idPassportNumber: parsed.data.idPassportNumber || null,
-        phone: parsed.data.phone || null,
-        altPhone: parsed.data.altPhone || null,
-        nokName: parsed.data.nokName || null,
-        nokContactNo: parsed.data.nokContactNo || null,
-        postalAddress: parsed.data.postalAddress || null,
-        homeAddress: parsed.data.homeAddress || null,
-        clubName: parsed.data.clubName || null,
-        medicalAid: parsed.data.medicalAid || null,
-        medicalAidNo: parsed.data.medicalAidNo || null,
-        bloodGroup: parsed.data.bloodGroup || null,
-        allergies: parsed.data.allergies || null,
-        ...(profilePictureFile ? { profilePictureFile } : {}),
-        ...(idPassportFile ? { idPassportFile } : {}),
-        ...(flightMedicalCertFile ? { flightMedicalCertFile } : {}),
+        callSign: parsed.data.callSign || null,
+        sacaaNumber: parsed.data.sacaaNumber || null,
+        sahpaNumber: parsed.data.sahpaNumber || null,
+        sahpaExpiryDate: parsed.data.sahpaExpiryDate
+          ? new Date(parsed.data.sahpaExpiryDate)
+          : null,
+        ...(caaLicenceFile ? { caaLicenceFile } : {}),
       })
-      .where(eq(users.id, targetUserId));
+      .where(eq(pilotProfiles.userId, targetUserId));
+  }
 
-    if (target.role === "pilot" || target.role === "cfi" || target.role === "instructor") {
-      const caaLicenceInput = formData.get("caaLicenceFile");
-      const caaLicenceFile =
-        caaLicenceInput instanceof File
-          ? await saveUpload(targetUserId, "caa-licence", caaLicenceInput)
-          : null;
-
-      await db
-        .update(pilotProfiles)
-        .set({
-          callSign: parsed.data.callSign || null,
-          sacaaNumber: parsed.data.sacaaNumber || null,
-          sahpaNumber: parsed.data.sahpaNumber || null,
-          sahpaExpiryDate: parsed.data.sahpaExpiryDate
-            ? new Date(parsed.data.sahpaExpiryDate)
-            : null,
-          ...(caaLicenceFile ? { caaLicenceFile } : {}),
-        })
-        .where(eq(pilotProfiles.userId, targetUserId));
-    }
-  } catch (err) {
-    if (err instanceof UploadError) return { error: err.message };
-    throw err;
+  if (uploadErrors.length > 0) {
+    return { error: uploadErrors.join(" ") };
   }
 
   revalidatePath(`/admin/applicants/${targetUserId}`);

@@ -125,6 +125,13 @@ export default async function PilotDashboard() {
             <h2 className="mb-2 text-sm font-semibold text-slate-900">
               Verified licences &amp; endorsements
             </h2>
+            {relevantEquipment.length > 0 && (
+              <p className="mb-3 text-xs text-slate-500">
+                Your PG/PPG/PPT licence tiers (Basic, Intermediate, Sport, Tandem) show as a
+                green ✓ in the &ldquo;Ratings &amp; progress&rdquo; ladder above once verified --
+                this section covers everything else: add-ons, instructor and display ratings.
+              </p>
+            )}
             {groupedVerified.length === 0 ? (
               <p className="text-sm text-slate-400">
                 Nothing verified yet -- your CFI or Admin will confirm your declared
@@ -232,9 +239,8 @@ export default async function PilotDashboard() {
       )}
 
       <div className="rounded-xl border border-dashed border-slate-300 bg-white p-6 text-center text-sm text-slate-500">
-        Logbook, printable records and the personal document library are still coming in a
-        later build stage. This page covers your account, verified endorsements, and the
-        ratings ladder.
+        A personal document library is still coming in a later build stage. This page covers
+        your account, verified endorsements, and the ratings ladder.
       </div>
     </div>
   );

@@ -1,11 +1,12 @@
 "use server";
 
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import * as z from "zod";
 import { db } from "@/db";
 import { users, pilotProfiles, pilotEndorsements, studentProfiles } from "@/db/schema";
 import { requireAdminOrCFI } from "@/lib/auth/dal";
+import { ENDORSEMENT_OPTIONS } from "@/lib/pilot-endorsements";
 
 /**
  * Approves a pending Student or Pilot application. For a pilot, only the
@@ -116,6 +117,62 @@ export async function setEndorsementVerified(
     .where(eq(pilotEndorsements.id, endorsementId));
 
   revalidatePath("/admin");
+  revalidatePath("/pilot");
+}
+
+/**
+ * Lets a CFI/Admin grant a rating directly to a pilot during review --
+ * added 20 Sep 2026 (Notes4 item 11, the Henna Fourie case): a reviewer
+ * could already edit a pilot's personal details during verification but had
+ * no way to add a rating the pilot hadn't self-declared at sign-up. If the
+ * pilot already declared this key, this just verifies it (same effect as
+ * PilotEndorsementToggle's "Verify", but usable before first approval too,
+ * since the ladder/flat-list toggles were gated to accountStatus==="active").
+ * If they never declared it, this creates the row and verifies it in one
+ * step -- the CFI's own judgement stands in for the pilot's declaration.
+ */
+export async function adminGrantEndorsement(
+  pilotProfileId: string,
+  applicantUserId: string,
+  key: string
+) {
+  const reviewer = await requireAdminOrCFI();
+  if (!ENDORSEMENT_OPTIONS.some((o) => o.key === key)) return;
+
+  const [existing] = await db
+    .select()
+    .from(pilotEndorsements)
+    .where(
+      and(eq(pilotEndorsements.pilotProfileId, pilotProfileId), eq(pilotEndorsements.key, key))
+    )
+    .limit(1);
+
+  if (!existing) {
+    await db.insert(pilotEndorsements).values({
+      pilotProfileId,
+      key,
+      declaredAt: new Date(),
+      verified: true,
+      verifiedAt: new Date(),
+      verifiedByUserId: reviewer.id,
+    });
+  } else if (!existing.verified) {
+    await db
+      .update(pilotEndorsements)
+      .set({
+        verified: true,
+        verifiedAt: new Date(),
+        verifiedByUserId: reviewer.id,
+        declined: false,
+        declineReason: null,
+        declinedAt: null,
+        declinedByUserId: null,
+      })
+      .where(eq(pilotEndorsements.id, existing.id));
+  }
+
+  revalidatePath("/admin");
+  revalidatePath(`/admin/applicants/${applicantUserId}`);
   revalidatePath("/pilot");
 }
 

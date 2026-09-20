@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { getApplicantDetail } from "@/lib/verification";
-import { groupEndorsementItems, isLadderTierKey } from "@/lib/pilot-endorsements";
+import { groupEndorsementItems, isLadderTierKey, ENDORSEMENT_OPTIONS } from "@/lib/pilot-endorsements";
 import { computeLadder, EQUIPMENT_LABELS, INSTRUCTOR_RATING_REFERENCE_TEXT, type Equipment } from "@/lib/pilot-progress";
 import LadderTiers from "@/components/ladder-tiers";
 import Avatar from "@/components/avatar";
@@ -8,6 +8,7 @@ import ApplicantReviewActions from "./applicant-review-actions";
 import ApplicantTrainingTypeEditor from "./applicant-training-type-editor";
 import PilotEndorsementToggle from "./pilot-endorsement-toggle";
 import AdminProfileEditor from "./admin-profile-editor";
+import AdminGrantEndorsement from "./admin-grant-endorsement";
 
 const ALL_EQUIPMENT: Equipment[] = ["pg", "ppg", "ppt"];
 
@@ -239,51 +240,47 @@ export default async function ApplicantReviewPage({
             <Row label="SACAA License expiry" value={pilot.profile.sahpaExpiryDate?.toLocaleDateString()} />
           </dl>
 
-          {applicant.accountStatus === "active" && (
-            <div className="mt-4 space-y-3">
-              <h3 className="text-sm font-medium text-slate-700">
-                Ratings &amp; progress (CAR Part 106 ladder)
-              </h3>
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-                {ALL_EQUIPMENT.map((eq) => (
-                  <LadderTiers
-                    key={eq}
-                    equipmentLabel={EQUIPMENT_LABELS[eq]}
-                    tiers={computeLadder(eq, pilot.endorsements)}
-                    actionFor={(t) => {
-                      const row = pilot.endorsements.find((e) => e.key === t.key);
-                      if (!row) return null;
-                      return (
-                        <PilotEndorsementToggle
-                          endorsementId={row.id}
-                          verified={row.verified}
-                          declined={row.declined}
-                        />
-                      );
-                    }}
-                  />
-                ))}
-              </div>
+          {/* Ladder + flat-list Verify/Decline controls used to be gated to
+             accountStatus === "active" (only shown after first approval) --
+             changed 20 Sep 2026 (Notes4 item 11) so a CFI/Admin can verify,
+             decline, or grant ratings during the initial review too, not
+             just after approving the account. */}
+          <div className="mt-4 space-y-3">
+            <h3 className="text-sm font-medium text-slate-700">
+              Ratings &amp; progress (CAR Part 106 ladder)
+            </h3>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+              {ALL_EQUIPMENT.map((eq) => (
+                <LadderTiers
+                  key={eq}
+                  equipmentLabel={EQUIPMENT_LABELS[eq]}
+                  tiers={computeLadder(eq, pilot.endorsements)}
+                  actionFor={(t) => {
+                    const row = pilot.endorsements.find((e) => e.key === t.key);
+                    if (!row) return null;
+                    return (
+                      <PilotEndorsementToggle
+                        endorsementId={row.id}
+                        verified={row.verified}
+                        declined={row.declined}
+                      />
+                    );
+                  }}
+                />
+              ))}
             </div>
-          )}
+          </div>
 
           <p className="mb-1 mt-4 text-sm font-medium text-slate-700">
             Declared licences, add-ons, instructor &amp; display ratings
           </p>
-          {/* Ladder-tier items (Basic/Intermediate/Sport/Tandem) are
-             excluded here ONLY once the ladder section above is actually
-             showing (accountStatus === "active") -- otherwise this flat
-             list would repeat a second Verify control for the exact same
-             row. For a still-pending applicant the ladder cards aren't
-             rendered at all yet (see the accountStatus check above), so
-             this list stays the ONLY place a reviewer can see what they
-             declared -- filtering here too would hide PG/PPG/PPT Basic
-             from the review entirely before first approval. */}
+          {/* Ladder-tier items are excluded here -- they get their own card
+             + Verify control in the ladder section above (now always shown,
+             see the comment above it), so listing them a second time here
+             would give a reviewer two separate Verify buttons for the same
+             underlying row. */}
           {(() => {
-            const nonLadderEndorsements =
-              applicant.accountStatus === "active"
-                ? pilot.endorsements.filter((e) => !isLadderTierKey(e.key))
-                : pilot.endorsements;
+            const nonLadderEndorsements = pilot.endorsements.filter((e) => !isLadderTierKey(e.key));
             return nonLadderEndorsements.length === 0 ? (
               <p className="text-sm text-slate-400">None declared.</p>
             ) : (
@@ -307,21 +304,57 @@ export default async function ApplicantReviewPage({
                         title={e.declined && e.declineReason ? `Declined: ${e.declineReason}` : undefined}
                       >
                         {e.label} {e.verified ? "✓" : e.declined ? "✕" : ""}
-                        {applicant.accountStatus === "active" && (
-                          <PilotEndorsementToggle
-                            endorsementId={e.id}
-                            verified={e.verified}
-                            declined={e.declined}
-                          />
-                        )}
+                        <PilotEndorsementToggle
+                          endorsementId={e.id}
+                          verified={e.verified}
+                          declined={e.declined}
+                        />
                       </span>
                     ))}
                   </div>
                 </div>
               ))}
-              {applicant.accountStatus === "active" && (
-                <p className="pt-1 text-[11px] text-slate-400">{INSTRUCTOR_RATING_REFERENCE_TEXT}</p>
-              )}
+              <p className="pt-1 text-[11px] text-slate-400">{INSTRUCTOR_RATING_REFERENCE_TEXT}</p>
+              </div>
+            );
+          })()}
+
+          {/* Grant a rating the pilot never self-declared (Notes4 item 11,
+             the Henna Fourie case) -- everything above only lets a reviewer
+             verify/decline what the pilot already applied for. */}
+          {(() => {
+            const declaredKeys = new Set(pilot.endorsements.map((e) => e.key));
+            const notYetDeclared = ENDORSEMENT_OPTIONS.filter((o) => !declaredKeys.has(o.key));
+            if (notYetDeclared.length === 0) return null;
+            return (
+              <div className="mt-4 border-t border-slate-100 pt-3">
+                <p className="mb-1 text-sm font-medium text-slate-700">Grant a rating</p>
+                <p className="mb-2 text-xs text-slate-500">
+                  For a rating this pilot holds but didn&apos;t declare at sign-up -- adds it
+                  and marks it verified in one step.
+                </p>
+                <div className="space-y-2">
+                  {groupEndorsementItems(notYetDeclared.map((o) => ({ key: o.key }))).map(
+                    ({ group, items }) => (
+                      <div key={group}>
+                        <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                          {group}
+                        </p>
+                        <div className="mt-1 flex flex-wrap gap-1.5">
+                          {items.map((item) => (
+                            <AdminGrantEndorsement
+                              key={item.key}
+                              pilotProfileId={pilot.profile.id}
+                              applicantUserId={applicant.id}
+                              endorsementKey={item.key}
+                              label={item.label}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    )
+                  )}
+                </div>
               </div>
             );
           })()}
