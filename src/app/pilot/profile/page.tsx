@@ -31,6 +31,11 @@ export default async function PilotProfilePage() {
         postalAddress={fullUser?.postalAddress ?? null}
         homeAddress={fullUser?.homeAddress ?? null}
         clubName={fullUser?.clubName ?? null}
+        medicalAid={fullUser?.medicalAid ?? null}
+        medicalAidNo={fullUser?.medicalAidNo ?? null}
+        bloodGroup={fullUser?.bloodGroup ?? null}
+        allergies={fullUser?.allergies ?? null}
+        flightMedicalCertFile={fullUser?.flightMedicalCertFile ?? null}
         pilot={
           profile
             ? {

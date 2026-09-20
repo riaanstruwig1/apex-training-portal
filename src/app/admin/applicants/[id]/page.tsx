@@ -123,6 +123,10 @@ export default async function ApplicantReviewPage({
           <Row label="Postal address" value={applicant.postalAddress} />
           <Row label="Home address" value={applicant.homeAddress} />
           <Row label="Club / school" value={applicant.clubName} />
+          <Row label="Medical aid" value={applicant.medicalAid} />
+          <Row label="Medical aid no." value={applicant.medicalAidNo} />
+          <Row label="Blood group" value={applicant.bloodGroup} />
+          <Row label="Allergies" value={applicant.allergies} />
         </dl>
       </div>
 
@@ -145,6 +149,11 @@ export default async function ApplicantReviewPage({
               label="Proof of payment"
             />
           )}
+          <DocLink
+            userId={applicant.id}
+            filename={applicant.flightMedicalCertFile}
+            label="Flight medical certificate"
+          />
         </div>
         {applicant.role === "student" && student?.profile.invoiceRequestedAt && (
           <p className="mt-2 rounded-md bg-amber-50 px-3 py-2 text-xs text-amber-800">
@@ -165,6 +174,10 @@ export default async function ApplicantReviewPage({
             postalAddress={applicant.postalAddress}
             homeAddress={applicant.homeAddress}
             clubName={applicant.clubName}
+            medicalAid={applicant.medicalAid}
+            medicalAidNo={applicant.medicalAidNo}
+            bloodGroup={applicant.bloodGroup}
+            allergies={applicant.allergies}
             pilot={
               pilot
                 ? {

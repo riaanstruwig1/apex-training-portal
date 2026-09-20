@@ -23,6 +23,12 @@ const SharedProfileSchema = z.object({
   postalAddress: z.string().trim().optional(),
   homeAddress: z.string().trim().optional(),
   clubName: z.string().trim().optional(),
+  // Medical details (Notes4 item 19) -- shared across every role, same as
+  // next-of-kin above.
+  medicalAid: z.string().trim().optional(),
+  medicalAidNo: z.string().trim().optional(),
+  bloodGroup: z.string().trim().optional(),
+  allergies: z.string().trim().optional(),
 });
 
 // Pilot-only fields, self-declared at sign-up and now editable afterward
@@ -57,6 +63,10 @@ export async function updateOwnProfile(
     postalAddress: formData.get("postalAddress") || undefined,
     homeAddress: formData.get("homeAddress") || undefined,
     clubName: formData.get("clubName") || undefined,
+    medicalAid: formData.get("medicalAid") || undefined,
+    medicalAidNo: formData.get("medicalAidNo") || undefined,
+    bloodGroup: formData.get("bloodGroup") || undefined,
+    allergies: formData.get("allergies") || undefined,
   });
   if (!shared.success) {
     return { error: shared.error.issues[0]?.message ?? "Invalid input." };
@@ -67,6 +77,11 @@ export async function updateOwnProfile(
     const profilePictureFile =
       profilePictureInput instanceof File
         ? await saveUpload(user.id, "profile-picture", profilePictureInput)
+        : null;
+    const flightMedicalCertInput = formData.get("flightMedicalCertFile");
+    const flightMedicalCertFile =
+      flightMedicalCertInput instanceof File
+        ? await saveUpload(user.id, "flight-medical-cert", flightMedicalCertInput)
         : null;
 
     await db
@@ -79,7 +94,12 @@ export async function updateOwnProfile(
         postalAddress: shared.data.postalAddress || null,
         homeAddress: shared.data.homeAddress || null,
         clubName: shared.data.clubName || null,
+        medicalAid: shared.data.medicalAid || null,
+        medicalAidNo: shared.data.medicalAidNo || null,
+        bloodGroup: shared.data.bloodGroup || null,
+        allergies: shared.data.allergies || null,
         ...(profilePictureFile ? { profilePictureFile } : {}),
+        ...(flightMedicalCertFile ? { flightMedicalCertFile } : {}),
       })
       .where(eq(users.id, user.id));
 
@@ -224,6 +244,10 @@ export async function adminUpdateProfile(
     postalAddress: formData.get("postalAddress") || undefined,
     homeAddress: formData.get("homeAddress") || undefined,
     clubName: formData.get("clubName") || undefined,
+    medicalAid: formData.get("medicalAid") || undefined,
+    medicalAidNo: formData.get("medicalAidNo") || undefined,
+    bloodGroup: formData.get("bloodGroup") || undefined,
+    allergies: formData.get("allergies") || undefined,
     callSign: formData.get("callSign") || undefined,
     sacaaNumber: formData.get("sacaaNumber") || undefined,
     sahpaNumber: formData.get("sahpaNumber") || undefined,
@@ -244,6 +268,11 @@ export async function adminUpdateProfile(
       idPassportInput instanceof File
         ? await saveUpload(targetUserId, "id-passport", idPassportInput)
         : null;
+    const flightMedicalCertInput = formData.get("flightMedicalCertFile");
+    const flightMedicalCertFile =
+      flightMedicalCertInput instanceof File
+        ? await saveUpload(targetUserId, "flight-medical-cert", flightMedicalCertInput)
+        : null;
 
     await db
       .update(users)
@@ -257,8 +286,13 @@ export async function adminUpdateProfile(
         postalAddress: parsed.data.postalAddress || null,
         homeAddress: parsed.data.homeAddress || null,
         clubName: parsed.data.clubName || null,
+        medicalAid: parsed.data.medicalAid || null,
+        medicalAidNo: parsed.data.medicalAidNo || null,
+        bloodGroup: parsed.data.bloodGroup || null,
+        allergies: parsed.data.allergies || null,
         ...(profilePictureFile ? { profilePictureFile } : {}),
         ...(idPassportFile ? { idPassportFile } : {}),
+        ...(flightMedicalCertFile ? { flightMedicalCertFile } : {}),
       })
       .where(eq(users.id, targetUserId));
 

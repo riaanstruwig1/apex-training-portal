@@ -18,24 +18,25 @@ export default function CsvImportForm() {
       onToggle={(e) => setOpen(e.currentTarget.open)}
     >
       <summary className="cursor-pointer text-sm font-semibold text-slate-900">
-        Import flights from a CSV file
+        Import flights from a CSV or Excel file
       </summary>
       <div className="mt-3 space-y-3">
         <p className="text-xs text-slate-500">
-          We read the <strong>Date</strong>, <strong>Take Off Site</strong>,{" "}
-          <strong>Aircraft</strong> and <strong>Duration</strong> columns (column
-          names can vary a bit, e.g. &ldquo;Site&rdquo; or &ldquo;Wing&rdquo; also work).
-          Duration can be minutes (e.g. 45) or hours:minutes (e.g. 0:45). Everything else
-          (launches, exercises, instructor) isn&rsquo;t in a typical export -- add those by
-          hand afterwards if you need them.
+          Upload a .csv or .xlsx export from your flight-tracking app (an .xlsx with one
+          sheet per year, e.g. a FlySkyHy export, is read in full). We read the{" "}
+          <strong>Date</strong>, <strong>Take Off Site</strong>, <strong>Aircraft</strong> and{" "}
+          <strong>Duration</strong> columns (column names can vary a bit, e.g. &ldquo;Site&rdquo;
+          or &ldquo;Wing&rdquo; also work). Duration can be minutes (e.g. 45), hours:minutes (e.g.
+          0:45), or a decimal-hours column. Everything else (launches, exercises, instructor)
+          isn&rsquo;t in a typical export -- add those by hand afterwards if you need them.
         </p>
         <form action={action} className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div>
-            <label className="block text-xs font-medium text-slate-700">CSV file</label>
+            <label className="block text-xs font-medium text-slate-700">CSV or Excel file</label>
             <input
               type="file"
               name="csvFile"
-              accept=".csv,text/csv"
+              accept=".csv,text/csv,.xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
               required
               className="mt-1 w-full text-sm"
             />
@@ -70,9 +71,9 @@ export default function CsvImportForm() {
               </p>
               {state.skipped.length > 0 && (
                 <ul className="mt-1 list-inside list-disc text-xs text-green-700">
-                  {state.skipped.map((s) => (
-                    <li key={s.row}>
-                      Row {s.row}: {s.reason}
+                  {state.skipped.map((s, i) => (
+                    <li key={`${s.row}-${i}`}>
+                      {s.row}: {s.reason}
                     </li>
                   ))}
                 </ul>
@@ -86,7 +87,7 @@ export default function CsvImportForm() {
               disabled={pending}
               className="rounded-md bg-slate-800 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-900 disabled:opacity-60"
             >
-              {pending ? "Importing..." : "Import CSV"}
+              {pending ? "Importing..." : "Import file"}
             </button>
           </div>
         </form>

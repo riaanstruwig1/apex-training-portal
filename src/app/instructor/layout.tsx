@@ -1,10 +1,7 @@
-import { eq } from "drizzle-orm";
-import { db } from "@/db";
-import { pilotProfiles } from "@/db/schema";
 import { requireInstructor } from "@/lib/auth/dal";
 import NavHeader from "@/components/nav-header";
 import { countPendingApplicants } from "@/lib/verification";
-import { countPendingPilotEndorsements } from "@/lib/pilots";
+import { countPendingPilotEndorsements, ensurePilotProfile } from "@/lib/pilots";
 
 const staffLinks = [{ href: "/instructor", label: "Students" }];
 
@@ -13,17 +10,15 @@ export default async function InstructorLayout({
 }: LayoutProps<"/instructor">) {
   const staff = await requireInstructor();
   const isCFI = staff.role === "cfi";
-  const [pendingCount, pendingPilotCount, [ownPilotProfile]] = await Promise.all([
+  // A CFI/instructor is very often also a pilot (Notes4 item 24, flagged
+  // MAJOR) -- every staff account is now guaranteed a pilot_profiles row
+  // (created on first visit here if it didn't already exist), so the
+  // "My Portfolio" link and clickable profile name always work, not just
+  // for staff who happened to already have one.
+  const [pendingCount, pendingPilotCount] = await Promise.all([
     isCFI ? countPendingApplicants() : Promise.resolve(0),
     isCFI ? countPendingPilotEndorsements() : Promise.resolve(0),
-    // A CFI/instructor is very often also a pilot (Notes4 item 24) -- if
-    // they carry a linked pilot_profiles row, surface it as its own nav
-    // link rather than hiding their pilot side behind their staff account.
-    db
-      .select({ id: pilotProfiles.id })
-      .from(pilotProfiles)
-      .where(eq(pilotProfiles.userId, staff.id))
-      .limit(1),
+    ensurePilotProfile(staff.id),
   ]);
   const cfiOnlyLinks = [
     { href: "/instructor/students/new", label: "Add student" },
@@ -35,7 +30,7 @@ export default async function InstructorLayout({
     { href: "/admin/pilots", label: "Pilots", badge: pendingPilotCount },
     { href: "/instructor/settings", label: "Settings" },
   ];
-  const pilotLinks = ownPilotProfile ? [{ href: "/pilot", label: "My Portfolio" }] : [];
+  const pilotLinks = [{ href: "/pilot", label: "My Portfolio" }];
   const links = [...staffLinks, ...pilotLinks, ...(isCFI ? cfiOnlyLinks : [])];
 
   return (
@@ -44,7 +39,7 @@ export default async function InstructorLayout({
         name={staff.name}
         roleLabel={isCFI ? "Chief Flight Instructor" : "Instructor"}
         links={links}
-        profileHref={ownPilotProfile ? "/pilot/profile" : null}
+        profileHref="/pilot/profile"
       />
       <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8">
         {children}

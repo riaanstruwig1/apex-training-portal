@@ -76,6 +76,10 @@ export default function AdminProfileEditor({
   postalAddress,
   homeAddress,
   clubName,
+  medicalAid,
+  medicalAidNo,
+  bloodGroup,
+  allergies,
   pilot,
 }: {
   userId: string;
@@ -89,6 +93,10 @@ export default function AdminProfileEditor({
   postalAddress: string | null;
   homeAddress: string | null;
   clubName: string | null;
+  medicalAid: string | null;
+  medicalAidNo: string | null;
+  bloodGroup: string | null;
+  allergies: string | null;
   pilot?: {
     callSign: string | null;
     sacaaNumber: string | null;
@@ -176,6 +184,53 @@ export default function AdminProfileEditor({
           <Field id="clubName" label="Club / school">
             <input id="clubName" name="clubName" defaultValue={clubName ?? ""} className={inputClass} />
           </Field>
+        </div>
+
+        <div className="border-t border-slate-200 pt-4">
+          <h4 className="mb-3 text-sm font-semibold text-slate-900">Medical</h4>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <Field id="medicalAid" label="Medical aid">
+              <input
+                id="medicalAid"
+                name="medicalAid"
+                defaultValue={medicalAid ?? ""}
+                className={inputClass}
+              />
+            </Field>
+            <Field id="medicalAidNo" label="Medical aid no.">
+              <input
+                id="medicalAidNo"
+                name="medicalAidNo"
+                defaultValue={medicalAidNo ?? ""}
+                className={inputClass}
+              />
+            </Field>
+            <Field id="bloodGroup" label="Blood group">
+              <input
+                id="bloodGroup"
+                name="bloodGroup"
+                defaultValue={bloodGroup ?? ""}
+                className={inputClass}
+              />
+            </Field>
+            <Field id="allergies" label="Allergies">
+              <input
+                id="allergies"
+                name="allergies"
+                defaultValue={allergies ?? ""}
+                className={inputClass}
+              />
+            </Field>
+            <Field id="flightMedicalCertFile" label="Flight medical certificate (replace)">
+              <input
+                id="flightMedicalCertFile"
+                name="flightMedicalCertFile"
+                type="file"
+                accept="application/pdf,image/png,image/jpeg,image/webp"
+                className={fileClass}
+              />
+            </Field>
+          </div>
         </div>
 
         {isPilot && (

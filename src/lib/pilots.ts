@@ -69,6 +69,40 @@ export async function getAllPilotsWithSummary(): Promise<PilotSummary[]> {
     .sort((a, b) => a.name.localeCompare(b.name));
 }
 
+/** A CFI/instructor is very often also a pilot (Notes4 item 24, flagged
+ * MAJOR) -- every staff account should always be able to see and use its
+ * own pilot side, not just the ones that happen to already have a
+ * pilot_profiles row. This guarantees one exists for a given user, creating
+ * it (as an already-active profile -- staff don't need a separate
+ * verification step) the first time it's needed, and just returning it on
+ * every later call. Safe to call from a Server Component render: if two
+ * requests race, the DB's unique constraint on userId rejects the loser's
+ * insert and it falls back to reading the winner's row instead of crashing. */
+export async function ensurePilotProfile(userId: string): Promise<{ id: string }> {
+  const [existing] = await db
+    .select({ id: pilotProfiles.id })
+    .from(pilotProfiles)
+    .where(eq(pilotProfiles.userId, userId))
+    .limit(1);
+  if (existing) return existing;
+
+  try {
+    const [created] = await db
+      .insert(pilotProfiles)
+      .values({ userId, status: "active" })
+      .returning({ id: pilotProfiles.id });
+    return created;
+  } catch {
+    const [row] = await db
+      .select({ id: pilotProfiles.id })
+      .from(pilotProfiles)
+      .where(eq(pilotProfiles.userId, userId))
+      .limit(1);
+    if (!row) throw new Error("Failed to ensure pilot profile for user " + userId);
+    return row;
+  }
+}
+
 /** Count of declared-but-unverified, not-declined endorsements across every
  * active pilot -- drives the "Pilots" nav badge, same pattern as the sign-up
  * queue. A declined application is excluded: it's parked awaiting the pilot

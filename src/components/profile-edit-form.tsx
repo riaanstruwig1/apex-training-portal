@@ -46,6 +46,11 @@ export default function ProfileEditForm({
   postalAddress,
   homeAddress,
   clubName,
+  medicalAid,
+  medicalAidNo,
+  bloodGroup,
+  allergies,
+  flightMedicalCertFile,
   pilot,
 }: {
   role: "student" | "pilot" | "cfi" | "instructor";
@@ -59,6 +64,11 @@ export default function ProfileEditForm({
   postalAddress: string | null;
   homeAddress: string | null;
   clubName: string | null;
+  medicalAid?: string | null;
+  medicalAidNo?: string | null;
+  bloodGroup?: string | null;
+  allergies?: string | null;
+  flightMedicalCertFile?: string | null;
   pilot?: {
     callSign: string | null;
     sacaaNumber: string | null;
@@ -132,6 +142,56 @@ export default function ProfileEditForm({
           <Field id="clubName" label="Club / school">
             <input id="clubName" name="clubName" defaultValue={clubName ?? ""} className={inputClass} />
           </Field>
+        </div>
+
+        <div className="border-t border-slate-100 pt-4">
+          <h3 className="mb-3 text-sm font-semibold text-slate-900">Medical</h3>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <Field id="medicalAid" label="Medical aid">
+              <input
+                id="medicalAid"
+                name="medicalAid"
+                defaultValue={medicalAid ?? ""}
+                className={inputClass}
+              />
+            </Field>
+            <Field id="medicalAidNo" label="Medical aid no.">
+              <input
+                id="medicalAidNo"
+                name="medicalAidNo"
+                defaultValue={medicalAidNo ?? ""}
+                className={inputClass}
+              />
+            </Field>
+            <Field id="bloodGroup" label="Blood group">
+              <input
+                id="bloodGroup"
+                name="bloodGroup"
+                defaultValue={bloodGroup ?? ""}
+                className={inputClass}
+              />
+            </Field>
+            <Field id="allergies" label="Allergies">
+              <input
+                id="allergies"
+                name="allergies"
+                defaultValue={allergies ?? ""}
+                className={inputClass}
+              />
+            </Field>
+          </div>
+          <div className="mt-4">
+            <label htmlFor="flightMedicalCertFile" className={labelClass}>
+              Flight medical certificate{flightMedicalCertFile ? " (replace)" : ""}
+            </label>
+            <input
+              id="flightMedicalCertFile"
+              name="flightMedicalCertFile"
+              type="file"
+              accept="application/pdf,image/png,image/jpeg,image/webp"
+              className="mt-1 block w-full text-sm text-slate-600 file:mr-3 file:rounded-md file:border-0 file:bg-slate-100 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-slate-700 hover:file:bg-slate-200"
+            />
+          </div>
         </div>
 
         {pilot && (

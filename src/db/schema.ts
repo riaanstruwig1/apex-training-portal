@@ -67,6 +67,16 @@ export const users = sqliteTable("users", {
   postalAddress: text("postal_address"),
   homeAddress: text("home_address"),
   clubName: text("club_name"),
+  // Medical details -- added 20 Sep 2026 (Notes4 item 19: the profile-edit
+  // form needs to capture these, not just contact/next-of-kin details).
+  // Shared across every role on the same "one profile" reasoning as
+  // nokName/nokContactNo above -- a student, pilot or instructor can all be
+  // flying, so all can usefully record this.
+  medicalAid: text("medical_aid"),
+  medicalAidNo: text("medical_aid_no"),
+  bloodGroup: text("blood_group"),
+  allergies: text("allergies"),
+  flightMedicalCertFile: text("flight_medical_cert_file"), // filename under data/uploads/<userId>/
   // Consent (CA 183-540) and Indemnity/Release -- required on every
   // application. Simple e-sign for now (typed full name + timestamp counts
   // as signature); populating the actual SACAA/SAHPA PDF is a later stage.
