@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
+    "start": "tsx src/db/migrate.ts && next start",
     "lint": "eslint",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx src/db/migrate.ts",
@@ -13,7 +13,9 @@
     "db:reseed-exam": "tsx src/db/reseed-exam.ts",
     "db:fix-endorsement-keys": "tsx src/db/fix-legacy-endorsement-keys.ts",
     "db:fix-legacy-flight-types": "tsx src/db/fix-legacy-flight-types.ts",
-    "db:backup": "tsx src/db/backup.ts"
+    "db:backup": "tsx src/db/backup.ts",
+    "accounts:reset": "tsx src/db/reset-accounts.ts",
+    "accounts:add-test": "tsx src/db/create-test-account.ts"
   },
   "dependencies": {
     "archiver": "^8.0.0",
