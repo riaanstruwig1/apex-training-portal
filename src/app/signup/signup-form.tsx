@@ -29,6 +29,7 @@ const TEXT_FIELDS = [
   "password",
   "confirmPassword",
   "callSign",
+  "sacaaNumber",
   "sahpaNumber",
   "sahpaExpiryDate",
   "consentName",
@@ -294,13 +295,18 @@ export default function SignupForm() {
             <Field id="callSign" label="Call sign (if already allocated)">
               <input id="callSign" name="callSign" value={values.callSign} onChange={set("callSign")} className={inputClass} />
             </Field>
-            <Field id="sahpaNumber" label="SACAA License No.">
-              <input id="sahpaNumber" name="sahpaNumber" value={values.sahpaNumber} onChange={set("sahpaNumber")} className={inputClass} />
+            <Field id="sacaaNumber" label="SACAA No.">
+              <input id="sacaaNumber" name="sacaaNumber" value={values.sacaaNumber} onChange={set("sacaaNumber")} className={inputClass} />
             </Field>
           </div>
-          <Field id="sahpaExpiryDate" label="SACAA License expiry">
-            <input id="sahpaExpiryDate" name="sahpaExpiryDate" type="date" value={values.sahpaExpiryDate} onChange={set("sahpaExpiryDate")} className={inputClass} />
-          </Field>
+          <div className="grid grid-cols-2 gap-4">
+            <Field id="sahpaNumber" label="SAHPA Membership No.">
+              <input id="sahpaNumber" name="sahpaNumber" value={values.sahpaNumber} onChange={set("sahpaNumber")} className={inputClass} />
+            </Field>
+            <Field id="sahpaExpiryDate" label="SAHPA membership expiry">
+              <input id="sahpaExpiryDate" name="sahpaExpiryDate" type="date" value={values.sahpaExpiryDate} onChange={set("sahpaExpiryDate")} className={inputClass} />
+            </Field>
+          </div>
           <Field id="caaLicenceFile" label="Current CAA licence (PDF)" required>
             <input
               id="caaLicenceFile"
@@ -313,7 +319,7 @@ export default function SignupForm() {
           </Field>
 
           <div>
-            <p className={labelClass}>Licence type &amp; endorsements you hold or are working towards</p>
+            <p className={labelClass}>Licence type &amp; endorsements you hold</p>
             <div className="mt-2 space-y-3">
               {Object.entries(groupedEndorsements).map(([group, opts]) => (
                 <div key={group}>

@@ -4,7 +4,7 @@ import NavHeader from "@/components/nav-header";
 import ConsentGate from "@/components/consent-gate";
 
 const links = [
-  { href: "/student", label: "Dashboard" },
+  { href: "/student", label: "My Portfolio" },
   { href: "/student/exercises", label: "Training folio" },
   { href: "/student/logbook", label: "Logbook" },
 ];
@@ -30,7 +30,8 @@ export default async function StudentLayout({
         roleLabel="Student"
         links={needsConsent ? [] : links}
         apexNumber={user.apexNumber}
-        sahpaNumber={profile?.sahpaNumber}
+        sacaaNumber={profile?.sacaaNumber}
+        profileHref={needsConsent ? null : "/student/profile"}
       />
       <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8">
         {needsConsent ? <ConsentGate name={user.name} /> : children}

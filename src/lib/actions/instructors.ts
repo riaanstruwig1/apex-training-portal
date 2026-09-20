@@ -7,6 +7,7 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/db";
 import { users } from "@/db/schema";
 import { requireCFI } from "@/lib/auth/dal";
+import { getBaseUrl } from "@/lib/base-url";
 
 const INVITE_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 
@@ -64,7 +65,7 @@ export async function createInvitedInstructor(
 
   revalidatePath("/instructor/team");
 
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+  const baseUrl = getBaseUrl();
   return { inviteUrl: `${baseUrl}/accept-invite/${inviteToken}` };
 }
 
@@ -82,7 +83,7 @@ export async function resendInstructorInvite(instructorUserId: string) {
 
   revalidatePath("/instructor/team");
 
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+  const baseUrl = getBaseUrl();
   return { inviteUrl: `${baseUrl}/accept-invite/${inviteToken}` };
 }
 

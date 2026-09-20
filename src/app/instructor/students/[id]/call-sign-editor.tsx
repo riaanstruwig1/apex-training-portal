@@ -24,6 +24,7 @@ export default function CallSignEditor({
   studentUserId,
   callSign,
   startDate,
+  sacaaNumber,
   sahpaNumber,
   sahpaExpiryDate,
   trainingType,
@@ -31,6 +32,7 @@ export default function CallSignEditor({
   studentUserId: string;
   callSign: string | null;
   startDate: Date | null;
+  sacaaNumber: string | null;
   sahpaNumber: string | null;
   sahpaExpiryDate: Date | null;
   trainingType: TrainingType | null;
@@ -38,6 +40,7 @@ export default function CallSignEditor({
   const [editing, setEditing] = useState(false);
   const [callSignValue, setCallSignValue] = useState(callSign ?? "");
   const [startDateValue, setStartDateValue] = useState(formatDate(startDate));
+  const [sacaaNumberValue, setSacaaNumberValue] = useState(sacaaNumber ?? "");
   const [sahpaNumberValue, setSahpaNumberValue] = useState(sahpaNumber ?? "");
   const [sahpaExpiryValue, setSahpaExpiryValue] = useState(
     formatDate(sahpaExpiryDate)
@@ -53,6 +56,7 @@ export default function CallSignEditor({
       await updateStudentDetails(studentUserId, {
         callSign: callSignValue,
         startDate: startDateValue,
+        sacaaNumber: sacaaNumberValue,
         sahpaNumber: sahpaNumberValue,
         sahpaExpiryDate: sahpaExpiryValue,
         trainingType: trainingTypeValue || null,
@@ -65,6 +69,7 @@ export default function CallSignEditor({
   function cancel() {
     setCallSignValue(callSign ?? "");
     setStartDateValue(formatDate(startDate));
+    setSacaaNumberValue(sacaaNumber ?? "");
     setSahpaNumberValue(sahpaNumber ?? "");
     setSahpaExpiryValue(formatDate(sahpaExpiryDate));
     setTrainingTypeValue(trainingType ?? "");
@@ -111,6 +116,15 @@ export default function CallSignEditor({
           />
         </div>
         <div>
+          <label className="block text-[11px] text-slate-500">SACAA No.</label>
+          <input
+            value={sacaaNumberValue}
+            onChange={(e) => setSacaaNumberValue(e.target.value)}
+            placeholder="0279002604"
+            className="w-28 rounded-md border border-slate-300 px-2 py-1 text-sm"
+          />
+        </div>
+        <div>
           <label className="block text-[11px] text-slate-500">SAHPA No. (SPL)</label>
           <input
             value={sahpaNumberValue}
@@ -146,7 +160,8 @@ export default function CallSignEditor({
   }
 
   const expired = isExpired(sahpaExpiryDate);
-  const hasAnyDetail = callSign || startDate || sahpaNumber || sahpaExpiryDate || trainingType;
+  const hasAnyDetail =
+    callSign || startDate || sacaaNumber || sahpaNumber || sahpaExpiryDate || trainingType;
 
   return (
     <button
@@ -178,15 +193,21 @@ export default function CallSignEditor({
               </span>
             </>
           )}
-          {sahpaNumber && (
+          {sacaaNumber && (
             <>
               {trainingType || callSign || startDate ? " · " : ""}
+              SACAA No.: <span className="font-medium text-slate-900">{sacaaNumber}</span>
+            </>
+          )}
+          {sahpaNumber && (
+            <>
+              {trainingType || callSign || startDate || sacaaNumber ? " · " : ""}
               SAHPA No. (SPL): <span className="font-medium text-slate-900">{sahpaNumber}</span>
             </>
           )}
           {sahpaExpiryDate && (
             <>
-              {trainingType || callSign || startDate || sahpaNumber ? " · " : ""}
+              {trainingType || callSign || startDate || sacaaNumber || sahpaNumber ? " · " : ""}
               SAHPA expires:{" "}
               <span className={`font-medium ${expired ? "text-red-600" : "text-slate-900"}`}>
                 {sahpaExpiryDate.toLocaleDateString()}

@@ -7,6 +7,7 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/db";
 import { users, studentProfiles, studentExerciseProgress } from "@/db/schema";
 import { requireInstructor, requireCFI } from "@/lib/auth/dal";
+import { getBaseUrl } from "@/lib/base-url";
 
 const INVITE_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 
@@ -86,7 +87,7 @@ export async function createInvitedStudent(
 
   revalidatePath("/instructor");
 
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+  const baseUrl = getBaseUrl();
   return { inviteUrl: `${baseUrl}/accept-invite/${inviteToken}` };
 }
 
@@ -107,7 +108,7 @@ export async function resendInvite(studentUserId: string) {
 
   revalidatePath("/instructor");
 
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+  const baseUrl = getBaseUrl();
   return { inviteUrl: `${baseUrl}/accept-invite/${inviteToken}` };
 }
 
@@ -212,6 +213,7 @@ export async function updateStudentDetails(
   details: {
     callSign: string;
     startDate: string;
+    sacaaNumber: string;
     sahpaNumber: string;
     sahpaExpiryDate: string;
     trainingType?: "pg" | "ppg" | "ppt" | null;
@@ -224,6 +226,7 @@ export async function updateStudentDetails(
     .set({
       callSign: details.callSign.trim().toUpperCase() || null,
       startDate: details.startDate ? new Date(details.startDate) : null,
+      sacaaNumber: details.sacaaNumber.trim() || null,
       sahpaNumber: details.sahpaNumber.trim() || null,
       sahpaExpiryDate: details.sahpaExpiryDate
         ? new Date(details.sahpaExpiryDate)

@@ -91,6 +91,7 @@ export default function AdminProfileEditor({
   clubName: string | null;
   pilot?: {
     callSign: string | null;
+    sacaaNumber: string | null;
     sahpaNumber: string | null;
     sahpaExpiryDate: Date | null;
   } | null;
@@ -189,7 +190,15 @@ export default function AdminProfileEditor({
                   className={inputClass}
                 />
               </Field>
-              <Field id="sahpaNumber" label="SACAA License No.">
+              <Field id="sacaaNumber" label="SACAA No.">
+                <input
+                  id="sacaaNumber"
+                  name="sacaaNumber"
+                  defaultValue={pilot?.sacaaNumber ?? ""}
+                  className={inputClass}
+                />
+              </Field>
+              <Field id="sahpaNumber" label="SAHPA Membership No.">
                 <input
                   id="sahpaNumber"
                   name="sahpaNumber"
@@ -197,7 +206,7 @@ export default function AdminProfileEditor({
                   className={inputClass}
                 />
               </Field>
-              <Field id="sahpaExpiryDate" label="SACAA License expiry">
+              <Field id="sahpaExpiryDate" label="SAHPA membership expiry">
                 <input
                   id="sahpaExpiryDate"
                   name="sahpaExpiryDate"

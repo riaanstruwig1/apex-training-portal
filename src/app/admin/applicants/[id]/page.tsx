@@ -169,6 +169,7 @@ export default async function ApplicantReviewPage({
               pilot
                 ? {
                     callSign: pilot.profile.callSign,
+                    sacaaNumber: pilot.profile.sacaaNumber,
                     sahpaNumber: pilot.profile.sahpaNumber,
                     sahpaExpiryDate: pilot.profile.sahpaExpiryDate,
                   }

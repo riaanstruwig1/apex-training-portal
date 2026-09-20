@@ -104,6 +104,12 @@ export const studentProfiles = sqliteTable("student_profiles", {
   callSign: text("call_sign"), // radio call sign, e.g. "PPG-DYB"
   licenseNumber: text("license_number"),
   startDate: integer("start_date", { mode: "timestamp" }), // date the student started training
+  // Two distinct regulator numbers -- added 20 Sep 2026. Before this there
+  // was only `sahpaNumber`, but every screen labelled it "SACAA No.", which
+  // was simply wrong: SACAA and SAHPA are two different bodies with two
+  // different numbers. sahpaNumber now genuinely means the SAHPA
+  // membership/SPL number it was always documented as; sacaaNumber is new.
+  sacaaNumber: text("sacaa_number"),
   sahpaNumber: text("sahpa_number"), // SAHPA membership / student pilot license (SPL) number
   sahpaExpiryDate: integer("sahpa_expiry_date", { mode: "timestamp" }), // SAHPA membership expiry
   dtoNumber: text("dto_number").default("SACAA-0012DTO"),
@@ -264,6 +270,7 @@ export const pilotProfiles = sqliteTable("pilot_profiles", {
   // never has one (it's allocated on completion of their licence, which is
   // a later stage of this system, not sign-up).
   callSign: text("call_sign"),
+  sacaaNumber: text("sacaa_number"),
   sahpaNumber: text("sahpa_number"),
   sahpaExpiryDate: integer("sahpa_expiry_date", { mode: "timestamp" }),
   caaLicenceFile: text("caa_licence_file"), // filename under data/uploads/<userId>/

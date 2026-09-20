@@ -17,20 +17,38 @@ export default function NavHeader({
   roleLabel,
   links,
   apexNumber,
-  sahpaNumber,
+  sacaaNumber,
+  profileHref,
 }: {
   name: string;
   roleLabel: string;
   links: { href: string; label: string; badge?: number }[];
   apexNumber?: string | null;
-  sahpaNumber?: string | null;
+  sacaaNumber?: string | null;
+  /** Where clicking the name/role block on the right goes -- the account's
+   * own editable profile page. Left out entirely (e.g. staff with no linked
+   * pilot profile) means the block is plain text, not a dead-looking link. */
+  profileHref?: string | null;
 }) {
+  // Shown compact on every screen, per Riaan's request (20 Sep 2026) --
+  // Apex No. and SACAA No. specifically; SAHPA No. and Call Sign have their
+  // own full-width spot on the dashboard/profile pages instead, since four
+  // numbers here would crowd the header on a phone.
   const idLine = [
     apexNumber ? `Apex No. ${apexNumber}` : null,
-    sahpaNumber ? `SACAA No. ${sahpaNumber}` : null,
+    sacaaNumber ? `SACAA No. ${sacaaNumber}` : null,
   ]
     .filter(Boolean)
     .join(" · ");
+  const identityBlock = (
+    <div className="hidden text-right text-sm sm:block">
+      <div className="font-medium text-slate-900">{name}</div>
+      <div className="text-xs text-slate-500">
+        {roleLabel}
+        {idLine ? ` · ${idLine}` : ""}
+      </div>
+    </div>
+  );
   return (
     <header className="border-b border-slate-200 bg-white">
       <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-2 px-4 py-3">
@@ -74,13 +92,13 @@ export default function NavHeader({
             height={400}
             className="hidden h-8 w-auto rounded sm:block"
           />
-          <div className="hidden text-right text-sm sm:block">
-            <div className="font-medium text-slate-900">{name}</div>
-            <div className="text-xs text-slate-500">
-              {roleLabel}
-              {idLine ? ` · ${idLine}` : ""}
-            </div>
-          </div>
+          {profileHref ? (
+            <Link href={profileHref} className="hover:opacity-80" title="Edit your profile">
+              {identityBlock}
+            </Link>
+          ) : (
+            identityBlock
+          )}
           <form action={logout}>
             <button
               type="submit"

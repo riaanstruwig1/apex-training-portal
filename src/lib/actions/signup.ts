@@ -37,6 +37,7 @@ const SignupSchema = z
     trainingType: z.enum(["pg", "ppg", "ppt"]).optional(),
     // Pilot-only
     callSign: z.string().trim().optional(),
+    sacaaNumber: z.string().trim().optional(),
     sahpaNumber: z.string().trim().optional(),
     sahpaExpiryDate: z.string().trim().optional(),
     endorsements: z.array(z.string()).optional(),
@@ -80,6 +81,7 @@ export async function submitSignup(
     consentName: formData.get("consentName"),
     indemnityName: formData.get("indemnityName"),
     callSign: formData.get("callSign") || undefined,
+    sacaaNumber: formData.get("sacaaNumber") || undefined,
     sahpaNumber: formData.get("sahpaNumber") || undefined,
     sahpaExpiryDate: formData.get("sahpaExpiryDate") || undefined,
     endorsements: formData.getAll("endorsements").map(String),
@@ -178,6 +180,7 @@ export async function submitSignup(
         .values({
           userId: user.id,
           callSign: data.callSign || null,
+          sacaaNumber: data.sacaaNumber || null,
           sahpaNumber: data.sahpaNumber || null,
           sahpaExpiryDate: data.sahpaExpiryDate ? new Date(data.sahpaExpiryDate) : null,
           caaLicenceFile,

@@ -51,14 +51,7 @@ export default async function PilotDashboard() {
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3">
           <Avatar userId={user.id} filename={user.profilePictureFile} name={user.name} size={48} />
-          <div>
-            <h1 className="text-xl font-semibold text-slate-900">Welcome, {user.name}</h1>
-            <p className="mt-1 text-sm text-slate-500">
-              Apex No. {user.apexNumber ?? "—"}
-              {profile?.callSign ? ` · Call sign ${profile.callSign}` : ""}
-              {profile?.sahpaNumber ? ` · SACAA License No. ${profile.sahpaNumber}` : ""}
-            </p>
-          </div>
+          <h1 className="text-xl font-semibold text-slate-900">Welcome, {user.name}</h1>
         </div>
         <Link
           href="/pilot/profile"
@@ -66,6 +59,28 @@ export default async function PilotDashboard() {
         >
           Edit profile
         </Link>
+      </div>
+
+      {/* SACAA No, SAHPA No, Apex No, Call Sign -- in that order, spaced
+          across the full width per Riaan's request (20 Sep 2026) so they're
+          easier to read than the old single cramped line. */}
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+        <div>
+          <div className="text-xs text-slate-500">SACAA No.</div>
+          <div className="text-sm font-medium text-slate-900">{profile?.sacaaNumber ?? "—"}</div>
+        </div>
+        <div>
+          <div className="text-xs text-slate-500">SAHPA No.</div>
+          <div className="text-sm font-medium text-slate-900">{profile?.sahpaNumber ?? "—"}</div>
+        </div>
+        <div>
+          <div className="text-xs text-slate-500">Apex No.</div>
+          <div className="text-sm font-medium text-slate-900">{user.apexNumber ?? "—"}</div>
+        </div>
+        <div>
+          <div className="text-xs text-slate-500">Call Sign</div>
+          <div className="text-sm font-medium text-slate-900">{profile?.callSign ?? "—"}</div>
+        </div>
       </div>
 
       {!profile ? (

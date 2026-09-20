@@ -141,6 +141,13 @@
       "when": 1789715974405,
       "tag": "0019_legal_stepford_cuckoos",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "6",
+      "when": 1789880468587,
+      "tag": "0020_wide_nuke",
+      "breakpoints": true
     }
   ]
 }

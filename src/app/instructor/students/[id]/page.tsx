@@ -61,8 +61,9 @@ export default async function StudentFolioPage(
         <h1 className="text-xl font-semibold text-slate-900">{student.name}</h1>
         <p className="text-sm text-slate-500">
           {student.apexNumber ? `Apex No. ${student.apexNumber}` : ""}
-          {profile?.sahpaNumber ? ` · SACAA No. ${profile.sahpaNumber}` : ""}
-          {student.apexNumber || profile?.sahpaNumber ? " · " : ""}
+          {profile?.sacaaNumber ? ` · SACAA No. ${profile.sacaaNumber}` : ""}
+          {profile?.sahpaNumber ? ` · SAHPA No. ${profile.sahpaNumber}` : ""}
+          {student.apexNumber || profile?.sacaaNumber || profile?.sahpaNumber ? " · " : ""}
           {student.email}
           {profile?.phone ? ` · ${profile.phone}` : ""}
           {profile?.dtoNumber ? ` · DTO ${profile.dtoNumber}` : ""}
@@ -72,6 +73,7 @@ export default async function StudentFolioPage(
             studentUserId={id}
             callSign={profile?.callSign ?? null}
             startDate={profile?.startDate ?? null}
+            sacaaNumber={profile?.sacaaNumber ?? null}
             sahpaNumber={profile?.sahpaNumber ?? null}
             sahpaExpiryDate={profile?.sahpaExpiryDate ?? null}
             trainingType={profile?.trainingType ?? null}
@@ -79,6 +81,7 @@ export default async function StudentFolioPage(
         ) : (
           (profile?.callSign ||
             profile?.startDate ||
+            profile?.sacaaNumber ||
             profile?.sahpaNumber ||
             profile?.sahpaExpiryDate ||
             profile?.trainingType) && (
@@ -98,9 +101,17 @@ export default async function StudentFolioPage(
                   Start date: {profile.startDate.toLocaleDateString()}
                 </>
               )}
-              {profile.sahpaNumber && (
+              {profile.sacaaNumber && (
                 <>
                   {profile.trainingType || profile.callSign || profile.startDate ? " · " : ""}
+                  SACAA No.: {profile.sacaaNumber}
+                </>
+              )}
+              {profile.sahpaNumber && (
+                <>
+                  {profile.trainingType || profile.callSign || profile.startDate || profile.sacaaNumber
+                    ? " · "
+                    : ""}
                   SAHPA No. (SPL): {profile.sahpaNumber}
                 </>
               )}

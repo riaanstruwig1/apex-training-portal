@@ -35,6 +35,7 @@ export default async function PilotProfilePage() {
           profile
             ? {
                 callSign: profile.callSign,
+                sacaaNumber: profile.sacaaNumber,
                 sahpaNumber: profile.sahpaNumber,
                 sahpaExpiryDate: profile.sahpaExpiryDate,
               }

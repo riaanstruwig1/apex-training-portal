@@ -2,7 +2,7 @@ import { requirePilot } from "@/lib/auth/dal";
 import NavHeader from "@/components/nav-header";
 import ConsentGate from "@/components/consent-gate";
 
-const links = [{ href: "/pilot", label: "My Profile" }];
+const links = [{ href: "/pilot", label: "My Portfolio" }];
 
 export default async function PilotLayout({ children }: LayoutProps<"/pilot">) {
   const { user, profile } = await requirePilot();
@@ -20,7 +20,8 @@ export default async function PilotLayout({ children }: LayoutProps<"/pilot">) {
         roleLabel="Pilot"
         links={needsConsent ? [] : links}
         apexNumber={user.apexNumber}
-        sahpaNumber={profile?.sahpaNumber}
+        sacaaNumber={profile?.sacaaNumber}
+        profileHref={needsConsent ? null : "/pilot/profile"}
       />
       <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8">
         {needsConsent ? <ConsentGate name={user.name} /> : children}

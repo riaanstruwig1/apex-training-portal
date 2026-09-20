@@ -68,10 +68,6 @@ export default async function StudentDashboard() {
                 </span>
               )}
             </h1>
-            <p className="mt-1 text-sm text-slate-500">
-              Apex No. {user.apexNumber ?? "—"}
-              {profile?.sahpaNumber ? ` · SAHPA No. (SPL) ${profile.sahpaNumber}` : ""}
-            </p>
             <p className="text-sm text-slate-500">
               {signedOff} of {totalExercises} exercises signed off
             </p>
@@ -101,6 +97,27 @@ export default async function StudentDashboard() {
             )}
           </div>
         )}
+      </div>
+
+      {/* SACAA No, SAHPA No, Apex No, Call Sign -- in that order, spaced
+          across the full width per Riaan's request (20 Sep 2026). */}
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+        <div>
+          <div className="text-xs text-slate-500">SACAA No.</div>
+          <div className="text-sm font-medium text-slate-900">{profile?.sacaaNumber ?? "—"}</div>
+        </div>
+        <div>
+          <div className="text-xs text-slate-500">SAHPA No.</div>
+          <div className="text-sm font-medium text-slate-900">{profile?.sahpaNumber ?? "—"}</div>
+        </div>
+        <div>
+          <div className="text-xs text-slate-500">Apex No.</div>
+          <div className="text-sm font-medium text-slate-900">{user.apexNumber ?? "—"}</div>
+        </div>
+        <div>
+          <div className="text-xs text-slate-500">Call Sign</div>
+          <div className="text-sm font-medium text-slate-900">{profile?.callSign ?? "—"}</div>
+        </div>
       </div>
 
       <Link

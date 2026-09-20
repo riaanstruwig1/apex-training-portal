@@ -29,6 +29,7 @@ const SharedProfileSchema = z.object({
 // too (previously read-only outside sign-up -- see Notes3 item 2).
 const PilotOnlyProfileSchema = z.object({
   callSign: z.string().trim().toUpperCase().optional(),
+  sacaaNumber: z.string().trim().optional(),
   sahpaNumber: z.string().trim().optional(),
   sahpaExpiryDate: z.string().trim().optional(),
 });
@@ -95,6 +96,7 @@ export async function updateOwnProfile(
       if (pilotProfile) {
         const pilotOnly = PilotOnlyProfileSchema.safeParse({
           callSign: formData.get("callSign") || undefined,
+          sacaaNumber: formData.get("sacaaNumber") || undefined,
           sahpaNumber: formData.get("sahpaNumber") || undefined,
           sahpaExpiryDate: formData.get("sahpaExpiryDate") || undefined,
         });
@@ -111,6 +113,7 @@ export async function updateOwnProfile(
           .update(pilotProfiles)
           .set({
             callSign: pilotOnly.data.callSign || null,
+            sacaaNumber: pilotOnly.data.sacaaNumber || null,
             sahpaNumber: pilotOnly.data.sahpaNumber || null,
             sahpaExpiryDate: pilotOnly.data.sahpaExpiryDate
               ? new Date(pilotOnly.data.sahpaExpiryDate)
@@ -222,6 +225,7 @@ export async function adminUpdateProfile(
     homeAddress: formData.get("homeAddress") || undefined,
     clubName: formData.get("clubName") || undefined,
     callSign: formData.get("callSign") || undefined,
+    sacaaNumber: formData.get("sacaaNumber") || undefined,
     sahpaNumber: formData.get("sahpaNumber") || undefined,
     sahpaExpiryDate: formData.get("sahpaExpiryDate") || undefined,
   });
@@ -269,6 +273,7 @@ export async function adminUpdateProfile(
         .update(pilotProfiles)
         .set({
           callSign: parsed.data.callSign || null,
+          sacaaNumber: parsed.data.sacaaNumber || null,
           sahpaNumber: parsed.data.sahpaNumber || null,
           sahpaExpiryDate: parsed.data.sahpaExpiryDate
             ? new Date(parsed.data.sahpaExpiryDate)
