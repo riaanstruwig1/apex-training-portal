@@ -79,12 +79,20 @@ export default async function StudentDashboard() {
                 </span>
               </p>
             )}
-            <Link
-              href="/student/profile"
-              className="mt-2 inline-block rounded-md border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
-            >
-              Edit profile
-            </Link>
+            <div className="mt-2 flex gap-2">
+              <Link
+                href="/student/profile"
+                className="inline-block rounded-md border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+              >
+                Edit profile
+              </Link>
+              <Link
+                href="/student/portfolio/print"
+                className="inline-block rounded-md border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+              >
+                Printable copy
+              </Link>
+            </div>
           </div>
         </div>
         {profile?.sahpaExpiryDate && (

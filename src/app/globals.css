@@ -20,3 +20,20 @@ body {
     ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica,
     Arial, sans-serif;
 }
+
+/* Printable portfolio pages (Notes4 item 22) -- the site nav/header lives in
+   every role's layout.tsx, so it can't be left out of a single printed
+   route; hiding it here at print time is simpler than restructuring the
+   route tree just for these two pages. .print-hide marks anything else
+   (buttons, the print trigger itself) that shouldn't appear on paper. */
+@media print {
+  header {
+    display: none !important;
+  }
+  body {
+    background-image: none;
+  }
+  .print-hide {
+    display: none !important;
+  }
+}

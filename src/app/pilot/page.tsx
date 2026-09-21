@@ -53,12 +53,20 @@ export default async function PilotDashboard() {
           <Avatar userId={user.id} filename={user.profilePictureFile} name={user.name} size={48} />
           <h1 className="text-xl font-semibold text-slate-900">Welcome, {user.name}</h1>
         </div>
-        <Link
-          href="/pilot/profile"
-          className="shrink-0 rounded-md border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
-        >
-          Edit profile
-        </Link>
+        <div className="flex shrink-0 gap-2">
+          <Link
+            href="/pilot/portfolio/print"
+            className="rounded-md border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+          >
+            Printable copy
+          </Link>
+          <Link
+            href="/pilot/profile"
+            className="rounded-md border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+          >
+            Edit profile
+          </Link>
+        </div>
       </div>
 
       {/* SACAA No, SAHPA No, Apex No, Call Sign -- in that order, spaced
