@@ -97,6 +97,13 @@ export async function updateOwnProfile(
     "flight-medical-cert",
     formData.get("flightMedicalCertFile")
   );
+  // Signature: deliberately only ever written here, in the self-service
+  // path, keyed off the CURRENT user's own id -- never in
+  // adminUpdateProfile below. Nobody, including a CFI/Admin editing this
+  // same person's profile, can set or replace someone else's signature.
+  // See src/app/api/signature/[userId]/route.ts for the matching
+  // owner-only read side.
+  const signatureFile = await tryUpload("signature", formData.get("signatureFile"));
 
   await db
     .update(users)
@@ -114,6 +121,7 @@ export async function updateOwnProfile(
       allergies: shared.data.allergies || null,
       ...(profilePictureFile ? { profilePictureFile } : {}),
       ...(flightMedicalCertFile ? { flightMedicalCertFile } : {}),
+      ...(signatureFile ? { signatureFile } : {}),
     })
     .where(eq(users.id, user.id));
 

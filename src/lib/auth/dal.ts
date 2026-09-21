@@ -51,6 +51,7 @@ export const getCurrentUser = cache(async () => {
       profilePictureFile: users.profilePictureFile,
       consentSigned: users.consentSigned,
       indemnitySigned: users.indemnitySigned,
+      signatureFile: users.signatureFile,
     })
     .from(users)
     .where(eq(users.id, session.userId))

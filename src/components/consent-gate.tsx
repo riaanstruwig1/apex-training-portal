@@ -12,7 +12,13 @@ import { signOwnConsentAndIndemnity } from "@/lib/actions/consent";
  * Blocks the whole role area (wired into StudentLayout/PilotLayout), not
  * just this one page, until both are signed.
  */
-export default function ConsentGate({ name }: { name: string }) {
+export default function ConsentGate({
+  name,
+  hasSignature,
+}: {
+  name: string;
+  hasSignature?: boolean;
+}) {
   const [state, formAction, isPending] = useActionState(signOwnConsentAndIndemnity, undefined);
   const router = useRouter();
   const signed = !!(state && "success" in state && state.success);
@@ -46,17 +52,34 @@ export default function ConsentGate({ name }: { name: string }) {
           <label htmlFor="consentName" className="block text-sm font-medium text-slate-700">
             Client Consent Form -- sign by typing your full name
           </label>
-          {/* TODO(Riaan): no source document for the Client Consent Form has
-              been supplied yet -- once you send it through, it gets the same
-              view/download link the Indemnity form has below. */}
-          <p className="mt-1 text-xs text-slate-500">
-            Document not yet available to view here -- ask your instructor for a copy if you&rsquo;d
-            like to read it before signing.
+          <p className="mt-1 text-xs">
+            <a
+              href="/documents/sacaa-client-consent-form.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-red-600 underline hover:text-red-700"
+            >
+              View / download the document
+            </a>{" "}
+            <span className="text-slate-500">
+              -- the official SACAA CA 183-540 form -- read it before you sign, if you&rsquo;d like to.
+            </span>
           </p>
+          {hasSignature && (
+            <p className="mt-1 flex items-center gap-2 text-xs text-slate-500">
+              <img
+                src="/api/signature"
+                alt="Your saved signature"
+                className="h-8 rounded border border-slate-200 bg-white object-contain p-1"
+              />
+              Using your saved signature on file.
+            </p>
+          )}
           <input
             id="consentName"
             name="consentName"
             required
+            defaultValue={hasSignature ? name : undefined}
             className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
           />
         </div>
@@ -75,10 +98,21 @@ export default function ConsentGate({ name }: { name: string }) {
             </a>{" "}
             <span className="text-slate-500">-- read it before you sign, if you&rsquo;d like to.</span>
           </p>
+          {hasSignature && (
+            <p className="mt-1 flex items-center gap-2 text-xs text-slate-500">
+              <img
+                src="/api/signature"
+                alt="Your saved signature"
+                className="h-8 rounded border border-slate-200 bg-white object-contain p-1"
+              />
+              Using your saved signature on file.
+            </p>
+          )}
           <input
             id="indemnityName"
             name="indemnityName"
             required
+            defaultValue={hasSignature ? name : undefined}
             className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
           />
         </div>

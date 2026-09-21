@@ -51,6 +51,7 @@ export default function ProfileEditForm({
   bloodGroup,
   allergies,
   flightMedicalCertFile,
+  signatureFile,
   pilot,
 }: {
   role: "student" | "pilot" | "cfi" | "instructor";
@@ -69,6 +70,7 @@ export default function ProfileEditForm({
   bloodGroup?: string | null;
   allergies?: string | null;
   flightMedicalCertFile?: string | null;
+  signatureFile?: string | null;
   pilot?: {
     callSign: string | null;
     sacaaNumber: string | null;
@@ -191,6 +193,38 @@ export default function ProfileEditForm({
               accept="application/pdf,image/png,image/jpeg,image/webp"
               className="mt-1 block w-full text-sm text-slate-600 file:mr-3 file:rounded-md file:border-0 file:bg-slate-100 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-slate-700 hover:file:bg-slate-200"
             />
+          </div>
+        </div>
+
+        <div className="border-t border-slate-100 pt-4">
+          <h3 className="text-sm font-semibold text-slate-900">Saved signature</h3>
+          <p className="mt-1 text-xs text-slate-500">
+            Upload an image of your signature once, and it&rsquo;s offered back to you automatically
+            next time you need to sign a form under your own login -- no need to re-upload it every
+            time. This is yours only: no one else, including CFIs and Admin, can view it, download
+            it, or use it -- not even to sign on your behalf. It&rsquo;s kept in a protected vault
+            for your account alone.
+          </p>
+          <div className="mt-2 flex items-center gap-4">
+            {signatureFile && (
+              <img
+                src={`/api/signature?v=${encodeURIComponent(signatureFile)}`}
+                alt="Your saved signature"
+                className="h-12 max-w-[12rem] rounded border border-slate-200 bg-white object-contain p-1"
+              />
+            )}
+            <div className="flex-1">
+              <label htmlFor="signatureFile" className={labelClass}>
+                {signatureFile ? "Replace signature" : "Upload signature"}
+              </label>
+              <input
+                id="signatureFile"
+                name="signatureFile"
+                type="file"
+                accept="image/png,image/jpeg,image/webp"
+                className="mt-1 block w-full text-sm text-slate-600 file:mr-3 file:rounded-md file:border-0 file:bg-slate-100 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-slate-700 hover:file:bg-slate-200"
+              />
+            </div>
           </div>
         </div>
 

@@ -91,6 +91,19 @@ export const users = sqliteTable("users", {
   indemnitySignedAt: integer("indemnity_signed_at", { mode: "timestamp" }),
   indemnitySignedName: text("indemnity_signed_name"),
 
+  // Saved signature image -- filename under data/uploads/<userId>/, same
+  // pattern as profilePictureFile. Self-service only: a person uploads
+  // their OWN signature once, and it is only ever offered back to that
+  // same account when THEY are signing something under their own login.
+  // No admin/CFI capability to view, select, or apply it on someone
+  // else's behalf -- it is never rendered to any other user or role, and
+  // never exposed via the shared /api/uploads/<userId>/<filename> route
+  // (that route is for other file kinds; signatures get their own
+  // access-checked route -- see src/app/api/signature/[userId]/route.ts).
+  // Kept out of every admin/CFI profile view and editor for the same
+  // reason. Vault-like guarantee, not just "hidden in the UI."
+  signatureFile: text("signature_file"),
+
   createdAt: integer("created_at", { mode: "timestamp" })
     .notNull()
     .default(sql`(unixepoch())`),

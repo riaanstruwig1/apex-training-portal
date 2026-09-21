@@ -34,7 +34,11 @@ export default async function StudentLayout({
         profileHref={needsConsent ? null : "/student/profile"}
       />
       <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8">
-        {needsConsent ? <ConsentGate name={user.name} /> : children}
+        {needsConsent ? (
+          <ConsentGate name={user.name} hasSignature={!!user.signatureFile} />
+        ) : (
+          children
+        )}
       </main>
       {!needsConsent && radioCallScript && (
         <footer className="border-t border-slate-200 bg-white">

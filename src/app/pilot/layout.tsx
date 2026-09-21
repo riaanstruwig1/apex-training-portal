@@ -50,7 +50,11 @@ export default async function PilotLayout({ children }: LayoutProps<"/pilot">) {
         profileHref={needsConsent ? null : "/pilot/profile"}
       />
       <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8">
-        {needsConsent ? <ConsentGate name={user.name} /> : children}
+        {needsConsent ? (
+          <ConsentGate name={user.name} hasSignature={!!user.signatureFile} />
+        ) : (
+          children
+        )}
       </main>
     </div>
   );

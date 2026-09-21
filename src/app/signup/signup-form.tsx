@@ -353,12 +353,18 @@ export default function SignupForm() {
           handwritten signature on these forms.
         </p>
         <Field id="consentName" label="Client Consent Form -- sign by typing your full name" required>
-          {/* TODO(Riaan): no source document for the Client Consent Form has
-              been supplied yet -- once you send it through, it gets the same
-              view/download link the Indemnity form has below. */}
-          <p className="mb-1 text-xs text-slate-500">
-            Document not yet available to view here -- ask us for a copy if you&rsquo;d like to
-            read it before signing.
+          <p className="mb-1 text-xs">
+            <a
+              href="/documents/sacaa-client-consent-form.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-red-600 underline hover:text-red-700"
+            >
+              View / download the document
+            </a>{" "}
+            <span className="text-slate-500">
+              -- the official SACAA CA 183-540 form -- read it before you sign, if you&rsquo;d like to.
+            </span>
           </p>
           <input id="consentName" name="consentName" value={values.consentName} onChange={set("consentName")} required className={inputClass} />
         </Field>
@@ -380,6 +386,14 @@ export default function SignupForm() {
           </p>
           <input id="indemnityName" name="indemnityName" value={values.indemnityName} onChange={set("indemnityName")} required className={inputClass} />
         </Field>
+      </div>
+
+      <div className="rounded-md border border-slate-200 bg-slate-50 p-3 text-xs text-slate-600">
+        By submitting this application, you confirm the details above are accurate. Apex
+        Adventures complies with the Consumer Protection Act (CPA) and the Protection of Personal
+        Information Act (POPIA): the personal information you provide here is used only for
+        training administration and SACAA/SAHPA compliance, is kept secure, and is never sold or
+        shared with third parties without your consent.
       </div>
 
       {state?.error && (

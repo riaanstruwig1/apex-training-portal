@@ -36,6 +36,7 @@ export default async function PilotProfilePage() {
         bloodGroup={fullUser?.bloodGroup ?? null}
         allergies={fullUser?.allergies ?? null}
         flightMedicalCertFile={fullUser?.flightMedicalCertFile ?? null}
+        signatureFile={fullUser?.signatureFile ?? null}
         pilot={
           profile
             ? {
