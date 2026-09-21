@@ -96,6 +96,12 @@ export async function submitSignup(
   const idPassportFileInput = formData.get("idPassportFile");
   const profilePictureFileInput = formData.get("profilePictureFile");
   const caaLicenceFileInput = formData.get("caaLicenceFile");
+  // Optional -- uploaded by the applicant, for the applicant, at the birth
+  // of their own account. Same "each person, their own only" rule as the
+  // profile-page vault (src/lib/actions/profile.ts): this is still the
+  // account's own owner uploading it for themselves, just at sign-up
+  // instead of afterward on their profile.
+  const signatureFileInput = formData.get("signatureFile");
 
   if (!(idPassportFileInput instanceof File) || idPassportFileInput.size === 0) {
     return { error: "Upload a copy of your ID or passport." };
@@ -159,10 +165,15 @@ export async function submitSignup(
       "profile-picture",
       profilePictureFileInput instanceof File ? profilePictureFileInput : null
     );
+    const signatureFile = await saveUpload(
+      user.id,
+      "signature",
+      signatureFileInput instanceof File ? signatureFileInput : null
+    );
 
     await db
       .update(users)
-      .set({ idPassportFile, profilePictureFile })
+      .set({ idPassportFile, profilePictureFile, signatureFile })
       .where(eq(users.id, user.id));
 
     if (data.accountType === "student") {

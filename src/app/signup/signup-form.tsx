@@ -276,6 +276,22 @@ export default function SignupForm() {
             className={`${inputClass} file:mr-3 file:rounded file:border-0 file:bg-slate-100 file:px-3 file:py-1.5 file:text-sm`}
           />
         </Field>
+        <Field id="signatureFile" label="Signature (optional)">
+          <p className="mb-1 text-xs text-slate-500">
+            Upload an image of your signature and it&rsquo;s saved for next time -- offered back
+            automatically when you need to sign something under your own login, so you don&rsquo;t
+            have to type your name every time. Yours only: no one else, including CFIs and Admin,
+            can view it, download it, or use it -- kept in a protected vault for your account
+            alone. You can still type your name below to sign these two forms now either way.
+          </p>
+          <input
+            id="signatureFile"
+            name="signatureFile"
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            className={`${inputClass} file:mr-3 file:rounded file:border-0 file:bg-slate-100 file:px-3 file:py-1.5 file:text-sm`}
+          />
+        </Field>
         {state?.error && (
           <p className="text-xs text-amber-700">
             If you&apos;re re-submitting after an error: your file selections above don&apos;t
