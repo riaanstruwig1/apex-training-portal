@@ -77,6 +77,18 @@ export const users = sqliteTable("users", {
   bloodGroup: text("blood_group"),
   allergies: text("allergies"),
   flightMedicalCertFile: text("flight_medical_cert_file"), // filename under data/uploads/<userId>/
+  // Online self-declaration of the SAHPA Appendix R62.22 "Pilot's
+  // Declaration of Medical Fitness" -- an alternative to uploading a signed
+  // copy of the form via flightMedicalCertFile above. Same simple e-sign
+  // pattern as consent/indemnity below (typed full name + timestamp).
+  // Deliberately only ever offered/written for someone under 60 with a
+  // known DOB -- see medicalDeclarationEligible() in src/lib/medical.ts --
+  // because the real form requires a separate Medical Practitioner's
+  // Declaration, signed by a GP, for anyone 60 or over (or with a flagged
+  // medical condition); that half can't be satisfied online, so that case
+  // is routed to download-sign-upload (flightMedicalCertFile) instead.
+  medicalDeclarationSignedAt: integer("medical_declaration_signed_at", { mode: "timestamp" }),
+  medicalDeclarationSignedName: text("medical_declaration_signed_name"),
   // Consent (CA 183-540) and Indemnity/Release -- required on every
   // application. Simple e-sign for now (typed full name + timestamp counts
   // as signature); populating the actual SACAA/SAHPA PDF is a later stage.

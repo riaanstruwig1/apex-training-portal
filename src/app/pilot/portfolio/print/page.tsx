@@ -38,7 +38,7 @@ export default async function PilotPortfolioPrintPage() {
         <Avatar userId={user.id} filename={user.profilePictureFile} name={user.name} size={64} />
         <div>
           <h1 className="text-xl font-semibold text-slate-900">{user.name}</h1>
-          <p className="text-sm text-slate-500">Pilot Portfolio -- Team Apex Portal</p>
+          <p className="text-sm text-slate-500">Pilot Portfolio -- Apex Flight Hub</p>
         </div>
       </div>
 
@@ -101,7 +101,7 @@ export default async function PilotPortfolioPrintPage() {
 
       <p className="border-t border-slate-200 pt-3 text-xs text-slate-400">
         {declaredKeys.size} rating{declaredKeys.size === 1 ? "" : "s"} declared in total -- printed{" "}
-        {new Date().toLocaleDateString()} from Team Apex Portal.
+        {new Date().toLocaleDateString()} from Apex Flight Hub.
       </p>
     </div>
   );

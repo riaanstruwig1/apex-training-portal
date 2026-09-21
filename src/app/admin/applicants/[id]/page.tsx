@@ -168,6 +168,16 @@ export default async function ApplicantReviewPage({
             filename={applicant.flightMedicalCertFile}
             label="Flight medical certificate"
           />
+          {applicant.medicalDeclarationSignedAt && (
+            <div className="flex items-center justify-between rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-700">
+              Pilot&rsquo;s Declaration of Medical Fitness (self-declared online)
+              <ConsentBadge
+                signed
+                at={applicant.medicalDeclarationSignedAt}
+                name={applicant.medicalDeclarationSignedName}
+              />
+            </div>
+          )}
         </div>
         {applicant.role === "student" && student?.profile.invoiceRequestedAt && (
           <p className="mt-2 rounded-md bg-amber-50 px-3 py-2 text-xs text-amber-800">

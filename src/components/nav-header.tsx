@@ -63,7 +63,7 @@ export default function NavHeader({
               className="h-7 w-auto shrink-0 sm:h-9"
             />
             <span className="whitespace-nowrap font-semibold tracking-tight text-slate-900">
-              Team Apex Portal
+              Apex Flight Hub
             </span>
           </Link>
           <nav className="hidden flex-wrap gap-4 sm:flex">

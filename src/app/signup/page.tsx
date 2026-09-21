@@ -7,7 +7,7 @@ export default function SignupPage() {
       <div className="w-full max-w-2xl">
         <div className="mb-8 text-center">
           <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
-            Join Team Apex Portal
+            Join Apex Flight Hub
           </h1>
           <p className="mt-1 text-sm text-slate-500">
             Sign up as a new student, or as a licensed pilot / club member.

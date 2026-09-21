@@ -37,6 +37,9 @@ export default async function StudentProfilePage() {
         bloodGroup={fullUser?.bloodGroup ?? null}
         allergies={fullUser?.allergies ?? null}
         flightMedicalCertFile={fullUser?.flightMedicalCertFile ?? null}
+        dob={fullUser?.dob ?? null}
+        medicalDeclarationSignedAt={fullUser?.medicalDeclarationSignedAt ?? null}
+        medicalDeclarationSignedName={fullUser?.medicalDeclarationSignedName ?? null}
         signatureFile={fullUser?.signatureFile ?? null}
       />
       <PopPaymentPanel

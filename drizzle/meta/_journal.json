@@ -162,6 +162,13 @@
       "when": 1789972965173,
       "tag": "0022_fluffy_photon",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "6",
+      "when": 1790000483128,
+      "tag": "0023_gorgeous_the_phantom",
+      "breakpoints": true
     }
   ]
 }

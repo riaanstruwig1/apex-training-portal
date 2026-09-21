@@ -221,7 +221,7 @@ export default function AdminProfileEditor({
                 className={inputClass}
               />
             </Field>
-            <Field id="flightMedicalCertFile" label="Flight medical certificate (replace)">
+            <Field id="flightMedicalCertFile" label="Flight medical certificate -- uploaded copy (replace)">
               <input
                 id="flightMedicalCertFile"
                 name="flightMedicalCertFile"
@@ -229,6 +229,10 @@ export default function AdminProfileEditor({
                 accept="application/pdf,image/png,image/jpeg,image/webp"
                 className={fileClass}
               />
+              <p className="mt-1 text-xs text-slate-400">
+                For the pilot&rsquo;s own online self-declaration (under-60 pilots only), see the
+                badge above -- that can only be signed by the account holder, not set here.
+              </p>
             </Field>
           </div>
         </div>

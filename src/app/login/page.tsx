@@ -17,7 +17,7 @@ export default function LoginPage() {
             className="mx-auto h-20 w-auto sm:h-24"
           />
           <h1 className="mt-4 text-2xl font-semibold tracking-tight text-slate-900">
-            Team Apex Portal
+            Apex Flight Hub
           </h1>
           <p className="mt-1 text-sm text-slate-500">
             Sign in to your instructor, student or pilot account

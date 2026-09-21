@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Team Apex Portal",
+  title: "Apex Flight Hub",
   description: "Student & instructor training folio for Apex Adventures / EPIC Aviation",
 };
 

@@ -33,7 +33,7 @@ export default async function StudentPortfolioPrintPage() {
         <Avatar userId={user.id} filename={user.profilePictureFile} name={user.name} size={64} />
         <div>
           <h1 className="text-xl font-semibold text-slate-900">{user.name}</h1>
-          <p className="text-sm text-slate-500">Student Portfolio -- Team Apex Portal</p>
+          <p className="text-sm text-slate-500">Student Portfolio -- Apex Flight Hub</p>
         </div>
       </div>
 
@@ -108,7 +108,7 @@ export default async function StudentPortfolioPrintPage() {
       </div>
 
       <p className="border-t border-slate-200 pt-3 text-xs text-slate-400">
-        Printed {new Date().toLocaleDateString()} from Team Apex Portal.
+        Printed {new Date().toLocaleDateString()} from Apex Flight Hub.
       </p>
     </div>
   );
