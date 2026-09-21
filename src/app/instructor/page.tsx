@@ -12,6 +12,7 @@ import {
 } from "@/lib/exams";
 import { requireInstructor } from "@/lib/auth/dal";
 import { getPendingApplicants } from "@/lib/verification";
+import Avatar from "@/components/avatar";
 import InviteLinkButton from "./invite-link-button";
 import StudentRowActions from "./student-row-actions";
 
@@ -107,19 +108,22 @@ function StudentCard({
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-4">
       <div className="mb-2 flex items-start justify-between gap-2">
-        <div>
-          <Link
-            href={`/instructor/students/${s.id}`}
-            className="font-medium text-slate-900 hover:text-red-600"
-          >
-            {s.name}
-          </Link>
-          {s.trainingType && (
-            <span className="ml-1.5 rounded-full bg-slate-100 px-1.5 py-0.5 text-[10px] font-medium text-slate-500">
-              {TRAINING_TYPE_LABELS[s.trainingType]}
-            </span>
-          )}
-          <div className="text-xs text-slate-500">{s.email}</div>
+        <div className="flex items-start gap-2.5">
+          <Avatar userId={s.id} filename={s.profilePictureFile} name={s.name} size={32} />
+          <div>
+            <Link
+              href={`/instructor/students/${s.id}`}
+              className="font-medium text-slate-900 hover:text-red-600"
+            >
+              {s.name}
+            </Link>
+            {s.trainingType && (
+              <span className="ml-1.5 rounded-full bg-slate-100 px-1.5 py-0.5 text-[10px] font-medium text-slate-500">
+                {TRAINING_TYPE_LABELS[s.trainingType]}
+              </span>
+            )}
+            <div className="text-xs text-slate-500">{s.email}</div>
+          </div>
         </div>
         {s.status === "active" ? (
           <TrainingProgress signedOff={s.signedOffCount} total={s.totalCount} />
@@ -228,17 +232,22 @@ function StudentTable({
           {students.map((s) => (
             <tr key={s.id} className="hover:bg-slate-50">
               <td className="px-4 py-3">
-                <Link
-                  href={`/instructor/students/${s.id}`}
-                  className="font-medium text-slate-900 hover:text-red-600"
-                >
-                  {s.name}
-                </Link>
-                {s.trainingType && (
-                  <span className="ml-1.5 rounded-full bg-slate-100 px-1.5 py-0.5 text-[10px] font-medium text-slate-500">
-                    {TRAINING_TYPE_LABELS[s.trainingType]}
-                  </span>
-                )}
+                <div className="flex items-center gap-2.5">
+                  <Avatar userId={s.id} filename={s.profilePictureFile} name={s.name} size={28} />
+                  <div>
+                    <Link
+                      href={`/instructor/students/${s.id}`}
+                      className="font-medium text-slate-900 hover:text-red-600"
+                    >
+                      {s.name}
+                    </Link>
+                    {s.trainingType && (
+                      <span className="ml-1.5 rounded-full bg-slate-100 px-1.5 py-0.5 text-[10px] font-medium text-slate-500">
+                        {TRAINING_TYPE_LABELS[s.trainingType]}
+                      </span>
+                    )}
+                  </div>
+                </div>
               </td>
               <td className="px-4 py-3 text-slate-600">{s.email}</td>
               <td className="px-4 py-3">

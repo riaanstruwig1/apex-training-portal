@@ -13,6 +13,7 @@ import {
   type TrainingType,
 } from "@/lib/exams";
 import { requireInstructor } from "@/lib/auth/dal";
+import Avatar from "@/components/avatar";
 import ExerciseChecklist from "./exercise-checklist";
 import LogbookTable from "./logbook-table";
 import CallSignEditor from "./call-sign-editor";
@@ -57,7 +58,9 @@ export default async function StudentFolioPage(
 
   return (
     <div className="space-y-8">
-      <div>
+      <div className="flex items-start gap-3">
+        <Avatar userId={student.id} filename={student.profilePictureFile} name={student.name} size={48} />
+        <div>
         <h1 className="text-xl font-semibold text-slate-900">{student.name}</h1>
         <p className="text-sm text-slate-500">
           {student.apexNumber ? `Apex No. ${student.apexNumber}` : ""}
@@ -126,6 +129,7 @@ export default async function StudentFolioPage(
             </p>
           )
         )}
+        </div>
       </div>
 
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">

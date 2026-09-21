@@ -86,7 +86,14 @@ export default function InstructorRatingsGrid({
         className={`rounded-md border px-3 py-1.5 text-xs font-semibold disabled:opacity-60 ${stateClass[assistantState]}`}
         title="Not tracked per equipment type -- one shared prerequisite rating."
       >
-        Assistant Instructor {assistantState === "held" ? "✓" : assistantState === "declined" ? "✕" : ""}
+        Assistant Instructor{" "}
+        {assistantState === "held"
+          ? "✓"
+          : assistantState === "declined"
+            ? "✕"
+            : assistantState === "pending"
+              ? "-- applied, click to verify"
+              : ""}
       </button>
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
@@ -111,7 +118,14 @@ export default function InstructorRatingsGrid({
                       onClick={() => setGrade(eq.key, state === "held" ? null : g.key)}
                       className={`block w-full rounded-md border px-2 py-1 text-left text-xs font-medium disabled:opacity-60 ${stateClass[state]}`}
                     >
-                      {g.label} {state === "held" ? "✓" : state === "declined" ? "✕" : ""}
+                      {g.label}{" "}
+                      {state === "held"
+                        ? "✓"
+                        : state === "declined"
+                          ? "✕"
+                          : state === "pending"
+                            ? "-- applied, click to verify"
+                            : ""}
                     </button>
                   );
                 })}

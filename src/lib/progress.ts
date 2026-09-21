@@ -110,6 +110,7 @@ export type StudentSummary = {
   id: string;
   name: string;
   email: string;
+  profilePictureFile: string | null;
   status: "invited" | "active" | "suspended" | "archived";
   signedOffCount: number;
   totalCount: number;
@@ -132,6 +133,7 @@ export async function getAllStudentsWithSummary(): Promise<StudentSummary[]> {
       id: users.id,
       name: users.name,
       email: users.email,
+      profilePictureFile: users.profilePictureFile,
       status: studentProfiles.status,
       sahpaNumber: studentProfiles.sahpaNumber,
       sahpaExpiryDate: studentProfiles.sahpaExpiryDate,

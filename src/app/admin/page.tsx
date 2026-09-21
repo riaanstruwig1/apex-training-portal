@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getPendingApplicants } from "@/lib/verification";
+import Avatar from "@/components/avatar";
 
 const roleLabel: Record<string, string> = {
   student: "Student",
@@ -36,9 +37,12 @@ export default async function AdminVerificationQueue() {
             {applicants.map((a) => (
               <div key={a.id} className="rounded-xl border border-slate-200 bg-white p-4">
                 <div className="mb-2 flex items-start justify-between gap-2">
-                  <div>
-                    <div className="font-medium text-slate-900">{a.name}</div>
-                    <div className="text-xs text-slate-500">{a.email}</div>
+                  <div className="flex items-center gap-2.5">
+                    <Avatar userId={a.id} filename={a.profilePictureFile} name={a.name} size={32} />
+                    <div>
+                      <div className="font-medium text-slate-900">{a.name}</div>
+                      <div className="text-xs text-slate-500">{a.email}</div>
+                    </div>
                   </div>
                   <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-700">
                     {roleLabel[a.role]}
@@ -79,7 +83,12 @@ export default async function AdminVerificationQueue() {
               <tbody className="divide-y divide-slate-100">
                 {applicants.map((a) => (
                   <tr key={a.id} className="hover:bg-slate-50">
-                    <td className="px-4 py-3 font-medium text-slate-900">{a.name}</td>
+                    <td className="px-4 py-3 font-medium text-slate-900">
+                      <div className="flex items-center gap-2.5">
+                        <Avatar userId={a.id} filename={a.profilePictureFile} name={a.name} size={28} />
+                        {a.name}
+                      </div>
+                    </td>
                     <td className="px-4 py-3">
                       <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-700">
                         {roleLabel[a.role]}

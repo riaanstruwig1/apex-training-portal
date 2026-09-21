@@ -9,6 +9,7 @@ export type PendingApplicant = {
   email: string;
   role: "student" | "pilot";
   apexNumber: string | null;
+  profilePictureFile: string | null;
   createdAt: Date;
 };
 
@@ -20,6 +21,7 @@ export async function getPendingApplicants(): Promise<PendingApplicant[]> {
       email: users.email,
       role: users.role,
       apexNumber: users.apexNumber,
+      profilePictureFile: users.profilePictureFile,
       createdAt: users.createdAt,
     })
     .from(users)
