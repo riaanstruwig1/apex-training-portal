@@ -8,6 +8,7 @@ import { db } from "@/db";
 import { users } from "@/db/schema";
 import { requireCFI } from "@/lib/auth/dal";
 import { getBaseUrl } from "@/lib/base-url";
+import { ensurePilotProfile } from "@/lib/pilots";
 
 const INVITE_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 
@@ -98,6 +99,69 @@ export async function removeInstructor(instructorUserId: string) {
     .where(and(eq(users.id, instructorUserId), eq(users.role, "instructor")));
 
   revalidatePath("/instructor/team");
+}
+
+export type PromotablePilot = { id: string; name: string; email: string };
+
+/** Existing "pilot"-role accounts a CFI could promote to instructor --
+ * Notes4 item 13. Excludes anyone already staff (a cfi/instructor's own
+ * dual pilot profile keeps role "cfi"/"instructor", so they never show up
+ * here in the first place) and anyone not yet an active pilot (still
+ * pending verification, rejected, or suspended). */
+export async function listPromotablePilots(): Promise<PromotablePilot[]> {
+  await requireCFI();
+
+  const rows = await db
+    .select({ id: users.id, name: users.name, email: users.email })
+    .from(users)
+    .where(and(eq(users.role, "pilot"), eq(users.accountStatus, "active")))
+    .orderBy(users.name);
+
+  return rows;
+}
+
+export type PromotePilotState =
+  | { error: string; instructorUserId?: never }
+  | { error?: never; instructorUserId: string }
+  | undefined;
+
+/**
+ * Promotes an existing pilot account straight to "instructor" -- Notes4
+ * item 13 ("Add instructor" should let the CFI pick an existing pilot, not
+ * only invite a brand-new account). No invite link is needed: they already
+ * have a working login, so this just flips their role. Their pilot profile
+ * and every already-verified rating are untouched (a cfi/instructor account
+ * keeps its pilotProfiles row, same as the reverse direction handled by
+ * ensurePilotProfile/#17), so nothing about their pilot side is lost or
+ * reset by the promotion -- the caller can immediately open their profile
+ * to review or set instructor ratings via the grid on that page.
+ */
+export async function promotePilotToInstructor(
+  _prevState: PromotePilotState,
+  formData: FormData
+): Promise<PromotePilotState> {
+  await requireCFI();
+
+  const pilotUserId = formData.get("pilotUserId");
+  if (typeof pilotUserId !== "string" || !pilotUserId) {
+    return { error: "Pick a pilot to promote." };
+  }
+
+  const [candidate] = await db.select().from(users).where(eq(users.id, pilotUserId)).limit(1);
+  if (!candidate || candidate.role !== "pilot") {
+    return { error: "That account is no longer an eligible pilot -- refresh and try again." };
+  }
+
+  await db.update(users).set({ role: "instructor" }).where(eq(users.id, pilotUserId));
+  // Belt-and-braces: they should already have one (every pilot does), but
+  // this matches the guarantee #17 gives the reverse direction.
+  await ensurePilotProfile(pilotUserId);
+
+  revalidatePath("/instructor/team");
+  revalidatePath("/admin/pilots");
+  revalidatePath(`/admin/applicants/${pilotUserId}`);
+
+  return { instructorUserId: pilotUserId };
 }
 
 export type InstructorSummary = {

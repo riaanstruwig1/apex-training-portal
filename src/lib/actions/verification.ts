@@ -1,6 +1,6 @@
 "use server";
 
-import { eq, and } from "drizzle-orm";
+import { eq, and, inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import * as z from "zod";
 import { db } from "@/db";
@@ -169,6 +169,136 @@ export async function adminGrantEndorsement(
         declinedByUserId: null,
       })
       .where(eq(pilotEndorsements.id, existing.id));
+  }
+
+  revalidatePath("/admin");
+  revalidatePath(`/admin/applicants/${applicantUserId}`);
+  revalidatePath("/pilot");
+}
+
+/**
+ * Sets (or clears) a pilot's held instructor grade for one equipment type
+ * (PG/PPG/PPT) -- Notes4 item 15, the three-column instructor-ratings grid.
+ * A pilot only ever holds one grade per equipment (Grade A supersedes B
+ * supersedes C), so setting a new grade removes any other grade row already
+ * declared for that same equipment -- there's no separate "un-declare"
+ * control needed, selecting the new grade (or "None") is the whole
+ * interaction. Passing `grade: null` clears the column entirely.
+ */
+export async function adminSetInstructorGrade(
+  pilotProfileId: string,
+  applicantUserId: string,
+  equipment: "pg" | "ppg" | "ppt",
+  grade: "c" | "b" | "a" | null
+) {
+  const reviewer = await requireAdminOrCFI();
+
+  const gradeKeys: Record<"c" | "b" | "a", string> = {
+    c: `instructor_${equipment}_grade_c`,
+    b: `instructor_${equipment}_grade_b`,
+    a: `instructor_${equipment}_grade_a`,
+  };
+  const targetKey = grade ? gradeKeys[grade] : null;
+  const keysToRemove = Object.values(gradeKeys).filter((k) => k !== targetKey);
+
+  if (keysToRemove.length > 0) {
+    await db
+      .delete(pilotEndorsements)
+      .where(
+        and(
+          eq(pilotEndorsements.pilotProfileId, pilotProfileId),
+          inArray(pilotEndorsements.key, keysToRemove)
+        )
+      );
+  }
+
+  if (targetKey) {
+    const [existing] = await db
+      .select()
+      .from(pilotEndorsements)
+      .where(
+        and(eq(pilotEndorsements.pilotProfileId, pilotProfileId), eq(pilotEndorsements.key, targetKey))
+      )
+      .limit(1);
+
+    if (!existing) {
+      await db.insert(pilotEndorsements).values({
+        pilotProfileId,
+        key: targetKey,
+        declaredAt: new Date(),
+        verified: true,
+        verifiedAt: new Date(),
+        verifiedByUserId: reviewer.id,
+      });
+    } else if (!existing.verified || existing.declined) {
+      await db
+        .update(pilotEndorsements)
+        .set({
+          verified: true,
+          verifiedAt: new Date(),
+          verifiedByUserId: reviewer.id,
+          declined: false,
+          declineReason: null,
+          declinedAt: null,
+          declinedByUserId: null,
+        })
+        .where(eq(pilotEndorsements.id, existing.id));
+    }
+  }
+
+  revalidatePath("/admin");
+  revalidatePath(`/admin/applicants/${applicantUserId}`);
+  revalidatePath("/pilot");
+}
+
+/**
+ * Toggles the single, equipment-agnostic "Assistant Instructor" rating --
+ * the fourth rung of the instructor-ratings grid, shown once above the
+ * PG/PPG/PPT columns since (per Riaan's own list) it isn't tracked
+ * separately per equipment type.
+ */
+export async function adminSetAssistantInstructor(
+  pilotProfileId: string,
+  applicantUserId: string,
+  on: boolean
+) {
+  const reviewer = await requireAdminOrCFI();
+  const key = "assistant_instructor";
+
+  if (on) {
+    const [existing] = await db
+      .select()
+      .from(pilotEndorsements)
+      .where(and(eq(pilotEndorsements.pilotProfileId, pilotProfileId), eq(pilotEndorsements.key, key)))
+      .limit(1);
+
+    if (!existing) {
+      await db.insert(pilotEndorsements).values({
+        pilotProfileId,
+        key,
+        declaredAt: new Date(),
+        verified: true,
+        verifiedAt: new Date(),
+        verifiedByUserId: reviewer.id,
+      });
+    } else if (!existing.verified || existing.declined) {
+      await db
+        .update(pilotEndorsements)
+        .set({
+          verified: true,
+          verifiedAt: new Date(),
+          verifiedByUserId: reviewer.id,
+          declined: false,
+          declineReason: null,
+          declinedAt: null,
+          declinedByUserId: null,
+        })
+        .where(eq(pilotEndorsements.id, existing.id));
+    }
+  } else {
+    await db
+      .delete(pilotEndorsements)
+      .where(and(eq(pilotEndorsements.pilotProfileId, pilotProfileId), eq(pilotEndorsements.key, key)));
   }
 
   revalidatePath("/admin");

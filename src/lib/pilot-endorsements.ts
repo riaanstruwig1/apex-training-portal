@@ -95,6 +95,16 @@ export function isLadderTierKey(key: string): boolean {
   return ENDORSEMENT_OPTIONS.find((o) => o.key === key)?.tier != null;
 }
 
+/** True for the 10 "Instructor Ratings" group keys (Assistant Instructor
+ * plus PG/PPG/PPT Grade C/B/A) -- Notes4 item 15 gives these their own
+ * three-column grid with built-in mutual exclusivity (instructor-ratings-
+ * grid.tsx) instead of the flat checkbox/Apply/Grant list everything else
+ * uses, so callers rendering that flat list should filter these out the
+ * same way they already filter isLadderTierKey. */
+export function isInstructorRatingKey(key: string): boolean {
+  return ENDORSEMENT_OPTIONS.find((o) => o.key === key)?.group === "Instructor Ratings";
+}
+
 export function endorsementGroup(key: string): string {
   return ENDORSEMENT_OPTIONS.find((o) => o.key === key)?.group ?? "Other";
 }

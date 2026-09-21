@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { getApplicantDetail } from "@/lib/verification";
-import { groupEndorsementItems, isLadderTierKey, ENDORSEMENT_OPTIONS } from "@/lib/pilot-endorsements";
+import { groupEndorsementItems, isLadderTierKey, isInstructorRatingKey, ENDORSEMENT_OPTIONS } from "@/lib/pilot-endorsements";
 import { computeLadder, EQUIPMENT_LABELS, INSTRUCTOR_RATING_REFERENCE_TEXT, type Equipment } from "@/lib/pilot-progress";
 import LadderTiers from "@/components/ladder-tiers";
 import Avatar from "@/components/avatar";
@@ -9,6 +9,9 @@ import ApplicantTrainingTypeEditor from "./applicant-training-type-editor";
 import PilotEndorsementToggle from "./pilot-endorsement-toggle";
 import AdminProfileEditor from "./admin-profile-editor";
 import AdminGrantEndorsement from "./admin-grant-endorsement";
+import InstructorRatingsGrid from "./instructor-ratings-grid";
+
+const STAFF_ROLES = new Set(["cfi", "instructor"]);
 
 const ALL_EQUIPMENT: Equipment[] = ["pg", "ppg", "ppt"];
 
@@ -66,10 +69,20 @@ export default async function ApplicantReviewPage({
 }: PageProps<"/admin/applicants/[id]">) {
   const { id } = await params;
   const detail = await getApplicantDetail(id);
-  if (!detail || (detail.applicant.role !== "student" && detail.applicant.role !== "pilot")) {
+  const isStaff = !!detail && STAFF_ROLES.has(detail.applicant.role);
+  if (!detail || (detail.applicant.role !== "student" && detail.applicant.role !== "pilot" && !isStaff)) {
     notFound();
   }
   const { applicant, pilot, student } = detail;
+  const isPending = applicant.accountStatus === "pending_verification";
+  const roleNoun =
+    applicant.role === "pilot"
+      ? "Pilot"
+      : applicant.role === "student"
+        ? "Student"
+        : applicant.role === "cfi"
+          ? "Chief Flight Instructor"
+          : "Instructor";
 
   return (
     <div className="space-y-6">
@@ -83,7 +96,7 @@ export default async function ApplicantReviewPage({
         <div>
           <h1 className="text-xl font-semibold text-slate-900">{applicant.name}</h1>
           <p className="mt-1 text-sm text-slate-500">
-            {applicant.role === "pilot" ? "Pilot" : "Student"} application &middot; Apex No.{" "}
+            {roleNoun} {isPending ? "application" : "profile"} &middot; Apex No.{" "}
             {applicant.apexNumber}
             {(pilot?.profile?.sahpaNumber || student?.profile?.sahpaNumber) && (
               <>
@@ -231,9 +244,11 @@ export default async function ApplicantReviewPage({
         </div>
       )}
 
-      {applicant.role === "pilot" && pilot && (
+      {(applicant.role === "pilot" || isStaff) && pilot && (
         <div className="rounded-xl border border-slate-200 bg-white p-5">
-          <h2 className="mb-2 text-sm font-semibold text-slate-900">Pilot details</h2>
+          <h2 className="mb-2 text-sm font-semibold text-slate-900">
+            {isStaff ? "Pilot side (also a pilot)" : "Pilot details"}
+          </h2>
           <dl className="divide-y divide-slate-100">
             <Row label="Call sign (self-declared)" value={pilot.profile.callSign} />
             <Row label="SACAA License No." value={pilot.profile.sahpaNumber} />
@@ -271,16 +286,35 @@ export default async function ApplicantReviewPage({
             </div>
           </div>
 
+          {/* Three-column PG/PPG/PPT grid with built-in mutual exclusivity
+             (Notes4 item 15) -- replaces the flat checkbox/Apply/Grant list
+             for just this one group, which let a pilot end up with
+             contradictory state like both Grade C and Grade A declared at
+             once. Always shown (not gated on anything already declared) so
+             a CFI can set it from scratch, e.g. right after promoting a
+             pilot to instructor. */}
+          <div className="mt-4 border-t border-slate-100 pt-3">
+            <h3 className="mb-1 text-sm font-medium text-slate-700">Instructor ratings</h3>
+            <InstructorRatingsGrid
+              pilotProfileId={pilot.profile.id}
+              applicantUserId={applicant.id}
+              endorsements={pilot.endorsements.filter((e) => isInstructorRatingKey(e.key))}
+            />
+            <p className="mt-2 text-[11px] text-slate-400">{INSTRUCTOR_RATING_REFERENCE_TEXT}</p>
+          </div>
+
           <p className="mb-1 mt-4 text-sm font-medium text-slate-700">
-            Declared licences, add-ons, instructor &amp; display ratings
+            Declared licences &amp; add-ons
           </p>
-          {/* Ladder-tier items are excluded here -- they get their own card
-             + Verify control in the ladder section above (now always shown,
-             see the comment above it), so listing them a second time here
-             would give a reviewer two separate Verify buttons for the same
-             underlying row. */}
+          {/* Ladder-tier and instructor-rating items are excluded here --
+             they each get their own dedicated control above (the ladder
+             section and the instructor-ratings grid respectively), so
+             listing them a second time here would give a reviewer two
+             separate controls for the same underlying row. */}
           {(() => {
-            const nonLadderEndorsements = pilot.endorsements.filter((e) => !isLadderTierKey(e.key));
+            const nonLadderEndorsements = pilot.endorsements.filter(
+              (e) => !isLadderTierKey(e.key) && !isInstructorRatingKey(e.key)
+            );
             return nonLadderEndorsements.length === 0 ? (
               <p className="text-sm text-slate-400">None declared.</p>
             ) : (
@@ -314,17 +348,20 @@ export default async function ApplicantReviewPage({
                   </div>
                 </div>
               ))}
-              <p className="pt-1 text-[11px] text-slate-400">{INSTRUCTOR_RATING_REFERENCE_TEXT}</p>
               </div>
             );
           })()}
 
           {/* Grant a rating the pilot never self-declared (Notes4 item 11,
              the Henna Fourie case) -- everything above only lets a reviewer
-             verify/decline what the pilot already applied for. */}
+             verify/decline what the pilot already applied for. Instructor-
+             rating keys are excluded -- the grid above is how those get
+             granted now. */}
           {(() => {
             const declaredKeys = new Set(pilot.endorsements.map((e) => e.key));
-            const notYetDeclared = ENDORSEMENT_OPTIONS.filter((o) => !declaredKeys.has(o.key));
+            const notYetDeclared = ENDORSEMENT_OPTIONS.filter(
+              (o) => !declaredKeys.has(o.key) && !isInstructorRatingKey(o.key)
+            );
             if (notYetDeclared.length === 0) return null;
             return (
               <div className="mt-4 border-t border-slate-100 pt-3">
