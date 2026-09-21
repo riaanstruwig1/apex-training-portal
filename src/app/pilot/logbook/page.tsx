@@ -1,20 +1,24 @@
-import { requireStudent } from "@/lib/auth/dal";
+import { requirePilot } from "@/lib/auth/dal";
 import { getLogbookEntries, getInstructorRoster } from "@/lib/logbook";
 import LogEntryForm from "@/components/logbook/log-entry-form";
 import LogbookEntries from "@/components/logbook/logbook-entries";
 import CsvImportForm from "@/components/logbook/csv-import-form";
 
-export default async function StudentLogbookPage() {
-  const { user } = await requireStudent();
+// Same flight logbook as the student side (Notes4: "as instructor, CFI ...
+// have we added it in that an instructor is also a pilot with the same
+// screen as a normal pilot") -- a CFI/instructor's own pilot profile had no
+// logbook at all, only students did. flightLogEntries.studentId is really
+// just "whichever user this flight belongs to" (a plain FK to users.id, no
+// role check in the schema), so this reuses the exact same components and
+// server actions as /student/logbook rather than a parallel pilot-only
+// implementation.
+export default async function PilotLogbookPage() {
+  const { user } = await requirePilot();
   const [entries, instructors] = await Promise.all([
     getLogbookEntries(user.id),
     getInstructorRoster(),
   ]);
 
-  // Entries are sorted most-recent-first for display, but the last flight
-  // *logged* (by date) is what we want to default the next entry's site and
-  // wing/motor to -- most flights happen at the same place on the same gear
-  // as the one before.
   const lastEntry = entries[0];
 
   return (

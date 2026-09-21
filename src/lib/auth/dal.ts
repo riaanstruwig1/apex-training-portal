@@ -98,6 +98,27 @@ export async function requireStudent() {
   return { user, profile: profile ?? null };
 }
 
+/** Either a student or a pilot-side account (pilot, or a CFI/instructor
+ * viewing their own linked pilot profile) -- for the flight logbook, which
+ * is the same feature and the same `flightLogEntries` rows for both (the
+ * table's `studentId` column is just "which user this flight belongs to",
+ * no role check at the schema level). Used by the logbook Server Actions so
+ * /pilot/logbook can reuse the exact same add/import actions as
+ * /student/logbook instead of a parallel pilot-only copy. */
+export async function requireStudentOrPilot() {
+  const user = await getCurrentUser();
+  if (
+    !user ||
+    (user.role !== "student" &&
+      user.role !== "pilot" &&
+      user.role !== "cfi" &&
+      user.role !== "instructor")
+  ) {
+    redirect("/api/session-expired");
+  }
+  return user;
+}
+
 /** Office Manager (Admin) only -- reviews/approves new sign-ups. No
  * instructional authority (that stays CFI/instructor). */
 export async function requireAdmin() {

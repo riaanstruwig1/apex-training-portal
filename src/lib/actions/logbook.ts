@@ -7,7 +7,15 @@ import * as XLSX from "xlsx";
 import { revalidatePath } from "next/cache";
 import { db } from "@/db";
 import { flightLogEntries, users } from "@/db/schema";
-import { requireStudent, requireInstructor } from "@/lib/auth/dal";
+import { requireStudentOrPilot, requireInstructor } from "@/lib/auth/dal";
+
+/** The logbook lives at a different URL for a student vs. a pilot-side
+ * account (pilot, or a CFI/instructor's own linked pilot profile) even
+ * though it's the same feature and the same rows -- pick the path to
+ * revalidate off the acting user's role. */
+function logbookPathFor(role: string): string {
+  return role === "student" ? "/student/logbook" : "/pilot/logbook";
+}
 
 const LogEntrySchema = z.object({
   date: z.string().min(1, { error: "Enter the flight date." }),
@@ -27,7 +35,7 @@ export async function addLogbookEntry(
   _prevState: LogEntryState,
   formData: FormData
 ): Promise<LogEntryState> {
-  const { user } = await requireStudent();
+  const user = await requireStudentOrPilot();
 
   // Exercises covered is a checklist (multiple checkboxes share this name),
   // not a single field -- collect every checked value.
@@ -77,7 +85,7 @@ export async function addLogbookEntry(
     instructorUserId,
   });
 
-  revalidatePath("/student/logbook");
+  revalidatePath(logbookPathFor(user.role));
 }
 
 /** Instructor countersigns a student's logbook entry, with an optional comment. */
@@ -99,7 +107,10 @@ export async function verifyLogbookEntry(
     .where(eq(flightLogEntries.id, entryId));
 
   revalidatePath(`/instructor/students/${studentId}`);
+  // The owning account could be a student or a pilot-side one -- revalidate
+  // both logbook paths rather than looking up the role just for this.
   revalidatePath("/student/logbook");
+  revalidatePath("/pilot/logbook");
 }
 
 // ---------------------------------------------------------------------------
@@ -226,7 +237,7 @@ export async function importLogbookCsv(
   _prevState: CsvImportState,
   formData: FormData
 ): Promise<CsvImportState> {
-  const { user } = await requireStudent();
+  const user = await requireStudentOrPilot();
 
   const file = formData.get("csvFile");
   const flightType = formData.get("flightType");
@@ -333,7 +344,7 @@ export async function importLogbookCsv(
 
   if (toInsert.length > 0) {
     await db.insert(flightLogEntries).values(toInsert);
-    revalidatePath("/student/logbook");
+    revalidatePath(logbookPathFor(user.role));
   }
 
   return { imported: toInsert.length, skipped };
@@ -355,4 +366,5 @@ export async function updateLogbookComment(
 
   revalidatePath(`/instructor/students/${studentId}`);
   revalidatePath("/student/logbook");
+  revalidatePath("/pilot/logbook");
 }

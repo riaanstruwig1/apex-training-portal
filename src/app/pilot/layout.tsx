@@ -36,7 +36,10 @@ export default async function PilotLayout({ children }: LayoutProps<"/pilot">) {
           )
       ).length
     : 0;
-  const pilotOnlyLinks = [{ href: "/pilot", label: "My Portfolio", badge: declinedCount }];
+  const pilotOnlyLinks = [
+    { href: "/pilot", label: "My Portfolio", badge: declinedCount },
+    { href: "/pilot/logbook", label: "Logbook" },
+  ];
   const links = isStaff ? [...staffBackLink, ...pilotOnlyLinks] : pilotOnlyLinks;
 
   return (
