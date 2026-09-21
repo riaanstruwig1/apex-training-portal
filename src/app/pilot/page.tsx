@@ -48,12 +48,12 @@ export default async function PilotDashboard() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-start justify-between gap-3">
+      <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex items-center gap-3">
           <Avatar userId={user.id} filename={user.profilePictureFile} name={user.name} size={48} />
           <h1 className="text-xl font-semibold text-slate-900">Welcome, {user.name}</h1>
         </div>
-        <div className="flex shrink-0 gap-2">
+        <div className="flex flex-wrap gap-2">
           <Link
             href="/pilot/portfolio/print"
             className="rounded-md border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
