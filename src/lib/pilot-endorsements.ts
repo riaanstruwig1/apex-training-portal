@@ -46,11 +46,21 @@ export const ENDORSEMENT_OPTIONS: {
   { key: "ppg_intermediate", label: "Intermediate", group: "Powered Paragliding (PPG)", equipment: "ppg", tier: "intermediate" },
   { key: "ppg_sport", label: "Sport", group: "Powered Paragliding (PPG)", equipment: "ppg", tier: "sport" },
   { key: "ppg_tandem", label: "Tandem", group: "Powered Paragliding (PPG)", equipment: "ppg", tier: "tandem" },
+  // Non-tiered PPG add-ons -- added 22 Sep 2026, Riaan's request ("Engine,
+  // Winching, XC") once the new student-endorsements feature (STUDENT_
+  // ENDORSEMENT_OPTIONS in this file) surfaced that PPG had none, unlike PG.
+  { key: "ppg_engine", label: "Engine", group: "Powered Paragliding (PPG)", equipment: "ppg", tier: null },
+  { key: "ppg_winching", label: "Winching", group: "Powered Paragliding (PPG)", equipment: "ppg", tier: null },
+  { key: "ppg_xc", label: "Cross-Country (XC)", group: "Powered Paragliding (PPG)", equipment: "ppg", tier: null },
   // Paratrike (PPT) -- ladder tiers (i, k, m)
   { key: "ppt_base", label: "Basic", group: "Paratrike (PPT)", equipment: "ppt", tier: "basic" },
   { key: "ppt_intermediate", label: "Intermediate", group: "Paratrike (PPT)", equipment: "ppt", tier: "intermediate" },
   { key: "ppt_sport", label: "Sport", group: "Paratrike (PPT)", equipment: "ppt", tier: "sport" },
   { key: "ppt_tandem", label: "Tandem", group: "Paratrike (PPT)", equipment: "ppt", tier: "tandem" },
+  // Non-tiered PPT add-ons -- same set as PPG above, same reasoning (22 Sep 2026).
+  { key: "ppt_engine", label: "Engine", group: "Paratrike (PPT)", equipment: "ppt", tier: null },
+  { key: "ppt_winching", label: "Winching", group: "Paratrike (PPT)", equipment: "ppt", tier: null },
+  { key: "ppt_xc", label: "Cross-Country (XC)", group: "Paratrike (PPT)", equipment: "ppt", tier: null },
   // n-w: Instructor ratings (not part of the equipment ladder -- their own
   // thresholds, see lib/pilot-progress.ts INSTRUCTOR_RATINGS)
   { key: "assistant_instructor", label: "Assistant Instructor", group: "Instructor Ratings", equipment: null, tier: null },
