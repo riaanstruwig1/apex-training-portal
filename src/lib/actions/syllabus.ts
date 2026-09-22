@@ -57,7 +57,17 @@ const NewExerciseSchema = z.object({
   description: z.string().trim().optional(),
 });
 
-export async function addExercise(sectionId: string, formData: FormData) {
+export type AddExerciseResult = { error: string } | { success: true };
+
+// Exercise codes are unique across the ENTIRE syllabus, not just within one
+// section (see the `exercises_code_unique` index in db/schema.ts). A custom
+// syllabus that reuses a code in more than one section/phase hits that
+// constraint at the database level -- caught here so it shows a friendly
+// message instead of crashing the whole page.
+export async function addExercise(
+  sectionId: string,
+  formData: FormData
+): Promise<AddExerciseResult> {
   await assertInstructor();
   const parsed = NewExerciseSchema.parse({
     code: formData.get("code"),
@@ -71,14 +81,26 @@ export async function addExercise(sectionId: string, formData: FormData) {
     .where(eq(exercises.sectionId, sectionId));
   const nextOrder = existing.length + 1;
 
-  await db.insert(exercises).values({
-    sectionId,
-    code: parsed.code,
-    title: parsed.title,
-    description: parsed.description || null,
-    order: nextOrder,
-  });
+  try {
+    await db.insert(exercises).values({
+      sectionId,
+      code: parsed.code,
+      title: parsed.title,
+      description: parsed.description || null,
+      order: nextOrder,
+    });
+  } catch (err) {
+    const message = String(err);
+    if (message.includes("UNIQUE constraint failed") && message.includes("exercises.code")) {
+      return {
+        error: `Code "${parsed.code}" is already used somewhere else in the syllabus -- exercise codes must be unique across every section, not just this one. Try a different code (e.g. "${parsed.code}-2").`,
+      };
+    }
+    return { error: "Something went wrong adding this exercise. Please try again." };
+  }
+
   revalidatePath("/instructor/syllabus");
+  return { success: true };
 }
 
 export async function deleteExercise(exerciseId: string) {

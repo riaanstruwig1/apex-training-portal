@@ -41,6 +41,7 @@ function SectionCard({
   const [name, setName] = useState(section.name);
   const [description, setDescription] = useState(section.description ?? "");
   const [showAddExercise, setShowAddExercise] = useState(false);
+  const [exerciseError, setExerciseError] = useState<string | null>(null);
   const { isPending, run } = useServerAction();
 
   return (
@@ -111,9 +112,14 @@ function SectionCard({
         {showAddExercise ? (
           <form
             action={(formData) => {
+              setExerciseError(null);
               run(async () => {
-                await addExercise(section.id, formData);
-                setShowAddExercise(false);
+                const result = await addExercise(section.id, formData);
+                if ("error" in result) {
+                  setExerciseError(result.error);
+                } else {
+                  setShowAddExercise(false);
+                }
               });
             }}
             className="flex flex-wrap items-end gap-2"
@@ -146,17 +152,24 @@ function SectionCard({
             </div>
             <button
               type="submit"
-              className="rounded-md bg-slate-900 px-3 py-1.5 text-sm text-white hover:bg-slate-700"
+              disabled={isPending}
+              className="rounded-md bg-slate-900 px-3 py-1.5 text-sm text-white hover:bg-slate-700 disabled:opacity-60"
             >
-              Add
+              {isPending ? "Adding..." : "Add"}
             </button>
             <button
               type="button"
-              onClick={() => setShowAddExercise(false)}
+              onClick={() => {
+                setShowAddExercise(false);
+                setExerciseError(null);
+              }}
               className="rounded-md border border-slate-300 px-3 py-1.5 text-sm text-slate-700"
             >
               Cancel
             </button>
+            {exerciseError && (
+              <p className="w-full text-sm text-red-600">{exerciseError}</p>
+            )}
           </form>
         ) : (
           <button
