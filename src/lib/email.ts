@@ -1,5 +1,7 @@
 import "server-only";
 import nodemailer from "nodemailer";
+import dns from "node:dns/promises";
+import net from "node:net";
 
 /**
  * Outbound email, added 22 Sep 2026 for the decline-notification feature
@@ -27,15 +29,44 @@ export type SendEmailResult =
   | { sent: true }
   | { sent: false; reason: "not_configured" | "send_failed"; detail?: string };
 
-function getTransport() {
+/**
+ * Resolves `host` to a literal IPv4 address, or null if that's not possible
+ * (already an IP, no A record, DNS error, etc) -- callers fall back to the
+ * original hostname in that case.
+ *
+ * Why: Railway's containers (confirmed 22 Sep 2026, via their own deploy
+ * logs) have an IPv6 address configured on the interface but no real route
+ * out over it. nodemailer resolves both the A and AAAA records for the SMTP
+ * host and connects to a RANDOM one of them -- there's no "IPv4 only"
+ * option to set. So roughly half the time it picked the unreachable IPv6
+ * address for smtp.gmail.com and every send failed with ENETUNREACH.
+ * Resolving to a literal IPv4 address ourselves and handing nodemailer that
+ * removes IPv6 from the picture entirely.
+ */
+async function resolveIPv4(host: string): Promise<string | null> {
+  if (net.isIP(host)) return null; // already a literal IP, nothing to do
+  try {
+    const addresses = await dns.resolve4(host);
+    return addresses[0] ?? null;
+  } catch {
+    return null;
+  }
+}
+
+async function getTransport() {
   const host = process.env.SMTP_HOST;
   const port = process.env.SMTP_PORT;
   const user = process.env.SMTP_USER;
   const pass = process.env.SMTP_PASS;
   if (!host || !port || !user || !pass) return null;
 
+  const ipv4 = await resolveIPv4(host);
+
   return nodemailer.createTransport({
-    host,
+    host: ipv4 ?? host,
+    // `servername` pins TLS/SNI to the real hostname so Gmail's certificate
+    // still validates when we're connecting to it by IP above.
+    ...(ipv4 ? { servername: host } : {}),
     port: Number(port),
     // 465 = implicit TLS (Gmail's usual port); anything else assumes STARTTLS.
     secure: Number(port) === 465,
@@ -52,7 +83,7 @@ export async function sendEmail(opts: {
   text: string;
   html?: string;
 }): Promise<SendEmailResult> {
-  const transport = getTransport();
+  const transport = await getTransport();
   if (!transport) {
     console.warn(
       `[email] Not configured (SMTP_HOST/SMTP_PORT/SMTP_USER/SMTP_PASS) -- skipped "${opts.subject}" to ${opts.to}.`
