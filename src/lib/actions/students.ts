@@ -8,6 +8,7 @@ import { db } from "@/db";
 import { users, studentProfiles, studentExerciseProgress } from "@/db/schema";
 import { requireInstructor, requireCFI } from "@/lib/auth/dal";
 import { getBaseUrl } from "@/lib/base-url";
+import { formatTrainingTypes } from "@/lib/exams";
 
 const INVITE_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 
@@ -15,9 +16,12 @@ const NewStudentSchema = z.object({
   name: z.string().trim().min(2, { error: "Enter the student's full name." }),
   email: z.string().trim().toLowerCase().email({ error: "Enter a valid email address." }),
   phone: z.string().trim().optional(),
-  trainingType: z.enum(["pg", "ppg", "ppt"], {
-    error: "Select what training this student is signed up for.",
-  }),
+  // Comma-separated, e.g. "pg,ppg" -- a student can train toward more than
+  // one course at once. The checkbox group on the form submits one
+  // "trainingType" field per checked box; formData.getAll picks those up.
+  trainingType: z
+    .array(z.enum(["pg", "ppg", "ppt"]))
+    .min(1, { error: "Select what training this student is signed up for." }),
   callSign: z.string().trim().toUpperCase().optional(),
   startDate: z.string().trim().optional(),
   sahpaNumber: z.string().trim().optional(),
@@ -41,7 +45,7 @@ export async function createInvitedStudent(
     name: formData.get("name"),
     email: formData.get("email"),
     phone: formData.get("phone") || undefined,
-    trainingType: formData.get("trainingType") || undefined,
+    trainingType: formData.getAll("trainingType"),
     callSign: formData.get("callSign") || undefined,
     startDate: formData.get("startDate") || undefined,
     sahpaNumber: formData.get("sahpaNumber") || undefined,
@@ -75,7 +79,7 @@ export async function createInvitedStudent(
   await db.insert(studentProfiles).values({
     userId: user.id,
     phone,
-    trainingType,
+    trainingType: formatTrainingTypes(trainingType),
     callSign,
     startDate: startDate ? new Date(startDate) : undefined,
     sahpaNumber,
@@ -216,7 +220,10 @@ export async function updateStudentDetails(
     sacaaNumber: string;
     sahpaNumber: string;
     sahpaExpiryDate: string;
-    trainingType?: "pg" | "ppg" | "ppt" | null;
+    /** Selected training types, e.g. ["pg", "ppg"] -- a student can be
+     * enrolled in more than one course at once. undefined leaves the
+     * existing value alone; [] clears it back to "not set". */
+    trainingType?: ("pg" | "ppg" | "ppt")[];
   }
 ) {
   await requireCFI();
@@ -231,7 +238,9 @@ export async function updateStudentDetails(
       sahpaExpiryDate: details.sahpaExpiryDate
         ? new Date(details.sahpaExpiryDate)
         : null,
-      ...(details.trainingType !== undefined ? { trainingType: details.trainingType } : {}),
+      ...(details.trainingType !== undefined
+        ? { trainingType: formatTrainingTypes(details.trainingType) }
+        : {}),
     })
     .where(eq(studentProfiles.userId, studentUserId));
 

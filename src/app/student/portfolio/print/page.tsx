@@ -3,7 +3,7 @@ import { getStudentProgress } from "@/lib/progress";
 import { getLogbookEntries, summarizeLogbook } from "@/lib/logbook";
 import Avatar from "@/components/avatar";
 import PrintButton from "@/components/print-button";
-import type { TrainingType } from "@/lib/exams";
+import { parseTrainingTypes, type TrainingType } from "@/lib/exams";
 
 const TRAINING_TYPE_LABELS: Record<TrainingType, string> = {
   pg: "Paraglider (PG)",
@@ -58,7 +58,10 @@ export default async function StudentPortfolioPrintPage() {
 
       {profile?.trainingType && (
         <p className="text-sm text-slate-700">
-          <span className="font-medium">Training:</span> {TRAINING_TYPE_LABELS[profile.trainingType]}
+          <span className="font-medium">Training:</span>{" "}
+          {parseTrainingTypes(profile.trainingType)
+            .map((t) => TRAINING_TYPE_LABELS[t])
+            .join(" + ")}
         </p>
       )}
 

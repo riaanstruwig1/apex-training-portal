@@ -4,6 +4,7 @@ import {
   getPendingExamVerifications,
   getExamCategoryStatusesForAllStudents,
   visibleExamCategories,
+  parseTrainingTypes,
   EXAM_CATEGORY_ORDER,
   EXAM_CATEGORY_LABELS,
   type ExamCategory,
@@ -65,7 +66,7 @@ function ExamBadges({
   trainingType,
 }: {
   statuses: Record<ExamCategory, ExamCategoryStatus> | undefined;
-  trainingType: TrainingType | null;
+  trainingType: string | null;
 }) {
   const visible = visibleExamCategories(trainingType) ?? EXAM_CATEGORY_ORDER;
   const categories = EXAM_CATEGORY_ORDER.filter((cat) => visible.includes(cat));
@@ -119,7 +120,9 @@ function StudentCard({
             </Link>
             {s.trainingType && (
               <span className="ml-1.5 rounded-full bg-slate-100 px-1.5 py-0.5 text-[10px] font-medium text-slate-500">
-                {TRAINING_TYPE_LABELS[s.trainingType]}
+                {parseTrainingTypes(s.trainingType)
+                  .map((t) => TRAINING_TYPE_LABELS[t])
+                  .join(" + ")}
               </span>
             )}
             <div className="text-xs text-slate-500">{s.email}</div>
@@ -243,7 +246,9 @@ function StudentTable({
                     </Link>
                     {s.trainingType && (
                       <span className="ml-1.5 rounded-full bg-slate-100 px-1.5 py-0.5 text-[10px] font-medium text-slate-500">
-                        {TRAINING_TYPE_LABELS[s.trainingType]}
+                        {parseTrainingTypes(s.trainingType)
+                          .map((t) => TRAINING_TYPE_LABELS[t])
+                          .join(" + ")}
                       </span>
                     )}
                   </div>

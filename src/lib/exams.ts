@@ -22,11 +22,20 @@ export const EXAM_CATEGORY_LABELS: Record<ExamCategory, string> = {
 };
 export const EXAM_CATEGORY_ORDER: ExamCategory[] = ["pg", "ppg", "ppt", "rt"];
 
-export type TrainingType = "pg" | "ppg" | "ppt";
+// Re-exported so existing server-side callers can keep importing these from
+// "@/lib/exams" -- but the underlying module has no "server-only" guard, so
+// a "use client" component (the training-type checkbox editors) can import
+// parseTrainingTypes/formatTrainingTypes/TrainingType directly from
+// "@/lib/training-types" instead, where this file's server-only guard would
+// otherwise block it.
+export type { TrainingType } from "@/lib/training-types";
+export { parseTrainingTypes, formatTrainingTypes } from "@/lib/training-types";
+import { parseTrainingTypes } from "@/lib/training-types";
 
 /**
  * Which exam categories a student should see, based on what they signed up
- * to train toward:
+ * to train toward (a student may be enrolled in more than one course at
+ * once -- the visible set is the union across all of them):
  *  - PG: only the PG exam.
  *  - PPG: PG, PPG and the Radio (RT) exam.
  *  - PPT: PG, PPT and the Radio (RT) exam.
@@ -35,12 +44,25 @@ export type TrainingType = "pg" | "ppg" | "ppt";
  * disappear on them.
  */
 export function visibleExamCategories(
-  trainingType: TrainingType | null | undefined
+  trainingTypeRaw: string | null | undefined
 ): ExamCategory[] | null {
-  if (trainingType === "pg") return ["pg"];
-  if (trainingType === "ppg") return ["pg", "ppg", "rt"];
-  if (trainingType === "ppt") return ["pg", "ppt", "rt"];
-  return null; // no restriction -- show everything
+  const types = parseTrainingTypes(trainingTypeRaw);
+  if (types.length === 0) return null; // no restriction -- show everything
+  const visible = new Set<ExamCategory>();
+  for (const t of types) {
+    if (t === "pg") visible.add("pg");
+    if (t === "ppg") {
+      visible.add("pg");
+      visible.add("ppg");
+      visible.add("rt");
+    }
+    if (t === "ppt") {
+      visible.add("pg");
+      visible.add("ppt");
+      visible.add("rt");
+    }
+  }
+  return EXAM_CATEGORY_ORDER.filter((c) => visible.has(c));
 }
 
 export type ExamSummary = {
@@ -94,9 +116,9 @@ async function latestAttemptsByExam(studentId: string) {
  * the student's most recent attempt if they've taken it more than once. */
 export async function getExamsForStudent(
   studentId: string,
-  trainingType?: TrainingType | null
+  trainingTypeRaw?: string | null
 ): Promise<ExamSummary[]> {
-  const visibleCategories = visibleExamCategories(trainingType);
+  const visibleCategories = visibleExamCategories(trainingTypeRaw);
   const allExamsUnfiltered = await db.select().from(exams).orderBy(exams.order);
   // A category-less exam (not yet slotted into PG/PPG/PPT/RT) always stays
   // visible -- only exams with a recognized category are gated.

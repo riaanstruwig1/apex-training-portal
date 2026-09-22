@@ -135,7 +135,14 @@ export const studentProfiles = sqliteTable("student_profiles", {
   // categories they (and their instructor) see for them. Null means not
   // yet declared, e.g. an older account from before this field existed --
   // treated as "show everything" rather than hiding exams unexpectedly.
-  trainingType: text("training_type", { enum: ["pg", "ppg", "ppt"] }),
+  // A student can be enrolled in more than one course at once (e.g. PG
+  // *and* PPG), so this stores a comma-separated list of TrainingType
+  // values (same convention as exams.mustPassSections below) -- a plain
+  // "pg" is still a perfectly valid single-course value. Always go through
+  // parseTrainingTypes()/formatTrainingTypes() in lib/exams.ts rather than
+  // reading/writing this column directly, so every call site agrees on the
+  // format.
+  trainingType: text("training_type"),
   callSign: text("call_sign"), // radio call sign, e.g. "PPG-DYB"
   licenseNumber: text("license_number"),
   startDate: integer("start_date", { mode: "timestamp" }), // date the student started training

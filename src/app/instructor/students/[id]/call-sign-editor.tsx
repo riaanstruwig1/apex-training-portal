@@ -3,13 +3,14 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { updateStudentDetails } from "@/lib/actions/students";
-import type { TrainingType } from "@/lib/exams";
+import { parseTrainingTypes, type TrainingType } from "@/lib/training-types";
 
 const TRAINING_TYPE_LABELS: Record<TrainingType, string> = {
   pg: "Paraglider (PG)",
   ppg: "Powered Paragliding (PPG)",
   ppt: "Powered Paratrike (PPT)",
 };
+const TRAINING_TYPE_ORDER: TrainingType[] = ["pg", "ppg", "ppt"];
 
 function formatDate(d: Date | null): string {
   if (!d) return "";
@@ -35,7 +36,9 @@ export default function CallSignEditor({
   sacaaNumber: string | null;
   sahpaNumber: string | null;
   sahpaExpiryDate: Date | null;
-  trainingType: TrainingType | null;
+  /** Comma-separated, e.g. "pg,ppg" -- a student can be enrolled in more
+   * than one course at once. */
+  trainingType: string | null;
 }) {
   const [editing, setEditing] = useState(false);
   const [callSignValue, setCallSignValue] = useState(callSign ?? "");
@@ -45,11 +48,20 @@ export default function CallSignEditor({
   const [sahpaExpiryValue, setSahpaExpiryValue] = useState(
     formatDate(sahpaExpiryDate)
   );
-  const [trainingTypeValue, setTrainingTypeValue] = useState<TrainingType | "">(
-    trainingType ?? ""
+  const [trainingTypeValue, setTrainingTypeValue] = useState<Set<TrainingType>>(
+    new Set(parseTrainingTypes(trainingType))
   );
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
+
+  function toggleTrainingType(t: TrainingType) {
+    setTrainingTypeValue((prev) => {
+      const next = new Set(prev);
+      if (next.has(t)) next.delete(t);
+      else next.add(t);
+      return next;
+    });
+  }
 
   function save() {
     startTransition(async () => {
@@ -59,7 +71,7 @@ export default function CallSignEditor({
         sacaaNumber: sacaaNumberValue,
         sahpaNumber: sahpaNumberValue,
         sahpaExpiryDate: sahpaExpiryValue,
-        trainingType: trainingTypeValue || null,
+        trainingType: [...trainingTypeValue],
       });
       setEditing(false);
       router.refresh();
@@ -72,7 +84,7 @@ export default function CallSignEditor({
     setSacaaNumberValue(sacaaNumber ?? "");
     setSahpaNumberValue(sahpaNumber ?? "");
     setSahpaExpiryValue(formatDate(sahpaExpiryDate));
-    setTrainingTypeValue(trainingType ?? "");
+    setTrainingTypeValue(new Set(parseTrainingTypes(trainingType)));
     setEditing(false);
   }
 
@@ -80,21 +92,22 @@ export default function CallSignEditor({
     return (
       <div className="mt-1 flex flex-wrap items-end gap-2">
         <div>
-          <label className="block text-[11px] text-slate-500">Training type</label>
-          <select
-            value={trainingTypeValue}
-            onChange={(e) => setTrainingTypeValue(e.target.value as TrainingType | "")}
-            className="rounded-md border border-slate-300 px-2 py-1 text-sm"
-          >
-            <option value="">Not set</option>
-            {(Object.entries(TRAINING_TYPE_LABELS) as [TrainingType, string][]).map(
-              ([value, label]) => (
-                <option key={value} value={value}>
-                  {label}
-                </option>
-              )
-            )}
-          </select>
+          <label className="block text-[11px] text-slate-500">
+            Training type <span className="font-normal">(a student can be enrolled in more than one)</span>
+          </label>
+          <div className="mt-0.5 flex flex-wrap gap-3 rounded-md border border-slate-300 px-2 py-1.5">
+            {TRAINING_TYPE_ORDER.map((t) => (
+              <label key={t} className="flex items-center gap-1.5 text-sm text-slate-700">
+                <input
+                  type="checkbox"
+                  checked={trainingTypeValue.has(t)}
+                  onChange={() => toggleTrainingType(t)}
+                  className="rounded border-slate-300"
+                />
+                {TRAINING_TYPE_LABELS[t]}
+              </label>
+            ))}
+          </div>
         </div>
         <div>
           <label className="block text-[11px] text-slate-500">Call sign</label>
@@ -160,6 +173,9 @@ export default function CallSignEditor({
   }
 
   const expired = isExpired(sahpaExpiryDate);
+  const trainingTypeLabel = parseTrainingTypes(trainingType)
+    .map((t) => TRAINING_TYPE_LABELS[t])
+    .join(" + ");
   const hasAnyDetail =
     callSign || startDate || sacaaNumber || sahpaNumber || sahpaExpiryDate || trainingType;
 
@@ -173,9 +189,7 @@ export default function CallSignEditor({
           {trainingType && (
             <>
               Training:{" "}
-              <span className="font-medium text-slate-900">
-                {TRAINING_TYPE_LABELS[trainingType]}
-              </span>
+              <span className="font-medium text-slate-900">{trainingTypeLabel}</span>
             </>
           )}
           {callSign && (

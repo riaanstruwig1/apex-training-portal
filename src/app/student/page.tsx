@@ -9,6 +9,7 @@ import Avatar from "@/components/avatar";
 import {
   getExamsForStudent,
   visibleExamCategories,
+  parseTrainingTypes,
   EXAM_CATEGORY_LABELS,
   EXAM_CATEGORY_ORDER,
   type TrainingType,
@@ -49,6 +50,7 @@ export default async function StudentDashboard() {
     visibleExamCategories(profile?.trainingType) ?? EXAM_CATEGORY_ORDER
   ).filter((cat) => !examSummaries.some((e) => e.category === cat));
   const summary = summarizeLogbook(logEntries);
+  const studentTrainingTypes = parseTrainingTypes(profile?.trainingType);
 
   const totalExercises = sections.reduce((n, s) => n + s.totalCount, 0);
   const signedOff = sections.reduce((n, s) => n + s.signedOffCount, 0);
@@ -71,11 +73,11 @@ export default async function StudentDashboard() {
             <p className="text-sm text-slate-500">
               {signedOff} of {totalExercises} exercises signed off
             </p>
-            {profile?.trainingType && (
+            {studentTrainingTypes.length > 0 && (
               <p className="mt-1 text-sm text-slate-500">
                 Training:{" "}
                 <span className="font-medium text-slate-900">
-                  {TRAINING_TYPE_LABELS[profile.trainingType]}
+                  {studentTrainingTypes.map((t) => TRAINING_TYPE_LABELS[t]).join(" + ")}
                 </span>
               </p>
             )}
@@ -247,10 +249,20 @@ export default async function StudentDashboard() {
         </div>
         <div className="rounded-xl border border-slate-200 bg-white p-4">
           <div className="text-xs text-slate-500">
-            {profile?.trainingType ? `${profile.trainingType.toUpperCase()} time` : "PG time"}
+            {studentTrainingTypes.length
+              ? `${studentTrainingTypes.map((t) => t.toUpperCase()).join(" + ")} time`
+              : "PG time"}
           </div>
           <div className="text-xl font-semibold text-slate-900">
-            {Math.round(summary.minutesByType[profile?.trainingType ?? "pg"] / 6) / 10} h
+            {Math.round(
+              (studentTrainingTypes.length
+                ? studentTrainingTypes.reduce(
+                    (sum, t) => sum + (summary.minutesByType[t] ?? 0),
+                    0
+                  )
+                : summary.minutesByType.pg) / 6
+            ) / 10}{" "}
+            h
           </div>
         </div>
         <div className="rounded-xl border border-slate-200 bg-white p-4">

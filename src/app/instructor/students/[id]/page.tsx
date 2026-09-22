@@ -8,6 +8,7 @@ import { getLogbookEntries, summarizeLogbook } from "@/lib/logbook";
 import {
   getExamsForStudent,
   visibleExamCategories,
+  parseTrainingTypes,
   EXAM_CATEGORY_LABELS,
   EXAM_CATEGORY_ORDER,
   type TrainingType,
@@ -55,6 +56,10 @@ export default async function StudentFolioPage(
   const missingExamCategories = (
     visibleExamCategories(profile?.trainingType) ?? EXAM_CATEGORY_ORDER
   ).filter((cat) => !examSummaries.some((e) => e.category === cat));
+  const studentTrainingTypes = parseTrainingTypes(profile?.trainingType);
+  const studentTrainingLabel = studentTrainingTypes
+    .map((t) => TRAINING_TYPE_LABELS[t])
+    .join(" + ");
 
   return (
     <div className="space-y-8">
@@ -90,7 +95,7 @@ export default async function StudentFolioPage(
             profile?.trainingType) && (
             <p className="mt-1 text-sm text-slate-500">
               {profile.trainingType && (
-                <>Training: {TRAINING_TYPE_LABELS[profile.trainingType]}</>
+                <>Training: {studentTrainingLabel}</>
               )}
               {profile.callSign && (
                 <>
@@ -147,10 +152,20 @@ export default async function StudentFolioPage(
         </div>
         <div className="rounded-xl border border-slate-200 bg-white p-4">
           <div className="text-xs text-slate-500">
-            {profile?.trainingType ? `${profile.trainingType.toUpperCase()} time` : "PG time"}
+            {studentTrainingTypes.length
+              ? `${studentTrainingTypes.map((t) => t.toUpperCase()).join(" + ")} time`
+              : "PG time"}
           </div>
           <div className="text-xl font-semibold text-slate-900">
-            {Math.round(summary.minutesByType[profile?.trainingType ?? "pg"] / 6) / 10} h
+            {Math.round(
+              (studentTrainingTypes.length
+                ? studentTrainingTypes.reduce(
+                    (sum, t) => sum + (summary.minutesByType[t] ?? 0),
+                    0
+                  )
+                : summary.minutesByType.pg) / 6
+            ) / 10}{" "}
+            h
           </div>
         </div>
         <div className="rounded-xl border border-slate-200 bg-white p-4">

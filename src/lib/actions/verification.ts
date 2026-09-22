@@ -9,6 +9,7 @@ import { requireAdminOrCFI } from "@/lib/auth/dal";
 import { ENDORSEMENT_OPTIONS, endorsementLabel } from "@/lib/pilot-endorsements";
 import { sendEmail } from "@/lib/email";
 import { getBaseUrl } from "@/lib/base-url";
+import { formatTrainingTypes } from "@/lib/exams";
 
 /**
  * Approves a pending Student or Pilot application. For a pilot, only the
@@ -82,13 +83,13 @@ export async function rejectApplicant(userId: string, reason: string) {
  * CFI/Admin a chance to fix it before (or after) approving them. */
 export async function updateApplicantTrainingType(
   studentUserId: string,
-  trainingType: "pg" | "ppg" | "ppt"
+  trainingType: ("pg" | "ppg" | "ppt")[]
 ) {
   await requireAdminOrCFI();
 
   await db
     .update(studentProfiles)
-    .set({ trainingType })
+    .set({ trainingType: formatTrainingTypes(trainingType) })
     .where(eq(studentProfiles.userId, studentUserId));
 
   revalidatePath("/admin");
