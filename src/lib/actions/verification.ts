@@ -6,7 +6,9 @@ import * as z from "zod";
 import { db } from "@/db";
 import { users, pilotProfiles, pilotEndorsements, studentProfiles } from "@/db/schema";
 import { requireAdminOrCFI } from "@/lib/auth/dal";
-import { ENDORSEMENT_OPTIONS } from "@/lib/pilot-endorsements";
+import { ENDORSEMENT_OPTIONS, endorsementLabel } from "@/lib/pilot-endorsements";
+import { sendEmail } from "@/lib/email";
+import { getBaseUrl } from "@/lib/base-url";
 
 /**
  * Approves a pending Student or Pilot application. For a pilot, only the
@@ -314,6 +316,18 @@ const DeclineReasonSchema = z.string().trim().min(1, { error: "Enter a reason fo
  * Actions), which only applies while pending_verification. This works on
  * any declared item, pending or already-active-pilot, same as
  * setEndorsementVerified above.
+ *
+ * Notifies the pilot (Notes item #8, added 22 Sep 2026), two ways, both
+ * always on -- Riaan's choice was "in-portal flag + email", not one or the
+ * other:
+ *  - In-portal: no extra write needed here -- the pilot dashboard already
+ *    reads `declined`/`declineReason` straight off this row (see
+ *    app/pilot/page.tsx's "Action needed" banner and the existing red
+ *    Declined section below it), so it's already correct the moment this
+ *    transaction commits.
+ *  - Email: best-effort, see lib/email.ts -- never throws, never blocks or
+ *    rolls back the decline itself if SMTP isn't configured yet or the
+ *    send fails.
  */
 export async function declineEndorsement(endorsementId: string, reason: string) {
   const reviewer = await requireAdminOrCFI();
@@ -322,6 +336,12 @@ export async function declineEndorsement(endorsementId: string, reason: string) 
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Enter a reason." };
   }
+
+  const [existing] = await db
+    .select({ key: pilotEndorsements.key, pilotProfileId: pilotEndorsements.pilotProfileId })
+    .from(pilotEndorsements)
+    .where(eq(pilotEndorsements.id, endorsementId))
+    .limit(1);
 
   await db
     .update(pilotEndorsements)
@@ -339,4 +359,34 @@ export async function declineEndorsement(endorsementId: string, reason: string) 
 
   revalidatePath("/admin");
   revalidatePath("/pilot");
+
+  if (existing) {
+    const [pilot] = await db
+      .select({ email: users.email, name: users.name })
+      .from(pilotProfiles)
+      .innerJoin(users, eq(users.id, pilotProfiles.userId))
+      .where(eq(pilotProfiles.id, existing.pilotProfileId))
+      .limit(1);
+
+    if (pilot) {
+      const label = endorsementLabel(existing.key);
+      const dashboardUrl = `${getBaseUrl()}/pilot`;
+      await sendEmail({
+        to: pilot.email,
+        subject: `Apex Flight Hub: ${label} application declined`,
+        text:
+          `Hi ${pilot.name},\n\n` +
+          `Your application for "${label}" was reviewed and declined by your CFI/Admin.\n\n` +
+          `Reason: ${parsed.data}\n\n` +
+          `Once addressed, you can re-apply from your dashboard:\n${dashboardUrl}\n\n` +
+          `-- Apex Flight Hub`,
+        html:
+          `<p>Hi ${pilot.name},</p>` +
+          `<p>Your application for <strong>${label}</strong> was reviewed and declined by your CFI/Admin.</p>` +
+          `<p><strong>Reason:</strong> ${parsed.data}</p>` +
+          `<p>Once addressed, you can re-apply from your dashboard: <a href="${dashboardUrl}">${dashboardUrl}</a></p>` +
+          `<p>-- Apex Flight Hub</p>`,
+      });
+    }
+  }
 }

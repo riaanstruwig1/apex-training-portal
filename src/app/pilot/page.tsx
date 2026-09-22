@@ -26,6 +26,11 @@ export default async function PilotDashboard() {
     (e) => !e.verified && !e.declined && !isLadderTierKey(e.key)
   );
   const declinedEndorsements = endorsements.filter((e) => e.declined && !isLadderTierKey(e.key));
+  // Includes ladder-tier declines too (Basic/Intermediate/...), unlike
+  // declinedEndorsements above -- this one just drives the top-of-page
+  // "Action needed" banner (Notes item #8, 22 Sep 2026), so it should count
+  // every declined item, not only the ones shown in the flat list below.
+  const allDeclinedCount = endorsements.filter((e) => e.declined).length;
   const groupedVerified = groupEndorsementItems(verifiedEndorsements);
   const groupedPending = groupEndorsementItems(pendingEndorsements);
   const groupedDeclined = groupEndorsementItems(declinedEndorsements);
@@ -68,6 +73,19 @@ export default async function PilotDashboard() {
           </Link>
         </div>
       </div>
+
+      {allDeclinedCount > 0 && (
+        <a
+          href="#declined"
+          className="flex items-center justify-between rounded-xl border border-red-300 bg-red-50 px-4 py-3 text-sm hover:bg-red-100"
+        >
+          <span className="font-semibold text-red-900">
+            Action needed: {allDeclinedCount} application{allDeclinedCount > 1 ? "s" : ""} declined
+            by your CFI/Admin -- see the reason and re-apply.
+          </span>
+          <span className="font-semibold text-red-700">Jump to details &rarr;</span>
+        </a>
+      )}
 
       {/* SACAA No, SAHPA No, Apex No, Call Sign -- in that order, spaced
           across the full width per Riaan's request (20 Sep 2026) so they're
@@ -129,7 +147,7 @@ export default async function PilotDashboard() {
             </div>
           )}
 
-          <div className="rounded-xl border border-slate-200 bg-white p-5">
+          <div id="declined" className="rounded-xl border border-slate-200 bg-white p-5 scroll-mt-4">
             <h2 className="mb-2 text-sm font-semibold text-slate-900">
               Verified licences &amp; endorsements
             </h2>
