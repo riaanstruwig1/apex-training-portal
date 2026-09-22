@@ -109,6 +109,50 @@ export function endorsementGroup(key: string): string {
   return ENDORSEMENT_OPTIONS.find((o) => o.key === key)?.group ?? "Other";
 }
 
+/**
+ * The endorsement keys a STUDENT (not yet a licensed pilot) can be granted --
+ * added 22 Sep 2026 for item 3 of Riaan's request. Deliberately excludes:
+ *  - the Basic/Intermediate/Sport/Tandem ladder tiers (`tier !== null`) --
+ *    per Riaan, "no intermediate, sport etc for student, that falls under
+ *    pilot": those are the licensing ladder tracked once someone becomes a
+ *    "pilot" account, not something a student folio grants.
+ *  - Instructor Ratings and Display Ratings groups -- not relevant mid-training.
+ * What's left is the non-tiered site/skill add-ons (Winching, Mountain
+ * Flying, Ridge Soaring, Thermaling, Cross-Country) per equipment group.
+ * Same ENDORSEMENT_OPTIONS list as pilots -- one source of truth, just a
+ * narrower slice of it -- so adding a new pilot add-on here automatically
+ * becomes grantable to students too without a second list to maintain.
+ */
+export const STUDENT_ENDORSEMENT_GROUPS = [
+  "Paraglider (PG)",
+  "Powered Paragliding (PPG)",
+  "Paratrike (PPT)",
+];
+export const STUDENT_ENDORSEMENT_OPTIONS = ENDORSEMENT_OPTIONS.filter(
+  (o) => o.tier === null && STUDENT_ENDORSEMENT_GROUPS.includes(o.group)
+);
+
+/** Scopes STUDENT_ENDORSEMENT_OPTIONS down to the groups matching a
+ * student's own declared training type(s) -- e.g. a PG-only student doesn't
+ * see PPG/PPT add-ons offered. An empty `trainingTypes` (not yet declared)
+ * shows everything, same "don't hide things unexpectedly" default used
+ * elsewhere for an undeclared training type. */
+export function studentEndorsementOptionsFor(
+  trainingTypes: ("pg" | "ppg" | "ppt")[]
+): typeof STUDENT_ENDORSEMENT_OPTIONS {
+  if (trainingTypes.length === 0) return STUDENT_ENDORSEMENT_OPTIONS;
+  const groups = new Set<string>(
+    trainingTypes.map((t) =>
+      t === "pg"
+        ? "Paraglider (PG)"
+        : t === "ppg"
+          ? "Powered Paragliding (PPG)"
+          : "Paratrike (PPT)"
+    )
+  );
+  return STUDENT_ENDORSEMENT_OPTIONS.filter((o) => groups.has(o.group));
+}
+
 /** Groups a list of endorsement keys (declared or verified) into
  * { group, items }[] in ENDORSEMENT_GROUP_ORDER, each item carrying its
  * label plus whatever extra data the caller attached (id, verifiedAt, etc). */

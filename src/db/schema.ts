@@ -179,6 +179,39 @@ export const studentProfiles = sqliteTable("student_profiles", {
     .default(sql`(unixepoch())`),
 });
 
+// A site/skill endorsement granted to a STUDENT (not a licensed pilot) as
+// they progress through training -- added 22 Sep 2026 (item 3 of Riaan's
+// "big problem" request). Deliberately much simpler than pilotEndorsements
+// below: a student doesn't self-declare/apply first, the CFI just grants it
+// directly (Riaan: "CFI must have the option to do student endorsments as he
+// continues"), so there's no declared/verified/declined split to track --
+// a row existing IS the grant. See STUDENT_ENDORSEMENT_OPTIONS in
+// lib/pilot-endorsements.ts for the (much shorter, non-tiered-only) key
+// list -- students don't get the Basic/Intermediate/Sport/Tandem licensing
+// ladder or Instructor/Display ratings, those are pilot-only per Riaan.
+export const studentEndorsements = sqliteTable(
+  "student_endorsements",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    studentProfileId: text("student_profile_id")
+      .notNull()
+      .references(() => studentProfiles.id, { onDelete: "cascade" }),
+    key: text("key").notNull(), // see STUDENT_ENDORSEMENT_OPTIONS in lib/pilot-endorsements.ts
+    grantedAt: integer("granted_at", { mode: "timestamp" })
+      .notNull()
+      .default(sql`(unixepoch())`),
+    grantedByUserId: text("granted_by_user_id").references(() => users.id),
+  },
+  (table) => [
+    uniqueIndex("student_endorsement_unique").on(
+      table.studentProfileId,
+      table.key
+    ),
+  ]
+);
+
 // ---------------------------------------------------------------------------
 // Syllabus: sections group exercises into a gated progression.
 // Instructors can reorder/rename these from the admin UI -- the seed data

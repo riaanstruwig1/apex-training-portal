@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
-import { studentProfiles } from "@/db/schema";
+import { studentProfiles, studentEndorsements } from "@/db/schema";
 import { requireStudent } from "@/lib/auth/dal";
 import { getStudentProgress } from "@/lib/progress";
 import { getLogbookEntries, summarizeLogbook } from "@/lib/logbook";
@@ -14,6 +14,7 @@ import {
   EXAM_CATEGORY_ORDER,
   type TrainingType,
 } from "@/lib/exams";
+import { groupEndorsementItems } from "@/lib/pilot-endorsements";
 import { getStudyMaterials } from "@/lib/actions/study-materials";
 
 function formatBytes(bytes: number | null): string {
@@ -51,6 +52,14 @@ export default async function StudentDashboard() {
   ).filter((cat) => !examSummaries.some((e) => e.category === cat));
   const summary = summarizeLogbook(logEntries);
   const studentTrainingTypes = parseTrainingTypes(profile?.trainingType);
+
+  const grantedEndorsements = profile
+    ? await db
+        .select()
+        .from(studentEndorsements)
+        .where(eq(studentEndorsements.studentProfileId, profile.id))
+    : [];
+  const groupedGrantedEndorsements = groupEndorsementItems(grantedEndorsements);
 
   const totalExercises = sections.reduce((n, s) => n + s.totalCount, 0);
   const signedOff = sections.reduce((n, s) => n + s.signedOffCount, 0);
@@ -272,6 +281,34 @@ export default async function StudentDashboard() {
           </div>
         </div>
       </div>
+
+      {groupedGrantedEndorsements.length > 0 && (
+        <section>
+          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">
+            Endorsements
+          </h2>
+          <div className="space-y-3 rounded-xl border border-slate-200 bg-white p-4">
+            {groupedGrantedEndorsements.map(({ group, items }) => (
+              <div key={group}>
+                <h3 className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-slate-400">
+                  {group}
+                </h3>
+                <div className="flex flex-wrap gap-1.5">
+                  {items.map((e) => (
+                    <span
+                      key={e.id}
+                      className="rounded-full bg-green-100 px-2.5 py-1 text-xs font-medium text-green-800"
+                      title={e.grantedAt ? `Granted ${e.grantedAt.toLocaleDateString()}` : undefined}
+                    >
+                      {e.label}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       <section>
         <div className="mb-3 flex items-center justify-between">

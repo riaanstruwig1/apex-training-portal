@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
-import { users, studentProfiles } from "@/db/schema";
+import { users, studentProfiles, studentEndorsements } from "@/db/schema";
 import Link from "next/link";
 import { getStudentProgress } from "@/lib/progress";
 import { getLogbookEntries, summarizeLogbook } from "@/lib/logbook";
@@ -13,11 +13,16 @@ import {
   EXAM_CATEGORY_ORDER,
   type TrainingType,
 } from "@/lib/exams";
+import {
+  studentEndorsementOptionsFor,
+  groupEndorsementItems,
+} from "@/lib/pilot-endorsements";
 import { requireInstructor } from "@/lib/auth/dal";
 import Avatar from "@/components/avatar";
 import ExerciseChecklist from "./exercise-checklist";
 import LogbookTable from "./logbook-table";
 import CallSignEditor from "./call-sign-editor";
+import StudentEndorsementToggle from "./student-endorsement-toggle";
 
 const TRAINING_TYPE_LABELS: Record<TrainingType, string> = {
   pg: "Paraglider (PG)",
@@ -60,6 +65,18 @@ export default async function StudentFolioPage(
   const studentTrainingLabel = studentTrainingTypes
     .map((t) => TRAINING_TYPE_LABELS[t])
     .join(" + ");
+
+  const grantedEndorsements = profile
+    ? await db
+        .select()
+        .from(studentEndorsements)
+        .where(eq(studentEndorsements.studentProfileId, profile.id))
+    : [];
+  const grantedKeys = new Set(grantedEndorsements.map((e) => e.key));
+  const availableEndorsementOptions = studentEndorsementOptionsFor(studentTrainingTypes);
+  const groupedAvailableEndorsements = groupEndorsementItems(
+    availableEndorsementOptions.map((o) => ({ key: o.key }))
+  );
 
   return (
     <div className="space-y-8">
@@ -181,6 +198,53 @@ export default async function StudentFolioPage(
           Training folio
         </h2>
         <ExerciseChecklist studentId={id} sections={sections} />
+      </section>
+
+      <section id="endorsements">
+        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">
+          Endorsements
+        </h2>
+        {groupedAvailableEndorsements.length === 0 ? (
+          <p className="text-sm text-slate-400">
+            No site/skill endorsements are defined yet for this student&apos;s
+            training type.
+          </p>
+        ) : (
+          <div className="space-y-3 rounded-xl border border-slate-200 bg-white p-4">
+            {groupedAvailableEndorsements.map(({ group, items }) => (
+              <div key={group}>
+                <h3 className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-slate-400">
+                  {group}
+                </h3>
+                <div className="flex flex-wrap gap-1.5">
+                  {items.map((o) =>
+                    isCFI ? (
+                      <StudentEndorsementToggle
+                        key={o.key}
+                        studentUserId={id}
+                        endorsementKey={o.key}
+                        label={o.label}
+                        granted={grantedKeys.has(o.key)}
+                      />
+                    ) : (
+                      <span
+                        key={o.key}
+                        className={`rounded-full px-2.5 py-1 text-xs font-medium ${
+                          grantedKeys.has(o.key)
+                            ? "bg-green-100 text-green-800"
+                            : "border border-slate-200 text-slate-400"
+                        }`}
+                      >
+                        {o.label}
+                        {grantedKeys.has(o.key) ? " ✓" : ""}
+                      </span>
+                    )
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </section>
 
       {(examSummaries.length > 0 || missingExamCategories.length > 0) && (
