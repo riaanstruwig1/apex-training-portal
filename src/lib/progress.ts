@@ -120,7 +120,9 @@ export type StudentSummary = {
   pendingLogbookCount: number;
   sahpaNumber: string | null;
   sahpaExpiryDate: Date | null;
-  trainingType: "pg" | "ppg" | "ppt" | null;
+  /** Comma-separated list of TrainingType values, e.g. "pg,ppg" -- parse
+   * with parseTrainingTypes() from lib/exams before rendering/comparing. */
+  trainingType: string | null;
 };
 
 /** Roster view for the instructor dashboard: one row per student, with a
