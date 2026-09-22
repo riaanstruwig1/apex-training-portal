@@ -10,6 +10,7 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx src/db/migrate.ts",
     "db:seed": "tsx src/db/seed.ts",
+    "db:seed-ppg-exam": "tsx src/db/seed-ppg-exam.ts",
     "db:reseed-exam": "tsx src/db/reseed-exam.ts",
     "db:fix-endorsement-keys": "tsx src/db/fix-legacy-endorsement-keys.ts",
     "db:fix-legacy-flight-types": "tsx src/db/fix-legacy-flight-types.ts",
