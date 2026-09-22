@@ -326,7 +326,7 @@ const DeclineReasonSchema = z.string().trim().min(1, { error: "Enter a reason fo
  *    Declined section below it), so it's already correct the moment this
  *    transaction commits.
  *  - Email: best-effort, see lib/email.ts -- never throws, never blocks or
- *    rolls back the decline itself if SMTP isn't configured yet or the
+ *    rolls back the decline itself if Resend isn't configured yet or the
  *    send fails.
  */
 export async function declineEndorsement(endorsementId: string, reason: string) {

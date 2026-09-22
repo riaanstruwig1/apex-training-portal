@@ -160,8 +160,7 @@ Either way, set these environment variables in production:
 | `DATABASE_URL` | Path to the SQLite file (defaults to `./data/apex-portal.db`) or, after a Postgres migration, a connection string. |
 | `SHOPIFY_WEBHOOK_SECRET` | Shared secret from the Shopify webhook config, above. |
 | `NEXT_PUBLIC_APP_URL` | Your real domain, e.g. `https://portal.apexadventures.co.za` — used to build invite links. |
-| `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS` | Optional. Outbound email (currently just the decline-notification to a pilot). Unset = emails are silently skipped, nothing else is affected. See `.env.example` for a Gmail App Password walkthrough. |
-| `SMTP_FROM` | Optional, defaults to `SMTP_USER`. |
+| `RESEND_API_KEY`, `EMAIL_FROM` | Optional. Outbound email via Resend (currently just the decline-notification to a pilot) — HTTP-based, not SMTP, since Railway blocks outbound SMTP entirely. Unset = emails are silently skipped, nothing else is affected. See `.env.example` for the Resend domain-verification walkthrough. |
 
 ## Roadmap / what's not here yet
 
