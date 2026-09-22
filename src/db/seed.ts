@@ -29,6 +29,7 @@ import {
 } from "./schema";
 import pgBasicTheory from "./exam-data/pg-basic-licence-theory.json";
 import rtRestrictedRadio from "./exam-data/rt-restricted-radio.json";
+import ppgTheoreticalKnowledge from "./exam-data/ppg-theoretical-knowledge.json";
 
 async function main() {
   console.log("Seeding database...");
@@ -388,6 +389,19 @@ async function main() {
       timeLimitMinutes: null,
       retryCooldownDays: null,
       content: pgBasicTheory as ParsedExam,
+    },
+    {
+      slug: "ppg-theoretical-knowledge",
+      title: "PPG Theoretical Knowledge Test",
+      subtitle: "Last Updated 2020-02-03 (Basjan/Riaan)",
+      category: "ppg",
+      passPercent: 85,
+      // Section B (Air Law & Radio Procedures) mirrors the source paper's
+      // "Air law questions to be passed, 100%" instruction.
+      mustPassSections: "B",
+      timeLimitMinutes: 90, // matches the PG exam's timer, per the #41 backlog note
+      retryCooldownDays: null,
+      content: ppgTheoreticalKnowledge as ParsedExam,
     },
     {
       slug: "rt-restricted-radio",

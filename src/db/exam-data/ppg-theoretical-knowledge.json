@@ -1,0 +1,1804 @@
+{
+  "sections": [
+    {
+      "letter": "A",
+      "name": "ENGINE & PROPELLER",
+      "questions": [
+        {
+          "code": "A.1",
+          "letter": "A",
+          "num": 1,
+          "sub": null,
+          "prompt": "Explain the Propeller Torque Effect (PTE) -- its causes, effects, and how to minimise it. Which of the following correctly covers this?",
+          "print_prompt": "Explain what you understand about the Propeller Torque Effect, including its causes and effects and how it affects PPG flight. What aspects influence the extent of the effect, and steps to be taken to minimise the consequences.",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "An equal-and-opposite reaction to the spinning propeller rolls the motor/pilot over to one side (e.g. right, on an anti-clockwise prop), lowering that shoulder and inducing a bank/turn that way -- worse at higher power; reduced passively (uneven carabiner heights or extra weight on the low side) or actively (differential speedbar, weight shift, asymmetric trim, counter-steer).",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "Caused by gyroscopic precession, so any force on the propeller disc is felt 90 degrees further around its rotation -- worst during pitch changes, corrected by gradually reducing power and waiting for the wing to recover.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Caused by crankshaft imbalance and shows up as frame vibration that increases with RPM -- reduced by professional propeller balancing and retorquing the motor mounts.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Caused by thinner air at altitude reducing propeller bite and thrust -- countered by richening the carburettor mixture and reducing pitch.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 10
+        },
+        {
+          "code": "A.2",
+          "letter": "A",
+          "num": 2,
+          "sub": null,
+          "prompt": "Describe the Gyroscopic Aspects of a spinning propeller, particularly Gyroscopic Precession, and its dangers in PPG flight. Which of the following correctly covers this?",
+          "print_prompt": "Describe the Gyroscopic Aspects, with particular emphasis on Gyroscopic Precession. What it is, what causes it and how it affects PPG flight and the resulting dangers thereof. Detail some examples, including resulting action and powered paraglider behaviour.",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "A force applied to the spinning prop disc is felt not where it's applied, but 90 degrees further around the rotation -- most noticeable when pitch changes (e.g. sharp braking or sudden full power causes the pilot to lean back), yawing the motor sharply to one side with thrust pushed off-line; recovery is to gradually back off power, wait for level flight, then slowly reapply power.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "An equal-and-opposite reaction torque that rolls the motor to one side under power, worse at higher RPM, corrected with differential speedbar or asymmetric trim.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "A resonance effect where the propeller and frame vibrate in sync at certain RPM ranges, corrected by avoiding that RPM band in cruise.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "A reduction in propeller efficiency at altitude due to thinner air, corrected by adjusting the carburettor mixture richer.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 10
+        },
+        {
+          "code": "A.3",
+          "letter": "A",
+          "num": 3,
+          "sub": null,
+          "prompt": "Describe the three causes of Asymmetric Blade Thrust (ABT) and its effect. Which of the following correctly covers this?",
+          "print_prompt": "Describe the three causes of Asymmetric Blade Thrust and its effect. What factors influence the extent of the problem and how can it be reduced.",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Three causes combine to push more thrust onto the left side of the prop disc (higher blade airspeed descending on the left, increased angle of attack on the left as the motor tilts back, and less pilot-body shielding on the left as the motor yaws right) -- producing continuous, uncommanded left-right oscillations that worsen with brake input; fixed by keeping the prop disc close to vertical via a proper hang-check, adjusted attachment points/harness trim, or reduced power.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "Caused by an unbalanced propeller, uneven fuel distribution, and a worn carburettor diaphragm -- producing a steady vibration that's fixed by replacing the propeller and diaphragm.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Caused by asymmetric riser length, an off-centre reserve parachute, and uneven brake line trim -- producing a constant turn to one side that's fixed by re-trimming the risers.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Caused by crosswind on take-off, gusty thermal conditions, and pilot weight shift -- producing brief roll input that's corrected with normal brake and weight-shift control.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 15
+        },
+        {
+          "code": "A.4",
+          "letter": "A",
+          "num": 4,
+          "sub": null,
+          "prompt": "Explain why PPGs usually have higher attachment points than free-flight harnesses, and the trade-offs of high vs low attachments. Which of the following correctly covers this?",
+          "print_prompt": "Explain why powered paragliders usually have higher Attachment Points (riser attachments) than free-flight harnesses. Describe the various methods of attachments and the advantages and disadvantages of each.",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Higher attachments give better stability than free-flight harnesses (with the trade-off that released toggles can be harder to regrab, and brake lines must be longer and closer to the prop); lower attachments give better weight-shift and are more stable than a movable side bar, with shorter, more comfortable brake lines.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "Higher attachments give better weight-shift performance; lower attachments give better stability but require longer brake lines that risk fouling the prop.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Attachment height makes no real difference to stability or weight-shift -- it's purely a matter of pilot comfort and harness style.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Lower attachments are always used on powered units for safety, while higher attachments are reserved exclusively for free-flight harnesses.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 5
+        },
+        {
+          "code": "A.5",
+          "letter": "A",
+          "num": 5,
+          "sub": null,
+          "prompt": "Discuss running-in of a new engine -- purpose, procedure and precautions. Which of the following correctly covers this?",
+          "print_prompt": "Discuss running-in of new engines, the purpose thereof, procedures and precautions. Cover aspects of carb tuning, ratio of oil mixtures, vibration problems, loosening fittings, etc.",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Following the manufacturer's specification: idle 5 minutes, switch off and cool 5 minutes, idle again, briefly take it to around 2000rpm then back to idle, cool again -- repeating while raising the ceiling by about 1000rpm each cycle up to full rpm (held no longer than 30 seconds) -- to let the piston, crankshaft and bearings settle in gradually, checking for vibration, loose fittings, correct carb tuning for altitude, and the right oil mixture throughout.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "Run the engine at full power for 10 minutes on first start-up to seat the rings quickly, then let it idle for the rest of the session.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Leave the engine idling continuously for an hour without ever raising the RPM, then fly normally from the next start-up.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Running-in only matters for the carburettor tuning -- piston, crankshaft and bearing wear settle in naturally during normal flying.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 10
+        },
+        {
+          "code": "A.6",
+          "letter": "A",
+          "num": 6,
+          "sub": null,
+          "prompt": "Comment on fuel mixtures, oil types, and running-in considerations. Which of the following correctly covers this?",
+          "print_prompt": "Comment on Fuel Mixtures with specific reference to oil types (i.e. Synthetic vs Mineral oils), mixture ratio's and running-in considerations.",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Always follow the manufacturer's specified oil and mixture ratio; use synthetic oil, which has a much higher flash point (temperature breakdown) than mineral oil; a richer mixture is needed during running-in, tapering off once the engine is broken in.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "Mineral oil is always preferred over synthetic for its higher flash point, and the mixture should be leaned progressively throughout running-in.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Oil type makes no real difference provided the mixture ratio is correct; running-in requires a leaner mixture than normal cruise.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Synthetic and mineral oils have the same flash point; the mixture ratio should be richened only after the engine is fully broken in.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 5
+        },
+        {
+          "code": "A.7",
+          "letter": "A",
+          "num": 7,
+          "sub": null,
+          "prompt": "Discuss heat-seizure of engines -- causes, extent of damage, repairs, and prevention. Which of the following correctly covers this?",
+          "print_prompt": "Discuss heat-seizure of engines, causes thereof, assessing extent of damage, resulting repairs required, and preventative action.",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Caused by excess heat or inadequate lubrication -- a carburettor set too lean, wrong spark plug, old fuel, or a leaking gasket -- melting and smearing the piston onto the cylinder wall; ranges from burnt rings to a fully damaged piston/sleeve; repaired by replacing damaged parts, honing if needed, then running-in again; prevented with the correct fuel/oil mixture, a carb set slightly rich rather than lean, and tight nuts/bolts to stop gasket leaks.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "Caused by over-lubrication and an over-rich mixture -- fixed by leaning the carburettor and reducing oil ratio, with no repair needed beyond a plug change.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Caused by low compression from worn rings alone -- always requires a full engine replacement, with no lesser repair possible.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Caused by using synthetic oil instead of mineral oil -- prevented simply by switching to a mineral-oil mixture.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 15
+        }
+      ]
+    },
+    {
+      "letter": "B",
+      "name": "AIR LAW & RADIO PROCEDURES",
+      "questions": [
+        {
+          "code": "B.1",
+          "letter": "B",
+          "num": 1,
+          "sub": null,
+          "prompt": "Briefly describe the Semi-Circular Separation Rule. Which of the following correctly covers this?",
+          "print_prompt": "Briefly describe the concept of the Semi-Circular Separation Rule, as pertaining to air-traffic separation. (no need to reproduce the actual table here)",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Provides vertical separation above 1500ft AGL in uncontrolled airspace by splitting tracks into two regions (000-179 degrees and 180-359 degrees): the first flies odd flight levels, the second even, with 500ft added for VFR (e.g. 5500ft vs 6500ft).",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "Provides horizontal separation below 1500ft AGL by requiring aircraft to stay one nautical mile apart on any heading.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Requires all aircraft above 1500ft AGL to fly even flight levels only, regardless of magnetic track.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Applies only within controlled airspace, splitting traffic by altitude band rather than by track.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 3
+        },
+        {
+          "code": "B.2",
+          "letter": "B",
+          "num": 2,
+          "sub": null,
+          "prompt": "Explain the Following Line Rule. Which of the following correctly covers this?",
+          "print_prompt": "Explain the principles and application of the Following Line Rule.",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "At or below 1500ft AGL, when following a line feature (road, railway, power line, canal, coastline, etc.) within one nautical mile, fly to the right of it unless ATC instructs otherwise.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "At or below 1500ft AGL, always fly to the left of any line feature you're following, regardless of ATC instruction.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "The rule only applies above 1500ft AGL, requiring aircraft to fly to the right of any line feature.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Line features must always be crossed at right angles rather than followed in either direction.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 2
+        },
+        {
+          "code": "B.3",
+          "letter": "B",
+          "num": 3,
+          "sub": null,
+          "prompt": "What do VMC, VFR, QNE, AGL, FL, UTC, CTR and FAR stand for? Which of the following correctly defines all eight?",
+          "print_prompt": "What do the following abbreviations stand for, and give a brief description of each: VMC, VFR, QNE, AGL, FL, UTC, CTR, FAR.",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "VMC = Visual Meteorological Conditions (clear of cloud, minimum visibility); VFR = Visual Flight Rules (visual reference, weather, separation and clearance rules); QNE = altimeter subscale set to standard pressure 1013.2 hPa; AGL = Above Ground Level; FL = Flight Level, altitude on the QNE setting expressed without the last two zeros; UTC = Universal Co-ordinated Time (no timezone/DST); CTR = Control Zone around an airfield, roughly 10x30nm, ground level up to about 6500ft; FAR = (South African) Restricted Area, entry restricted, usually needing military/authority permission.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "VMC = Visual Flight Rules; VFR = Visual Meteorological Conditions; QNE = altimeter set to local pressure; AGL = altitude above mean sea level; FL = Flight Level shown with the last two zeros included; UTC = local time adjusted for daylight saving; CTR = a Restricted Area around a military base; FAR = a Control Zone around an airfield.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "VMC = clear of cloud with an 8km visibility minimum; VFR = rules that apply only above FL100; QNE = altimeter set to the nearest airfield's QNH; AGL = height measured from sea level; FL = altitude on the QNH setting; UTC = time in the pilot's home timezone; CTR = an area where civilian aircraft are always prohibited; FAR = a race-track shaped area around a city.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "VMC = Visual Meteorological Conditions with no minimum visibility requirement; VFR = rules that only apply at night; QNE = altimeter set to 1013.2 hPa but only used above FL200; AGL = height above the highest obstacle in the area; FL = altitude expressed in metres rather than feet; UTC = a time zone used only by air traffic control, not pilots; CTR = airspace with no defined vertical limits; FAR = an area civilians may enter freely at any time.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 16
+        },
+        {
+          "code": "B.4",
+          "letter": "B",
+          "num": 4,
+          "sub": null,
+          "prompt": "How often should you make general radio announcements in flight? Which of the following correctly covers this?",
+          "print_prompt": "How often do you need to make general radio announcements while in flight?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "There's no fixed interval (it isn't simply every 5 minutes) -- announce whenever you change direction or altitude, and more frequently in areas with more air traffic.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "Every 5 minutes exactly, regardless of any change in direction, altitude or nearby traffic.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Only once, when you first depart -- no further announcements are required en route.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Only when instructed to do so by air traffic control on frequency.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 2
+        },
+        {
+          "code": "B.5",
+          "letter": "B",
+          "num": 5,
+          "sub": null,
+          "prompt": "Give an example of a general radio broadcast for your area. Which of the following correctly follows the standard structure?",
+          "print_prompt": "Write an example of a general radio broadcast announcement for your area.",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Structured as CAPARI -- Call sign, Aircraft type, Position, Altitude, Routing, Intentions -- e.g. 'Traffic on 124.8, Delta Delta Delta, is a Motorised Paraglider 5 miles south of Bethlehem, below 500ft, heading north toward Bethlehem airport on a pleasure flight, Delta Delta Delta'.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "Structured as just Call sign and Position only -- altitude, routing and intentions are optional extras.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Structured as Aircraft type, Fuel state, Souls on board, and ETA -- the standard format for any general aviation broadcast.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Structured as Call sign, Altitude and Squawk code only -- position and intentions are covered by radar.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 6
+        }
+      ]
+    },
+    {
+      "letter": "C",
+      "name": "SAFETY & AIRMANSHIP",
+      "questions": [
+        {
+          "code": "C.1",
+          "letter": "C",
+          "num": 1,
+          "sub": null,
+          "prompt": "When should you inspect your motor for potential problems (nuts, bolts, rubbers, belt, etc)? Which of the following correctly covers this?",
+          "print_prompt": "When should you inspect your motor for potential problems (nuts, bolts, rubbers, belt, etc)?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Before and after every flight (pre-flight and post-flight checks are equally important), plus at the manufacturer's specified hourly intervals for parts like piston/rings, spark plugs, and carb diaphragms.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "Only before each flight -- post-flight checks are optional once the pilot is experienced.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Only at the manufacturer's hourly service intervals -- a visual check before each flight isn't necessary.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Only after any flight where something felt unusual -- routine flights don't need inspection.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 4
+        },
+        {
+          "code": "C.2",
+          "letter": "C",
+          "num": 2,
+          "sub": null,
+          "prompt": "If your engine kill-switch fails while about to land, what should you do? Which of the following correctly covers this?",
+          "print_prompt": "If you are about to land and discover that your engine kill-switch is not functional, what would you do and how would you kill the engine?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Climb to at least 500ft AGL first, then try flooding the carburettor, covering the air filter/carb intake, pinching the fuel line, pulling the spark plug lead (not the plug itself), closing the fuel or air valve, or using the secondary safety switch if fitted.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "Land immediately regardless of altitude and switch the ignition off once on the ground.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Increase throttle to maximum to force the engine to flood and stall itself.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Disconnect the harness from the motor in flight and continue the approach on the wing alone.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 3
+        },
+        {
+          "code": "C.3",
+          "letter": "C",
+          "num": 3,
+          "sub": null,
+          "prompt": "Why is it important to have your speed-bar fitted? Which of the following correctly covers this?",
+          "print_prompt": "Why is it important to have your speed-bar fitted?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "To increase airspeed in strong or unexpected wind -- check your wing's manual first, as on some wings using speedbar and brake together when trimmed out can cause a serious collapse.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "To reduce airspeed for a more controlled, slower landing approach.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "To trim the wing for hands-free straight and level cruising.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "To increase glide ratio when searching for lift in weak thermals.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 2
+        },
+        {
+          "code": "C.4",
+          "letter": "C",
+          "num": 4,
+          "sub": null,
+          "prompt": "What are the benefits and usages of trim-tabs on a powered wing? Which of the following correctly covers this?",
+          "print_prompt": "What are the benefits and usages of having trim tabs on a powered wing?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Set, they give a higher angle of attack that helps on take-off; released, they give higher speed and faster inflation; different left/right settings can also help counter torque effect.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "Set, they reduce angle of attack for a faster take-off run; released, they slow the wing down for landing.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "They only affect trim speed in cruise -- take-off and inflation are unaffected by their setting.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "They exist purely for pilot comfort and have no aerodynamic effect on take-off or inflation.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 2
+        },
+        {
+          "code": "C.5",
+          "letter": "C",
+          "num": 5,
+          "sub": null,
+          "prompt": "If you are flying with a friend, what must you beware of? Which of the following correctly covers this?",
+          "print_prompt": "If you are flying with a friend, what must you beware of?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Stay aware of nearby gliders, look before you turn, keep enough separation to avoid touching wingtips, watch for prop wash, and observe right-of-way rules.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "Only your own altitude and heading -- other pilots are responsible for avoiding you.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Only radio communication -- visual lookout isn't necessary if everyone announces their position.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Only wind direction -- spacing and right-of-way are set entirely by air traffic control.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 2
+        },
+        {
+          "code": "C.6",
+          "letter": "C",
+          "num": 6,
+          "sub": null,
+          "prompt": "If you accidentally bump wingtips with a buddy in flight, what's the correct course of action for both pilots? Which of the following correctly covers this?",
+          "print_prompt": "If you are flying alongside a buddy and you accidentally bump wingtips, what is the correct course of action for both pilots?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "The left-hand pilot decreases power and turns left; the right-hand pilot increases power and turns right -- both establish vertical and horizontal separation by turning away from each other.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "Both pilots should turn toward each other and match altitude to re-establish visual contact.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "The left-hand pilot climbs while the right-hand pilot descends, both maintaining heading.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Both pilots should cut power immediately and glide straight ahead until clear.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 2
+        },
+        {
+          "code": "C.7",
+          "letter": "C",
+          "num": 7,
+          "sub": null,
+          "prompt": "What is a safe distance/height when flying near the coast, a lake or a dam? Which of the following correctly covers this?",
+          "print_prompt": "If you are flying near the coast (or lake or dam), what is a safe distance and height to go out over the water?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Never exceed a 2:1 distance-to-height ratio, always stay within gliding range of the shore, and carry an auto-floatation device (e.g. power float/Agama) if flying over water.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "Stay within a 1:1 distance-to-height ratio and always wear a life jacket instead of a floatation device.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "There's no fixed ratio -- any distance is fine provided you remain above 1000ft AGL.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "A 4:1 distance-to-height ratio is safe provided the water is calm and close to shore.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 2
+        }
+      ]
+    },
+    {
+      "letter": "D",
+      "name": "GENERAL FLIGHT KNOWLEDGE",
+      "questions": [
+        {
+          "code": "D.1",
+          "letter": "D",
+          "num": 1,
+          "sub": null,
+          "prompt": "Why would you log your flying hours?",
+          "print_prompt": null,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "To record training progress, support licence and renewal applications, provide proof of experience and licences received, and track engine hours for servicing intervals.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "Only to record training progress -- servicing and licensing records are kept separately by the CFI.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Only to prove engine hours for servicing -- training progress is tracked on the syllabus sign-off sheet instead.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Only required if you intend competing or applying for an instructor rating.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "D.2",
+          "letter": "D",
+          "num": 2,
+          "sub": null,
+          "prompt": "If you double your flying height above the ground, by what factor is the landing area reachable by gliding increased (in the event of an engine-out)?",
+          "print_prompt": null,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Doubled -- engine-out glide range simply doubles ft-for-ft with height.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Tripled -- every extra 100ft adds three times the horizontal glide range.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Four times greater -- doubling height quadruples the ground area reachable within glide range.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "D",
+              "text": "Increased by only 50% -- glide ratio flattens as altitude increases.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "D.3",
+          "letter": "D",
+          "num": 3,
+          "sub": null,
+          "prompt": "How far do you need to remain away from cloud, vertically and horizontally? Which of the following correctly covers this?",
+          "print_prompt": "How far do you need to remain away from clouds? Vertically and horizontally.",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Below 1000ft AGL you must remain clear of cloud (no set distance specified); from 1000ft AGL up to FL100 you need at least 2000ft vertically and 500ft horizontally from cloud.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "Below 1000ft AGL you need 500ft vertical and 1000ft horizontal clearance; above 1000ft up to FL100 you must remain clear of cloud entirely.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "You must remain at least 1000ft vertically and 1500ft horizontally from cloud at all altitudes, with no lower-level exemption.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Cloud clearance only applies above FL100 -- below that you may fly through cloud provided you remain in radio contact.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 4
+        },
+        {
+          "code": "D.4",
+          "letter": "D",
+          "num": 4,
+          "sub": null,
+          "prompt": "When flying around sunset, what is the latest you may remain in the air?",
+          "print_prompt": "When flying around sunset, what is the latest you may remain in the air?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "30 minutes after official sunset, local time as published in the AIP.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "15 minutes after official sunset, local time as published in the AIP.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "C",
+              "text": "Until last light, at the pilot's own discretion.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Official sunset itself -- no flying is permitted after that time.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "D.5",
+          "letter": "D",
+          "num": 5,
+          "sub": null,
+          "prompt": "What do you need (licensing and equipment) before you may take a passenger for a tandem flight? Which of the following correctly covers this?",
+          "print_prompt": "What do you need before you may take a passenger for a tandem flight on your paramotor? (in terms of licensing and equipment)",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "A valid Paramotor tandem licence, a motor with enough power for the extra weight, a harness that fits the passenger, a wing rated to carry the combined weight, and signed indemnity forms.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "Any current PPG licence, verbal consent from the passenger, and a helmet for each person -- no separate tandem rating is required.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "A tandem-rated wing only -- the pilot's normal licence and equipment otherwise cover a passenger.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "SAHPA membership in good standing and the passenger's own signed medical declaration -- no additional licence or equipment checks apply.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 3
+        },
+        {
+          "code": "D.6",
+          "letter": "D",
+          "num": 6,
+          "sub": null,
+          "prompt": "A lighter all-up take-off weight will increase:",
+          "print_prompt": null,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Climb rate.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "Take-off distance.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Power-off stall speed.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Power-on stall speed.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "D.7",
+          "letter": "D",
+          "num": 7,
+          "sub": null,
+          "prompt": "A heavier all-up take-off weight will increase:",
+          "print_prompt": null,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Overall flying airspeed, stall speed, and take-off run/internal cell pressure -- all of these increase.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "Only stall speed -- airspeed and take-off run stay the same regardless of weight.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Only take-off run -- stall speed and airspeed are set by the wing, not pilot weight.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Only overall airspeed -- stall speed actually decreases with more weight.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "D.8",
+          "letter": "D",
+          "num": 8,
+          "sub": null,
+          "prompt": "The _______ is an imaginary straight line drawn through an airfoil (wing) from the leading edge to the trailing edge.",
+          "print_prompt": null,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Angle of attack.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Camber line.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Chord line.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "D",
+              "text": "Relative wind line.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "D.9",
+          "letter": "D",
+          "num": 9,
+          "sub": null,
+          "prompt": "Angle of attack is defined as:",
+          "print_prompt": null,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "The angle between the horizon and the chord line.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "The angle between the horizon and the relative wind.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "The angle between the wing chord line and the vertical tail.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "The angle between the wing chord line and the relative airflow.",
+              "image": null,
+              "correct": true
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "D.10",
+          "letter": "D",
+          "num": 10,
+          "sub": null,
+          "prompt": "A stall occurs when:",
+          "print_prompt": null,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "The critical angle of attack is exceeded.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "The nose rises too far above the horizon.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "The airspeed drops below trim speed.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "The engine loses power unexpectedly.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "D.11",
+          "letter": "D",
+          "num": 11,
+          "sub": null,
+          "prompt": "Trimspeed is defined as:",
+          "print_prompt": null,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Flying hands-up, off speedbar, with trim tabs set to neutral.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "Flying hands-up, on full speedbar, with trim tabs set to neutral.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Flying at roughly 50% throttle with light brake pressure held.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Flying as slowly as possible with trim tabs fully retracted.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "D.12",
+          "letter": "D",
+          "num": 12,
+          "sub": null,
+          "prompt": "In heavy turbulence it is safest to minimise deflations by flying:",
+          "print_prompt": null,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Downwind of any high ground.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "As fast as possible, well past trim speed.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "As slowly as possible, close to stall.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "At trim speed.",
+              "image": null,
+              "correct": true
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "D.13",
+          "letter": "D",
+          "num": 13,
+          "sub": null,
+          "prompt": "You are on a head-on collision course with another aircraft in open areas. You should avoid the other aircraft by:",
+          "print_prompt": null,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Turning to the right.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "Turning to the left.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Climbing above the other aircraft's flight path.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Descending below the other aircraft's flight path.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "D.14",
+          "letter": "D",
+          "num": 14,
+          "sub": null,
+          "prompt": "You are flying north in straight and level flight with a True Airspeed of 38km/h. The wind at your altitude is from 180 degrees at 10km/h. What is your groundspeed?",
+          "print_prompt": null,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "38 km/h",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "48 km/h",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "C",
+              "text": "28 km/h",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "10 km/h",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "D.15",
+          "letter": "D",
+          "num": 15,
+          "sub": null,
+          "prompt": "A magnetic compass is accurate:",
+          "print_prompt": null,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "In any attitude, including turns, climbs and descents.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Only when flown below manoeuvring speed.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "At all times, regardless of flight condition.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Only in straight and level flight at a constant speed.",
+              "image": null,
+              "correct": true
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "D.16",
+          "letter": "D",
+          "num": 16,
+          "sub": null,
+          "prompt": "You would most likely find turbulent flying in conditions near:",
+          "print_prompt": null,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Stratus clouds.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Fog.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Cirrus clouds.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Cumulus clouds.",
+              "image": null,
+              "correct": true
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "D.17",
+          "letter": "D",
+          "num": 17,
+          "sub": null,
+          "prompt": "You would likely find turbulence:",
+          "print_prompt": null,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Near mountains, during the mid-afternoon heating peak, deep inland, and downwind of buildings -- all of these increase turbulence.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "Only near mountains -- time of day and terrain elsewhere make little difference.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Only in the early morning, before the ground has warmed up.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Only directly over open water, away from any terrain or buildings.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "D.18",
+          "letter": "D",
+          "num": 18,
+          "sub": null,
+          "prompt": "Why does SAHPA exist?",
+          "print_prompt": null,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "To keep the sport self-regulating, provide third-party aviation insurance, run a safety-oriented licensing system, and give the sport international recognition.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "Purely to organise national competitions and record badge flights.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Solely to manufacture and approve equipment sold in South Africa.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Only to act as a social club for pilots, with no regulatory or insurance role.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "D.19",
+          "letter": "D",
+          "num": 19,
+          "sub": null,
+          "prompt": "What is the very last safety action to perform prior to starting an engine?",
+          "print_prompt": null,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Check the fuel/oil mixture ratio.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Check for sufficient fuel quantity.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Complete a full pre-flight inspection.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Call \"clear prop\" and confirm the prop area is clear of people.",
+              "image": null,
+              "correct": true
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "D.20",
+          "letter": "D",
+          "num": 20,
+          "sub": null,
+          "prompt": "Considering density altitude, your motor and wing would perform better on:",
+          "print_prompt": null,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Warm humid days.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Cold humid days.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Warm dry days.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Cold, dry days.",
+              "image": null,
+              "correct": true
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "D.21",
+          "letter": "D",
+          "num": 21,
+          "sub": null,
+          "prompt": "When may you enter a Restricted Area (FAR)?",
+          "print_prompt": null,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Never -- Restricted Areas may not be entered under any circumstance.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "After receiving permission from the appropriate authority.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "C",
+              "text": "Whenever you wish, provided you exercise extreme caution.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Only at weekends, when the areas are officially closed.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "D.22",
+          "letter": "D",
+          "num": 22,
+          "sub": null,
+          "prompt": "When may you enter a Prohibited Area (FAP)?",
+          "print_prompt": null,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Never -- Prohibited Areas may not be entered under any circumstance.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Only with a written waiver from the CAA Administrator or their designee.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "C",
+              "text": "With verbal permission from the controlling agency.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Any time between official sunset and official sunrise.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "D.23",
+          "letter": "D",
+          "num": 23,
+          "sub": null,
+          "prompt": "What frequency is used for emergency communications?",
+          "print_prompt": null,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "126.7 MHz",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "124.8 MHz",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "130.35 MHz",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "121.5 MHz",
+              "image": null,
+              "correct": true
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "D.24",
+          "letter": "D",
+          "num": 24,
+          "sub": null,
+          "prompt": "Take-off run distance is increased by:",
+          "print_prompt": null,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "A lighter headwind, higher altitude, higher humidity, and lower QNH -- all of these increase the take-off run.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "Only a stronger headwind; the other factors make no real difference.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Only higher altitude; humidity and QNH are negligible.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Only lower QNH; wind and altitude have no effect.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "D.25",
+          "letter": "D",
+          "num": 25,
+          "sub": null,
+          "prompt": "Carb mixture adjustment should be:",
+          "print_prompt": null,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Richened as altitude decreases (the denser, lower air needs more fuel for the same ratio).",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "Richened whenever QNH is low, regardless of altitude flown.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Richened for higher humidity, since damp air needs extra fuel to combust cleanly.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Adjusted the same way regardless of altitude, QNH or humidity.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "D.26",
+          "letter": "D",
+          "num": 26,
+          "sub": null,
+          "prompt": "Which of the following is true, regarding altimeter settings and radio calls?",
+          "print_prompt": null,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Below 1500ft AGL the altimeter subscale is set to local QNH and altitude is given in feet; above transition altitude it's set to QNE, and altitude is then given as a Flight Level.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "Below 1500ft AGL the subscale is set to QNE; above transition altitude it's set to local QNH.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "The altimeter subscale is always set to QNE, regardless of altitude flown.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Altitude is always given in feet, even once the subscale is set to QNE.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "D.27",
+          "letter": "D",
+          "num": 27,
+          "sub": null,
+          "prompt": "Which one is true regarding rate of climb?",
+          "print_prompt": null,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Affected by your throttle setting; unaffected by windspeed or direction.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "Increased in a headwind and reduced in a tailwind.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Reduced in a headwind and increased in a tailwind.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Unaffected by throttle setting; determined entirely by wind.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "D.28",
+          "letter": "D",
+          "num": 28,
+          "sub": null,
+          "prompt": "Angle of climb is:",
+          "print_prompt": null,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Increased in a headwind, increased with added power, reduced at a faster airspeed trim, and reduced in turns.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "Only increased with added power -- wind and trim speed make no difference to angle of climb.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Only increased in a headwind -- power setting and trim speed make no difference.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Reduced in a headwind and increased at a faster airspeed trim.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "D.29",
+          "letter": "D",
+          "num": 29,
+          "sub": null,
+          "prompt": "When taking off in thermic conditions, you are 10 metres up when you fly into a thermal and the glider pitches back. Your reaction is:",
+          "print_prompt": null,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Go to full power immediately and increase brake pressure.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Come to idle power immediately and pump the brakes.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Maintain roughly 3/4 power and catch the pendulum as the glider surges forward.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "D",
+              "text": "Do nothing and let the glider recover on its own.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        }
+      ]
+    }
+  ]
+}
