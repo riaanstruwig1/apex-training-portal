@@ -15,25 +15,25 @@
           "options": [
             {
               "label": "A",
+              "text": "Caused by thinner air at higher density altitude reducing propeller bite and available thrust, most noticeable on hot days or at higher elevations -- countered by richening the carburettor mixture, reducing pitch slightly, and allowing a longer take-off run to compensate for the reduced power available.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
               "text": "An equal-and-opposite reaction to the spinning propeller rolls the motor/pilot over to one side (e.g. right, on an anti-clockwise prop), lowering that shoulder and inducing a bank/turn that way -- worse at higher power; reduced passively (uneven carabiner heights or extra weight on the low side) or actively (differential speedbar, weight shift, asymmetric trim, counter-steer).",
               "image": null,
               "correct": true
             },
             {
-              "label": "B",
-              "text": "Caused by gyroscopic precession, so any force on the propeller disc is felt 90 degrees further around its rotation -- worst during pitch changes, corrected by gradually reducing power and waiting for the wing to recover.",
-              "image": null,
-              "correct": false
-            },
-            {
               "label": "C",
-              "text": "Caused by crankshaft imbalance and shows up as frame vibration that increases with RPM -- reduced by professional propeller balancing and retorquing the motor mounts.",
+              "text": "Caused by gyroscopic precession acting on the spinning propeller disc, so any force applied is felt roughly 90 degrees further around the rotation rather than where it was applied -- most noticeable during pitch changes such as sharp braking or sudden power increases, and corrected by gradually easing off power, letting the wing settle level, then reapplying power smoothly.",
               "image": null,
               "correct": false
             },
             {
               "label": "D",
-              "text": "Caused by thinner air at altitude reducing propeller bite and thrust -- countered by richening the carburettor mixture and reducing pitch.",
+              "text": "Caused by an out-of-balance crankshaft or propeller, showing up as frame and cage vibration that worsens as RPM rises through certain bands -- reduced by having the propeller professionally balanced, retorquing the motor mounts, and checking the drive belt or gearbox for wear at regular service intervals.",
               "image": null,
               "correct": false
             }
@@ -52,25 +52,25 @@
           "options": [
             {
               "label": "A",
+              "text": "A resonance effect where the propeller, cage and frame vibrate together in sync at certain RPM ranges, most noticeable as a buzzing felt through the harness and risers -- corrected by briefly avoiding that RPM band during cruise and having the propeller checked for balance at the next service.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
               "text": "A force applied to the spinning prop disc is felt not where it's applied, but 90 degrees further around the rotation -- most noticeable when pitch changes (e.g. sharp braking or sudden full power causes the pilot to lean back), yawing the motor sharply to one side with thrust pushed off-line; recovery is to gradually back off power, wait for level flight, then slowly reapply power.",
               "image": null,
               "correct": true
             },
             {
-              "label": "B",
-              "text": "An equal-and-opposite reaction torque that rolls the motor to one side under power, worse at higher RPM, corrected with differential speedbar or asymmetric trim.",
-              "image": null,
-              "correct": false
-            },
-            {
               "label": "C",
-              "text": "A resonance effect where the propeller and frame vibrate in sync at certain RPM ranges, corrected by avoiding that RPM band in cruise.",
+              "text": "A reduction in propeller efficiency at higher altitude caused by thinner air reducing blade bite, most noticeable on hot days or at elevated take-off sites -- corrected by adjusting the carburettor mixture richer and allowing extra distance for the take-off run to compensate.",
               "image": null,
               "correct": false
             },
             {
               "label": "D",
-              "text": "A reduction in propeller efficiency at altitude due to thinner air, corrected by adjusting the carburettor mixture richer.",
+              "text": "An equal-and-opposite reaction torque that rolls the motor and pilot to one side under power, worse at higher RPM and higher power settings -- corrected with differential speedbar, asymmetric trim tab settings, or a deliberate weight shift toward the high side to counter the roll tendency.",
               "image": null,
               "correct": false
             }
@@ -89,27 +89,27 @@
           "options": [
             {
               "label": "A",
-              "text": "Three causes combine to push more thrust onto the left side of the prop disc (higher blade airspeed descending on the left, increased angle of attack on the left as the motor tilts back, and less pilot-body shielding on the left as the motor yaws right) -- producing continuous, uncommanded left-right oscillations that worsen with brake input; fixed by keeping the prop disc close to vertical via a proper hang-check, adjusted attachment points/harness trim, or reduced power.",
+              "text": "Caused by crosswind gusts during the take-off run, thermic conditions kicking up turbulence shortly after launch, and the pilot's own weight shift while adjusting the harness in flight -- producing brief, momentary roll input that is easily corrected with normal brake and weight-shift technique; not a persistent handling problem once airborne.",
               "image": null,
-              "correct": true
+              "correct": false
             },
             {
               "label": "B",
-              "text": "Caused by an unbalanced propeller, uneven fuel distribution, and a worn carburettor diaphragm -- producing a steady vibration that's fixed by replacing the propeller and diaphragm.",
+              "text": "Caused by asymmetric riser length from uneven stretch over time, an off-centre reserve parachute shifting the harness balance, and uneven brake line trim from repeated hard landings -- producing a constant, gentle turn to one side rather than an oscillation; fixed by re-trimming the risers and brake lines to manufacturer specification and rechecking with a proper hang-check.",
               "image": null,
               "correct": false
             },
             {
               "label": "C",
-              "text": "Caused by asymmetric riser length, an off-centre reserve parachute, and uneven brake line trim -- producing a constant turn to one side that's fixed by re-trimming the risers.",
+              "text": "Caused by an unbalanced propeller creating uneven centrifugal loading, uneven fuel distribution reaching each cylinder on multi-cylinder engines, and a worn carburettor diaphragm losing its seal -- producing a steady vibration felt through the frame and cage that worsens with RPM; fixed by replacing the propeller, the diaphragm, and rebalancing the drive train at the next service interval.",
               "image": null,
               "correct": false
             },
             {
               "label": "D",
-              "text": "Caused by crosswind on take-off, gusty thermal conditions, and pilot weight shift -- producing brief roll input that's corrected with normal brake and weight-shift control.",
+              "text": "Three causes combine to push more thrust onto the left side of the prop disc (higher blade airspeed descending on the left, increased angle of attack on the left as the motor tilts back, and less pilot-body shielding on the left as the motor yaws right) -- producing continuous, uncommanded left-right oscillations that worsen with brake input; fixed by keeping the prop disc close to vertical via a proper hang-check, adjusted attachment points/harness trim, or reduced power.",
               "image": null,
-              "correct": false
+              "correct": true
             }
           ],
           "stem_image": null,
@@ -126,25 +126,25 @@
           "options": [
             {
               "label": "A",
-              "text": "Higher attachments give better stability than free-flight harnesses (with the trade-off that released toggles can be harder to regrab, and brake lines must be longer and closer to the prop); lower attachments give better weight-shift and are more stable than a movable side bar, with shorter, more comfortable brake lines.",
+              "text": "Higher attachments give noticeably better weight-shift and turn response than a fixed low attachment; lower attachments give better roll stability but require much longer brake lines that risk fouling the propeller cage on a hard flare, and released toggles are correspondingly harder to regrab quickly.",
               "image": null,
-              "correct": true
+              "correct": false
             },
             {
               "label": "B",
-              "text": "Higher attachments give better weight-shift performance; lower attachments give better stability but require longer brake lines that risk fouling the prop.",
+              "text": "Lower attachments are used exclusively on powered units for safety reasons and to keep the centre of gravity low, while higher attachments are reserved for free-flight harnesses where weight-shift is the primary control input rather than a powered climb.",
               "image": null,
               "correct": false
             },
             {
               "label": "C",
-              "text": "Attachment height makes no real difference to stability or weight-shift -- it's purely a matter of pilot comfort and harness style.",
+              "text": "Higher attachments give better stability than free-flight harnesses (with the trade-off that released toggles can be harder to regrab, and brake lines must be longer and closer to the prop); lower attachments give better weight-shift and are more stable than a movable side bar, with shorter, more comfortable brake lines.",
               "image": null,
-              "correct": false
+              "correct": true
             },
             {
               "label": "D",
-              "text": "Lower attachments are always used on powered units for safety, while higher attachments are reserved exclusively for free-flight harnesses.",
+              "text": "Attachment height makes little practical difference to stability or weight-shift response once the harness is properly hang-checked -- it comes down mostly to pilot comfort, harness style, and whichever position the manufacturer set the risers at during construction.",
               "image": null,
               "correct": false
             }
@@ -163,27 +163,27 @@
           "options": [
             {
               "label": "A",
-              "text": "Following the manufacturer's specification: idle 5 minutes, switch off and cool 5 minutes, idle again, briefly take it to around 2000rpm then back to idle, cool again -- repeating while raising the ceiling by about 1000rpm each cycle up to full rpm (held no longer than 30 seconds) -- to let the piston, crankshaft and bearings settle in gradually, checking for vibration, loose fittings, correct carb tuning for altitude, and the right oil mixture throughout.",
+              "text": "Running-in is mainly about getting the carburettor tuning correct for the site's altitude and temperature -- the piston, crankshaft and bearings settle in naturally during the first few normal flights, so no special idle-and-cool cycling routine, vibration check, or fitting inspection is really necessary beforehand at all.",
               "image": null,
-              "correct": true
+              "correct": false
             },
             {
               "label": "B",
-              "text": "Run the engine at full power for 10 minutes on first start-up to seat the rings quickly, then let it idle for the rest of the session.",
+              "text": "Run the engine at full power for around 10 minutes on first start-up so the piston rings seat against the cylinder wall quickly under load, then let it idle for cool-down for the remainder of that first session before checking the carb tuning and oil mixture are correct for the site's altitude, and looking over the whole unit for any vibration or fittings that worked loose along the way.",
               "image": null,
               "correct": false
             },
             {
               "label": "C",
-              "text": "Leave the engine idling continuously for an hour without ever raising the RPM, then fly normally from the next start-up.",
+              "text": "Leave the engine idling continuously for a full hour without ever raising the RPM above idle, letting the piston and rings bed in slowly at low load, then fly the unit normally from the very next start-up once the hour of idling is complete, the engine has fully cooled, and a quick check for loose fittings and correct carb tuning has been done.",
               "image": null,
               "correct": false
             },
             {
               "label": "D",
-              "text": "Running-in only matters for the carburettor tuning -- piston, crankshaft and bearing wear settle in naturally during normal flying.",
+              "text": "Following the manufacturer's specification: idle 5 minutes, switch off and cool 5 minutes, idle again, briefly take it to around 2000rpm then back to idle, cool again -- repeating while raising the ceiling by about 1000rpm each cycle up to full rpm (held no longer than 30 seconds) -- to let the piston, crankshaft and bearings settle in gradually, checking for vibration, loose fittings, correct carb tuning for altitude, and the right oil mixture throughout.",
               "image": null,
-              "correct": false
+              "correct": true
             }
           ],
           "stem_image": null,
@@ -200,25 +200,25 @@
           "options": [
             {
               "label": "A",
-              "text": "Always follow the manufacturer's specified oil and mixture ratio; use synthetic oil, which has a much higher flash point (temperature breakdown) than mineral oil; a richer mixture is needed during running-in, tapering off once the engine is broken in.",
+              "text": "Mineral oil is generally preferred over synthetic for two-stroke paramotor engines because of its higher flash point and resistance to breakdown under heat, and the fuel mixture should be progressively leaned out as the engine works through its running-in period.",
               "image": null,
-              "correct": true
+              "correct": false
             },
             {
               "label": "B",
-              "text": "Mineral oil is always preferred over synthetic for its higher flash point, and the mixture should be leaned progressively throughout running-in.",
+              "text": "Oil type makes little real difference to engine protection provided the mixture ratio itself is correct for the manufacturer's specification; running-in actually calls for a slightly leaner mixture than normal cruise to help the rings seat faster.",
               "image": null,
               "correct": false
             },
             {
               "label": "C",
-              "text": "Oil type makes no real difference provided the mixture ratio is correct; running-in requires a leaner mixture than normal cruise.",
+              "text": "Always follow the manufacturer's specified oil and mixture ratio; use synthetic oil, which has a much higher flash point (temperature breakdown) than mineral oil; a richer mixture is needed during running-in, tapering off once the engine is broken in.",
               "image": null,
-              "correct": false
+              "correct": true
             },
             {
               "label": "D",
-              "text": "Synthetic and mineral oils have the same flash point; the mixture ratio should be richened only after the engine is fully broken in.",
+              "text": "Synthetic and mineral oils have essentially the same flash point and heat-breakdown resistance; the mixture ratio only needs to be richened once the engine is fully broken in and being flown at higher power settings regularly.",
               "image": null,
               "correct": false
             }
@@ -237,25 +237,25 @@
           "options": [
             {
               "label": "A",
-              "text": "Caused by excess heat or inadequate lubrication -- a carburettor set too lean, wrong spark plug, old fuel, or a leaking gasket -- melting and smearing the piston onto the cylinder wall; ranges from burnt rings to a fully damaged piston/sleeve; repaired by replacing damaged parts, honing if needed, then running-in again; prevented with the correct fuel/oil mixture, a carb set slightly rich rather than lean, and tight nuts/bolts to stop gasket leaks.",
+              "text": "Caused by low compression from gradually worn piston rings over many hours of normal running -- unlike a sudden seizure this develops slowly over time, and once compression drops far enough it always requires a full engine replacement rather than a lesser repair, rebuild, or simple honing of the cylinder wall.",
               "image": null,
-              "correct": true
+              "correct": false
             },
             {
               "label": "B",
-              "text": "Caused by over-lubrication and an over-rich mixture -- fixed by leaning the carburettor and reducing oil ratio, with no repair needed beyond a plug change.",
+              "text": "Caused specifically by using synthetic oil instead of mineral oil in the fuel mixture, which some engines are said not to tolerate well at sustained high RPM on a hot day -- prevented simply by switching back to a mineral-oil mixture, keeping the same ratio the manufacturer specifies, and avoiding a lean carburettor setting.",
               "image": null,
               "correct": false
             },
             {
               "label": "C",
-              "text": "Caused by low compression from worn rings alone -- always requires a full engine replacement, with no lesser repair possible.",
+              "text": "Caused by excess heat or inadequate lubrication -- a carburettor set too lean, wrong spark plug, old fuel, or a leaking gasket -- melting and smearing the piston onto the cylinder wall; ranges from burnt rings to a fully damaged piston/sleeve; repaired by replacing damaged parts, honing if needed, then running-in again; prevented with the correct fuel/oil mixture, a carb set slightly rich rather than lean, and tight nuts/bolts to stop gasket leaks.",
               "image": null,
-              "correct": false
+              "correct": true
             },
             {
               "label": "D",
-              "text": "Caused by using synthetic oil instead of mineral oil -- prevented simply by switching to a mineral-oil mixture.",
+              "text": "Caused by over-lubrication combined with an over-rich mixture fouling the spark plug and washing oil off the cylinder wall -- fixed by leaning the carburettor slightly, correcting the oil ratio, and replacing the fouled plug, with no further internal repair usually needed beyond that, though nuts and bolts should still be checked for tightness and any leaking gasket replaced afterwards.",
               "image": null,
               "correct": false
             }
@@ -280,27 +280,27 @@
           "options": [
             {
               "label": "A",
-              "text": "Provides vertical separation above 1500ft AGL in uncontrolled airspace by splitting tracks into two regions (000-179 degrees and 180-359 degrees): the first flies odd flight levels, the second even, with 500ft added for VFR (e.g. 5500ft vs 6500ft).",
+              "text": "Provides horizontal separation below 1500ft AGL in uncontrolled airspace by requiring aircraft on opposite headings to stay at least one nautical mile apart laterally, regardless of the flight level or altitude either aircraft happens to be flying at.",
               "image": null,
-              "correct": true
+              "correct": false
             },
             {
               "label": "B",
-              "text": "Provides horizontal separation below 1500ft AGL by requiring aircraft to stay one nautical mile apart on any heading.",
+              "text": "Requires every aircraft flying above 1500ft AGL to use even flight levels only, regardless of magnetic track flown, with the 500ft VFR offset applied only inside controlled airspace rather than in the open uncontrolled airspace most PPG pilots use.",
               "image": null,
               "correct": false
             },
             {
               "label": "C",
-              "text": "Requires all aircraft above 1500ft AGL to fly even flight levels only, regardless of magnetic track.",
+              "text": "Applies only within controlled airspace and splits traffic by altitude band rather than by magnetic track, with air traffic control assigning each aircraft an altitude band on first contact rather than pilots self-selecting a flight level.",
               "image": null,
               "correct": false
             },
             {
               "label": "D",
-              "text": "Applies only within controlled airspace, splitting traffic by altitude band rather than by track.",
+              "text": "Provides vertical separation above 1500ft AGL in uncontrolled airspace by splitting tracks into two regions (000-179 degrees and 180-359 degrees): the first flies odd flight levels, the second even, with 500ft added for VFR (e.g. 5500ft vs 6500ft).",
               "image": null,
-              "correct": false
+              "correct": true
             }
           ],
           "stem_image": null,
@@ -323,19 +323,19 @@
             },
             {
               "label": "B",
-              "text": "At or below 1500ft AGL, always fly to the left of any line feature you're following, regardless of ATC instruction.",
+              "text": "Line features such as roads, railways and power lines must always be crossed at right angles rather than followed alongside in either direction, to keep pilots from being mistaken for traffic tracking the feature itself.",
               "image": null,
               "correct": false
             },
             {
               "label": "C",
-              "text": "The rule only applies above 1500ft AGL, requiring aircraft to fly to the right of any line feature.",
+              "text": "At or below 1500ft AGL, always fly to the left of any line feature you are following -- road, railway, power line, canal or coastline -- regardless of any instruction given by air traffic control on frequency at the time.",
               "image": null,
               "correct": false
             },
             {
               "label": "D",
-              "text": "Line features must always be crossed at right angles rather than followed in either direction.",
+              "text": "The rule only applies above 1500ft AGL, and requires aircraft following a line feature within one nautical mile to keep it on their right-hand side at all times, with no exception even when instructed otherwise by ATC.",
               "image": null,
               "correct": false
             }
@@ -360,19 +360,19 @@
             },
             {
               "label": "B",
-              "text": "VMC = Visual Flight Rules; VFR = Visual Meteorological Conditions; QNE = altimeter set to local pressure; AGL = altitude above mean sea level; FL = Flight Level shown with the last two zeros included; UTC = local time adjusted for daylight saving; CTR = a Restricted Area around a military base; FAR = a Control Zone around an airfield.",
+              "text": "VMC = Visual Meteorological Conditions with no defined minimum visibility requirement anywhere; VFR = rules that apply only to night flying under visual reference; QNE = altimeter set to 1013.2 hPa but only used above Flight Level 200; AGL = height measured above the highest obstacle within the area rather than the ground; FL = altitude expressed in metres rather than feet on the QNE setting; UTC = a time zone used only by air traffic control staff, never by pilots; CTR = airspace with no defined vertical limit at all; FAR = an area civilians may enter freely at any time without restriction.",
               "image": null,
               "correct": false
             },
             {
               "label": "C",
-              "text": "VMC = clear of cloud with an 8km visibility minimum; VFR = rules that apply only above FL100; QNE = altimeter set to the nearest airfield's QNH; AGL = height measured from sea level; FL = altitude on the QNH setting; UTC = time in the pilot's home timezone; CTR = an area where civilian aircraft are always prohibited; FAR = a race-track shaped area around a city.",
+              "text": "VMC = Visual Flight Rules governing when radio calls are mandatory; VFR = Visual Meteorological Conditions describing cloud cover only; QNE = altimeter subscale set to the departure aerodrome's local pressure; AGL = altitude measured above mean sea level rather than the ground; FL = Flight Level shown with the last two zeros still included; UTC = local time adjusted for daylight saving where it applies; CTR = a Restricted Area drawn around a military base; FAR = a Control Zone drawn around a civilian airfield.",
               "image": null,
               "correct": false
             },
             {
               "label": "D",
-              "text": "VMC = Visual Meteorological Conditions with no minimum visibility requirement; VFR = rules that only apply at night; QNE = altimeter set to 1013.2 hPa but only used above FL200; AGL = height above the highest obstacle in the area; FL = altitude expressed in metres rather than feet; UTC = a time zone used only by air traffic control, not pilots; CTR = airspace with no defined vertical limits; FAR = an area civilians may enter freely at any time.",
+              "text": "VMC = clear of cloud with an 8km minimum flight visibility and no other requirement; VFR = a set of rules that apply only above Flight Level 100 in controlled airspace; QNE = altimeter set to the nearest airfield's current QNH reading; AGL = height measured from mean sea level rather than the ground below; FL = altitude flown on the QNH setting rather than standard pressure; UTC = the time kept in the pilot's own home timezone; CTR = an area civilian aircraft are always prohibited from entering; FAR = a race-track shaped danger area drawn around a city centre.",
               "image": null,
               "correct": false
             }
@@ -397,19 +397,19 @@
             },
             {
               "label": "B",
-              "text": "Every 5 minutes exactly, regardless of any change in direction, altitude or nearby traffic.",
+              "text": "Only when specifically instructed to make a call by air traffic control on frequency -- self-initiated position reports are discouraged in uncontrolled airspace since they add unnecessary radio chatter.",
               "image": null,
               "correct": false
             },
             {
               "label": "C",
-              "text": "Only once, when you first depart -- no further announcements are required en route.",
+              "text": "Only once, immediately after you first depart from the take-off field -- no further position or intention announcements are required for the remainder of the flight, even if your routing or altitude changes.",
               "image": null,
               "correct": false
             },
             {
               "label": "D",
-              "text": "Only when instructed to do so by air traffic control on frequency.",
+              "text": "Every 5 minutes exactly by the clock, regardless of whether you have changed direction or altitude in that time, and regardless of how much other air traffic is operating in the same area at that moment.",
               "image": null,
               "correct": false
             }
@@ -428,25 +428,25 @@
           "options": [
             {
               "label": "A",
+              "text": "Structured around just a call sign and current position -- e.g. 'Traffic, Delta Delta Delta, overhead Bethlehem' -- with altitude, routing and intentions treated as optional extras only included when the pilot personally judges them necessary for that particular call.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
               "text": "Structured as CAPARI -- Call sign, Aircraft type, Position, Altitude, Routing, Intentions -- e.g. 'Traffic on 124.8, Delta Delta Delta, is a Motorised Paraglider 5 miles south of Bethlehem, below 500ft, heading north toward Bethlehem airport on a pleasure flight, Delta Delta Delta'.",
               "image": null,
               "correct": true
             },
             {
-              "label": "B",
-              "text": "Structured as just Call sign and Position only -- altitude, routing and intentions are optional extras.",
-              "image": null,
-              "correct": false
-            },
-            {
               "label": "C",
-              "text": "Structured as Aircraft type, Fuel state, Souls on board, and ETA -- the standard format for any general aviation broadcast.",
+              "text": "Structured as Aircraft type, Fuel state, Souls on board, and Estimated Time of Arrival -- the standard format used for any general aviation position report, regardless of whether the flight itself is powered or unpowered.",
               "image": null,
               "correct": false
             },
             {
               "label": "D",
-              "text": "Structured as Call sign, Altitude and Squawk code only -- position and intentions are covered by radar.",
+              "text": "Structured as Call sign, Altitude and Squawk code only -- e.g. 'Delta Delta Delta, 500ft, squawking 7000' -- since position and intentions are assumed to already be covered automatically by radar in that area.",
               "image": null,
               "correct": false
             }
@@ -477,19 +477,19 @@
             },
             {
               "label": "B",
-              "text": "Only before each flight -- post-flight checks are optional once the pilot is experienced.",
+              "text": "Only after any flight where something felt unusual in the air, such as extra vibration or a rough-running engine -- routine, uneventful flights don't generally call for a hands-on inspection afterwards.",
               "image": null,
               "correct": false
             },
             {
               "label": "C",
-              "text": "Only at the manufacturer's hourly service intervals -- a visual check before each flight isn't necessary.",
+              "text": "At the manufacturer's specified hourly service intervals only -- a quick visual check before each individual flight isn't strictly necessary provided the unit was serviced correctly and on schedule.",
               "image": null,
               "correct": false
             },
             {
               "label": "D",
-              "text": "Only after any flight where something felt unusual -- routine flights don't need inspection.",
+              "text": "Before each flight only -- a thorough pre-flight walk-round is essential, but post-flight checks become optional once a pilot has built up enough hours to reliably feel when something on the unit isn't right.",
               "image": null,
               "correct": false
             }
@@ -508,25 +508,25 @@
           "options": [
             {
               "label": "A",
+              "text": "Disconnect the harness carabiners from the motor while still in flight and continue the landing approach on the wing alone, leaving the running motor to free-fall separately once clear of the pilot.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
               "text": "Climb to at least 500ft AGL first, then try flooding the carburettor, covering the air filter/carb intake, pinching the fuel line, pulling the spark plug lead (not the plug itself), closing the fuel or air valve, or using the secondary safety switch if fitted.",
               "image": null,
               "correct": true
             },
             {
-              "label": "B",
-              "text": "Land immediately regardless of altitude and switch the ignition off once on the ground.",
-              "image": null,
-              "correct": false
-            },
-            {
               "label": "C",
-              "text": "Increase throttle to maximum to force the engine to flood and stall itself.",
+              "text": "Land immediately regardless of your current altitude, treating the approach and landing as the priority, and only switch the ignition off at the magneto or battery terminal once the unit is safely down on the ground.",
               "image": null,
               "correct": false
             },
             {
               "label": "D",
-              "text": "Disconnect the harness from the motor in flight and continue the approach on the wing alone.",
+              "text": "Increase the throttle to maximum power deliberately, aiming to force the engine to flood itself on excess fuel and stall out on its own, then glide the remainder of the approach with the propeller stopped.",
               "image": null,
               "correct": false
             }
@@ -551,19 +551,19 @@
             },
             {
               "label": "B",
-              "text": "To reduce airspeed for a more controlled, slower landing approach.",
+              "text": "To reduce airspeed and give a more controlled, slower approach on landing, particularly useful in gusty conditions where extra margin above stall speed is wanted during the final stages of the flare.",
               "image": null,
               "correct": false
             },
             {
               "label": "C",
-              "text": "To trim the wing for hands-free straight and level cruising.",
+              "text": "To trim the wing for comfortable, hands-free straight and level cruising over longer distances, freeing the pilot's hands for navigation, radio calls, or adjusting the harness during extended flights.",
               "image": null,
               "correct": false
             },
             {
               "label": "D",
-              "text": "To increase glide ratio when searching for lift in weak thermals.",
+              "text": "To increase glide ratio when searching for lift in weak thermal conditions, letting the pilot cover more ground per foot of height lost while working a thermal that hasn't yet built up much strength.",
               "image": null,
               "correct": false
             }
@@ -588,19 +588,19 @@
             },
             {
               "label": "B",
-              "text": "Set, they reduce angle of attack for a faster take-off run; released, they slow the wing down for landing.",
+              "text": "They only affect trim speed during normal cruise flight -- take-off performance and canopy inflation behaviour are essentially unaffected by whatever position the trim tabs are set to before launch.",
               "image": null,
               "correct": false
             },
             {
               "label": "C",
-              "text": "They only affect trim speed in cruise -- take-off and inflation are unaffected by their setting.",
+              "text": "Set, they reduce the wing's angle of attack to shorten the take-off run; released, they slow the wing down noticeably, which is useful for a softer, more controlled landing in confined spaces.",
               "image": null,
               "correct": false
             },
             {
               "label": "D",
-              "text": "They exist purely for pilot comfort and have no aerodynamic effect on take-off or inflation.",
+              "text": "They exist mainly for pilot comfort during long flights and have no meaningful aerodynamic effect on either the take-off run or how the canopy inflates during the launch sequence.",
               "image": null,
               "correct": false
             }
@@ -619,25 +619,25 @@
           "options": [
             {
               "label": "A",
-              "text": "Stay aware of nearby gliders, look before you turn, keep enough separation to avoid touching wingtips, watch for prop wash, and observe right-of-way rules.",
+              "text": "Only wind direction needs watching when flying near others -- spacing between gliders and right-of-way in a turn are set entirely by air traffic control rather than by the pilots themselves.",
               "image": null,
-              "correct": true
+              "correct": false
             },
             {
               "label": "B",
-              "text": "Only your own altitude and heading -- other pilots are responsible for avoiding you.",
+              "text": "Only radio communication matters for safe formation flying -- a good visual lookout for other gliders isn't really necessary provided everyone announces their position regularly on frequency.",
               "image": null,
               "correct": false
             },
             {
               "label": "C",
-              "text": "Only radio communication -- visual lookout isn't necessary if everyone announces their position.",
+              "text": "Stay aware of nearby gliders, look before you turn, keep enough separation to avoid touching wingtips, watch for prop wash, and observe right-of-way rules.",
               "image": null,
-              "correct": false
+              "correct": true
             },
             {
               "label": "D",
-              "text": "Only wind direction -- spacing and right-of-way are set entirely by air traffic control.",
+              "text": "Only your own altitude and heading really matter -- other pilots flying nearby are responsible for keeping clear of you and adjusting their own flight path to avoid any conflict.",
               "image": null,
               "correct": false
             }
@@ -656,25 +656,25 @@
           "options": [
             {
               "label": "A",
+              "text": "The left-hand pilot climbs while the right-hand pilot descends, with both maintaining their existing heading rather than turning, so as to gain vertical separation without changing course.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
               "text": "The left-hand pilot decreases power and turns left; the right-hand pilot increases power and turns right -- both establish vertical and horizontal separation by turning away from each other.",
               "image": null,
               "correct": true
             },
             {
-              "label": "B",
-              "text": "Both pilots should turn toward each other and match altitude to re-establish visual contact.",
-              "image": null,
-              "correct": false
-            },
-            {
               "label": "C",
-              "text": "The left-hand pilot climbs while the right-hand pilot descends, both maintaining heading.",
+              "text": "Both pilots should turn toward each other and try to match altitude, re-establishing eye contact so each can visually confirm the other's wing hasn't been damaged before continuing the flight.",
               "image": null,
               "correct": false
             },
             {
               "label": "D",
-              "text": "Both pilots should cut power immediately and glide straight ahead until clear.",
+              "text": "Both pilots should cut power immediately and glide straight ahead on the existing heading until well clear of one another, without turning left or right in either direction.",
               "image": null,
               "correct": false
             }
@@ -693,25 +693,25 @@
           "options": [
             {
               "label": "A",
-              "text": "Never exceed a 2:1 distance-to-height ratio, always stay within gliding range of the shore, and carry an auto-floatation device (e.g. power float/Agama) if flying over water.",
+              "text": "Stay within a 1:1 distance-to-height ratio at all times, and wear a personal life jacket rather than an auto-floatation device fitted to the unit itself when planning to fly out over open water.",
               "image": null,
-              "correct": true
+              "correct": false
             },
             {
               "label": "B",
-              "text": "Stay within a 1:1 distance-to-height ratio and always wear a life jacket instead of a floatation device.",
+              "text": "There's no fixed ratio to worry about -- any distance out over the water is acceptable provided you remain above roughly 1000ft AGL for the entire time you're out over the lake, dam or coastline.",
               "image": null,
               "correct": false
             },
             {
               "label": "C",
-              "text": "There's no fixed ratio -- any distance is fine provided you remain above 1000ft AGL.",
+              "text": "Never exceed a 2:1 distance-to-height ratio, always stay within gliding range of the shore, and carry an auto-floatation device (e.g. power float/Agama) if flying over water.",
               "image": null,
-              "correct": false
+              "correct": true
             },
             {
               "label": "D",
-              "text": "A 4:1 distance-to-height ratio is safe provided the water is calm and close to shore.",
+              "text": "A 4:1 distance-to-height ratio is considered safe provided the water is calm and you remain reasonably close to shore, without needing any additional floatation equipment fitted or carried.",
               "image": null,
               "correct": false
             }
@@ -736,27 +736,27 @@
           "options": [
             {
               "label": "A",
-              "text": "To record training progress, support licence and renewal applications, provide proof of experience and licences received, and track engine hours for servicing intervals.",
+              "text": "Mainly to keep servicing records for the engine -- training progress and licence applications are tracked separately by the CFI using the syllabus sign-off sheet, not the pilot's own personal log.",
               "image": null,
-              "correct": true
+              "correct": false
             },
             {
               "label": "B",
-              "text": "Only to record training progress -- servicing and licensing records are kept separately by the CFI.",
+              "text": "Mainly to record training progress toward a rating -- proof of experience for licence applications comes from the CFI's own records, and engine hours are tracked on a separate service log kept with the unit.",
               "image": null,
               "correct": false
             },
             {
               "label": "C",
-              "text": "Only to prove engine hours for servicing -- training progress is tracked on the syllabus sign-off sheet instead.",
+              "text": "It matters only if you plan to compete or apply for an instructor rating later on -- for an ordinary recreational pilot flying for pleasure, keeping a personal log of hours isn't really necessary.",
               "image": null,
               "correct": false
             },
             {
               "label": "D",
-              "text": "Only required if you intend competing or applying for an instructor rating.",
+              "text": "To record training progress, support licence and renewal applications, provide proof of experience and licences received, and track engine hours for servicing intervals.",
               "image": null,
-              "correct": false
+              "correct": true
             }
           ],
           "stem_image": null,
@@ -773,27 +773,27 @@
           "options": [
             {
               "label": "A",
-              "text": "Doubled -- engine-out glide range simply doubles ft-for-ft with height.",
+              "text": "Doubled only -- engine-out glide distance simply doubles foot-for-foot as height above the ground increases, with no compounding effect on the area reachable.",
               "image": null,
               "correct": false
             },
             {
               "label": "B",
-              "text": "Tripled -- every extra 100ft adds three times the horizontal glide range.",
+              "text": "Increased by only 50% -- glide ratio flattens out noticeably as altitude increases, so doubling height adds far less reachable area than it would at low level.",
               "image": null,
               "correct": false
             },
             {
               "label": "C",
-              "text": "Four times greater -- doubling height quadruples the ground area reachable within glide range.",
+              "text": "Tripled -- every extra 100ft of height adds three times the horizontal glide range achievable before the wing reaches the ground in an engine-out scenario.",
               "image": null,
-              "correct": true
+              "correct": false
             },
             {
               "label": "D",
-              "text": "Increased by only 50% -- glide ratio flattens as altitude increases.",
+              "text": "Four times greater -- doubling your height above the ground quadruples the ground area reachable within gliding range, since that reachable area is a circle whose size grows with the square of the glide radius.",
               "image": null,
-              "correct": false
+              "correct": true
             }
           ],
           "stem_image": null,
@@ -810,9 +810,9 @@
           "options": [
             {
               "label": "A",
-              "text": "Below 1000ft AGL you must remain clear of cloud (no set distance specified); from 1000ft AGL up to FL100 you need at least 2000ft vertically and 500ft horizontally from cloud.",
+              "text": "You must remain at least 1000ft vertically and 1500ft horizontally from cloud at all altitudes, with no lower-level exemption.",
               "image": null,
-              "correct": true
+              "correct": false
             },
             {
               "label": "B",
@@ -822,15 +822,15 @@
             },
             {
               "label": "C",
-              "text": "You must remain at least 1000ft vertically and 1500ft horizontally from cloud at all altitudes, with no lower-level exemption.",
+              "text": "Cloud clearance rules apply above FL100 in controlled airspace -- below that level you may fly through cloud freely provided you remain in radio contact with the nearest air traffic control unit.",
               "image": null,
               "correct": false
             },
             {
               "label": "D",
-              "text": "Cloud clearance only applies above FL100 -- below that you may fly through cloud provided you remain in radio contact.",
+              "text": "Below 1000ft AGL you must remain clear of cloud (no set distance specified); from 1000ft AGL up to FL100 you need at least 2000ft vertically and 500ft horizontally from cloud.",
               "image": null,
-              "correct": false
+              "correct": true
             }
           ],
           "stem_image": null,
@@ -847,27 +847,27 @@
           "options": [
             {
               "label": "A",
-              "text": "30 minutes after official sunset, local time as published in the AIP.",
+              "text": "Official sunset itself only -- no further flying is permitted after that exact time is reached.",
               "image": null,
               "correct": false
             },
             {
               "label": "B",
-              "text": "15 minutes after official sunset, local time as published in the AIP.",
+              "text": "30 minutes after official sunset, local time as published in the AIP.",
               "image": null,
-              "correct": true
+              "correct": false
             },
             {
               "label": "C",
-              "text": "Until last light, at the pilot's own discretion.",
+              "text": "Until last light, entirely at the pilot's own discretion on the day.",
               "image": null,
               "correct": false
             },
             {
               "label": "D",
-              "text": "Official sunset itself -- no flying is permitted after that time.",
+              "text": "15 minutes after official sunset, local time as published in the AIP.",
               "image": null,
-              "correct": false
+              "correct": true
             }
           ],
           "stem_image": null,
@@ -890,19 +890,19 @@
             },
             {
               "label": "B",
-              "text": "Any current PPG licence, verbal consent from the passenger, and a helmet for each person -- no separate tandem rating is required.",
+              "text": "A tandem-rated wing is the only extra requirement -- the pilot's normal licence, motor and harness otherwise cover carrying a passenger without any further paperwork or fitting checks.",
               "image": null,
               "correct": false
             },
             {
               "label": "C",
-              "text": "A tandem-rated wing only -- the pilot's normal licence and equipment otherwise cover a passenger.",
+              "text": "Any current PPG licence together with verbal consent from the passenger and a helmet for each person -- no separate tandem rating or additional equipment checks are required beyond that.",
               "image": null,
               "correct": false
             },
             {
               "label": "D",
-              "text": "SAHPA membership in good standing and the passenger's own signed medical declaration -- no additional licence or equipment checks apply.",
+              "text": "SAHPA membership in good standing plus the passenger's own signed medical declaration -- no additional licence, harness fit, or wing-rating checks apply beyond those two documents.",
               "image": null,
               "correct": false
             }
@@ -921,15 +921,15 @@
           "options": [
             {
               "label": "A",
-              "text": "Climb rate.",
-              "image": null,
-              "correct": true
-            },
-            {
-              "label": "B",
               "text": "Take-off distance.",
               "image": null,
               "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Climb rate.",
+              "image": null,
+              "correct": true
             },
             {
               "label": "C",
@@ -958,25 +958,25 @@
           "options": [
             {
               "label": "A",
-              "text": "Overall flying airspeed, stall speed, and take-off run/internal cell pressure -- all of these increase.",
-              "image": null,
-              "correct": true
-            },
-            {
-              "label": "B",
-              "text": "Only stall speed -- airspeed and take-off run stay the same regardless of weight.",
+              "text": "Stall speed alone -- airspeed and take-off run stay roughly the same regardless of how much total weight the pilot happens to be carrying on that particular flight.",
               "image": null,
               "correct": false
             },
             {
+              "label": "B",
+              "text": "Overall flying airspeed, stall speed, and take-off run all increase together, along with a higher internal cell pressure needed to keep the wing's shape stable at the higher wing loading.",
+              "image": null,
+              "correct": true
+            },
+            {
               "label": "C",
-              "text": "Only take-off run -- stall speed and airspeed are set by the wing, not pilot weight.",
+              "text": "Take-off run alone -- stall speed and airspeed are set mainly by the wing's own design rather than by the pilot's total take-off weight on any given day.",
               "image": null,
               "correct": false
             },
             {
               "label": "D",
-              "text": "Only overall airspeed -- stall speed actually decreases with more weight.",
+              "text": "Overall airspeed alone -- stall speed actually decreases slightly as the total take-off weight increases, contrary to what most pilots would expect to happen.",
               "image": null,
               "correct": false
             }
@@ -995,27 +995,27 @@
           "options": [
             {
               "label": "A",
-              "text": "Angle of attack.",
+              "text": "Relative wind line.",
               "image": null,
               "correct": false
             },
             {
               "label": "B",
-              "text": "Camber line.",
+              "text": "Angle of attack.",
               "image": null,
               "correct": false
             },
             {
               "label": "C",
-              "text": "Chord line.",
+              "text": "Camber line.",
               "image": null,
-              "correct": true
+              "correct": false
             },
             {
               "label": "D",
-              "text": "Relative wind line.",
+              "text": "Chord line.",
               "image": null,
-              "correct": false
+              "correct": true
             }
           ],
           "stem_image": null,
@@ -1038,21 +1038,21 @@
             },
             {
               "label": "B",
-              "text": "The angle between the horizon and the relative wind.",
-              "image": null,
-              "correct": false
-            },
-            {
-              "label": "C",
               "text": "The angle between the wing chord line and the vertical tail.",
               "image": null,
               "correct": false
             },
             {
-              "label": "D",
+              "label": "C",
               "text": "The angle between the wing chord line and the relative airflow.",
               "image": null,
               "correct": true
+            },
+            {
+              "label": "D",
+              "text": "The angle between the horizon and the relative wind.",
+              "image": null,
+              "correct": false
             }
           ],
           "stem_image": null,
@@ -1075,19 +1075,19 @@
             },
             {
               "label": "B",
-              "text": "The nose rises too far above the horizon.",
+              "text": "The engine loses power unexpectedly.",
               "image": null,
               "correct": false
             },
             {
               "label": "C",
-              "text": "The airspeed drops below trim speed.",
+              "text": "The nose rises too far above the horizon.",
               "image": null,
               "correct": false
             },
             {
               "label": "D",
-              "text": "The engine loses power unexpectedly.",
+              "text": "The airspeed drops below trim speed.",
               "image": null,
               "correct": false
             }
@@ -1106,25 +1106,25 @@
           "options": [
             {
               "label": "A",
-              "text": "Flying hands-up, off speedbar, with trim tabs set to neutral.",
-              "image": null,
-              "correct": true
-            },
-            {
-              "label": "B",
-              "text": "Flying hands-up, on full speedbar, with trim tabs set to neutral.",
+              "text": "Flying as slowly as possible with trim tabs fully retracted.",
               "image": null,
               "correct": false
             },
             {
-              "label": "C",
+              "label": "B",
               "text": "Flying at roughly 50% throttle with light brake pressure held.",
               "image": null,
               "correct": false
             },
             {
+              "label": "C",
+              "text": "Flying hands-up, off speedbar, with trim tabs set to neutral.",
+              "image": null,
+              "correct": true
+            },
+            {
               "label": "D",
-              "text": "Flying as slowly as possible with trim tabs fully retracted.",
+              "text": "Flying hands-up, on full speedbar, with trim tabs set to neutral.",
               "image": null,
               "correct": false
             }
@@ -1143,27 +1143,27 @@
           "options": [
             {
               "label": "A",
-              "text": "Downwind of any high ground.",
+              "text": "As fast as possible, held well past trim speed.",
               "image": null,
               "correct": false
             },
             {
               "label": "B",
-              "text": "As fast as possible, well past trim speed.",
+              "text": "At trim speed, hands up and off the speedbar.",
               "image": null,
-              "correct": false
+              "correct": true
             },
             {
               "label": "C",
-              "text": "As slowly as possible, close to stall.",
+              "text": "Downwind of any high ground you can find nearby.",
               "image": null,
               "correct": false
             },
             {
               "label": "D",
-              "text": "At trim speed.",
+              "text": "As slowly as possible, flown close to stall.",
               "image": null,
-              "correct": true
+              "correct": false
             }
           ],
           "stem_image": null,
@@ -1180,27 +1180,27 @@
           "options": [
             {
               "label": "A",
-              "text": "Turning to the right.",
+              "text": "Turning to the left instead of to the right, the opposite of the standard rule.",
               "image": null,
-              "correct": true
+              "correct": false
             },
             {
               "label": "B",
-              "text": "Turning to the left.",
+              "text": "Climbing steeply to pass above the other aircraft's current flight path instead.",
               "image": null,
               "correct": false
             },
             {
               "label": "C",
-              "text": "Climbing above the other aircraft's flight path.",
+              "text": "Descending quickly to pass below the other aircraft's current flight path instead.",
               "image": null,
               "correct": false
             },
             {
               "label": "D",
-              "text": "Descending below the other aircraft's flight path.",
+              "text": "Turning to the right, per the standard head-on right-of-way rule.",
               "image": null,
-              "correct": false
+              "correct": true
             }
           ],
           "stem_image": null,
@@ -1217,21 +1217,21 @@
           "options": [
             {
               "label": "A",
-              "text": "38 km/h",
+              "text": "28 km/h",
               "image": null,
               "correct": false
             },
             {
               "label": "B",
-              "text": "48 km/h",
+              "text": "38 km/h",
               "image": null,
-              "correct": true
+              "correct": false
             },
             {
               "label": "C",
-              "text": "28 km/h",
+              "text": "48 km/h",
               "image": null,
-              "correct": false
+              "correct": true
             },
             {
               "label": "D",
@@ -1254,13 +1254,13 @@
           "options": [
             {
               "label": "A",
-              "text": "In any attitude, including turns, climbs and descents.",
+              "text": "Only in straight and level flight at a constant speed.",
               "image": null,
-              "correct": false
+              "correct": true
             },
             {
               "label": "B",
-              "text": "Only when flown below manoeuvring speed.",
+              "text": "In any attitude, including turns, climbs and descents.",
               "image": null,
               "correct": false
             },
@@ -1272,9 +1272,9 @@
             },
             {
               "label": "D",
-              "text": "Only in straight and level flight at a constant speed.",
+              "text": "Only when flown below the wing's specified manoeuvring speed limit.",
               "image": null,
-              "correct": true
+              "correct": false
             }
           ],
           "stem_image": null,
@@ -1291,27 +1291,27 @@
           "options": [
             {
               "label": "A",
-              "text": "Stratus clouds.",
+              "text": "Near high, wispy cirrus clouds well above the altitudes normal PPG flying takes place at.",
               "image": null,
               "correct": false
             },
             {
               "label": "B",
-              "text": "Fog.",
+              "text": "Near cumulus clouds, especially tall, building cumulus with strong vertical development.",
               "image": null,
-              "correct": false
+              "correct": true
             },
             {
               "label": "C",
-              "text": "Cirrus clouds.",
+              "text": "Near fog or low-lying mist sitting close to the ground on a calm, still morning.",
               "image": null,
               "correct": false
             },
             {
               "label": "D",
-              "text": "Cumulus clouds.",
+              "text": "Near flat, featureless stratus cloud layers that show little or no vertical development at all.",
               "image": null,
-              "correct": true
+              "correct": false
             }
           ],
           "stem_image": null,
@@ -1334,19 +1334,19 @@
             },
             {
               "label": "B",
-              "text": "Only near mountains -- time of day and terrain elsewhere make little difference.",
+              "text": "Mostly near mountains -- the time of day and terrain elsewhere generally make only a small difference to how rough the air feels.",
               "image": null,
               "correct": false
             },
             {
               "label": "C",
-              "text": "Only in the early morning, before the ground has warmed up.",
+              "text": "Mainly directly over open water, well away from any terrain features, buildings or other obstacles that might disturb the airflow.",
               "image": null,
               "correct": false
             },
             {
               "label": "D",
-              "text": "Only directly over open water, away from any terrain or buildings.",
+              "text": "Mainly in the early morning hours, before the ground has had a chance to warm up and start generating any convective activity.",
               "image": null,
               "correct": false
             }
@@ -1365,27 +1365,27 @@
           "options": [
             {
               "label": "A",
-              "text": "To keep the sport self-regulating, provide third-party aviation insurance, run a safety-oriented licensing system, and give the sport international recognition.",
+              "text": "Mainly to manufacture and formally approve equipment sold to pilots in South Africa, similar to a national standards body.",
               "image": null,
-              "correct": true
+              "correct": false
             },
             {
               "label": "B",
-              "text": "Purely to organise national competitions and record badge flights.",
+              "text": "Mainly to act as a social club connecting pilots around the country, without taking on much of a regulatory or insurance role.",
               "image": null,
               "correct": false
             },
             {
               "label": "C",
-              "text": "Solely to manufacture and approve equipment sold in South Africa.",
+              "text": "Mainly to organise national competitions, record badge flights, and rank pilots on a national scoreboard for each discipline.",
               "image": null,
               "correct": false
             },
             {
               "label": "D",
-              "text": "Only to act as a social club for pilots, with no regulatory or insurance role.",
+              "text": "To keep the sport self-regulating, provide third-party aviation insurance, run a safety-oriented licensing system, and give the sport international recognition.",
               "image": null,
-              "correct": false
+              "correct": true
             }
           ],
           "stem_image": null,
@@ -1402,27 +1402,27 @@
           "options": [
             {
               "label": "A",
-              "text": "Check the fuel/oil mixture ratio.",
+              "text": "Confirm there is a sufficient quantity of fuel on board for the planned flight.",
               "image": null,
               "correct": false
             },
             {
               "label": "B",
-              "text": "Check for sufficient fuel quantity.",
+              "text": "Call \"clear prop\" and confirm the prop area is clear of people.",
               "image": null,
-              "correct": false
+              "correct": true
             },
             {
               "label": "C",
-              "text": "Complete a full pre-flight inspection.",
+              "text": "Complete one final full walk-around pre-flight inspection of the whole unit.",
               "image": null,
               "correct": false
             },
             {
               "label": "D",
-              "text": "Call \"clear prop\" and confirm the prop area is clear of people.",
+              "text": "Double-check the fuel-to-oil mixture ratio is correctly blended for that tank.",
               "image": null,
-              "correct": true
+              "correct": false
             }
           ],
           "stem_image": null,
@@ -1476,25 +1476,25 @@
           "options": [
             {
               "label": "A",
-              "text": "Never -- Restricted Areas may not be entered under any circumstance.",
-              "image": null,
-              "correct": false
-            },
-            {
-              "label": "B",
               "text": "After receiving permission from the appropriate authority.",
               "image": null,
               "correct": true
             },
             {
+              "label": "B",
+              "text": "Only at weekends, when the areas are officially closed.",
+              "image": null,
+              "correct": false
+            },
+            {
               "label": "C",
-              "text": "Whenever you wish, provided you exercise extreme caution.",
+              "text": "Never -- Restricted Areas may not be entered under any circumstance.",
               "image": null,
               "correct": false
             },
             {
               "label": "D",
-              "text": "Only at weekends, when the areas are officially closed.",
+              "text": "Whenever you wish, provided you exercise extreme caution.",
               "image": null,
               "correct": false
             }
@@ -1513,27 +1513,27 @@
           "options": [
             {
               "label": "A",
-              "text": "Never -- Prohibited Areas may not be entered under any circumstance.",
+              "text": "Any time between official sunset and official sunrise, when the area is considered officially inactive.",
               "image": null,
               "correct": false
             },
             {
               "label": "B",
-              "text": "Only with a written waiver from the CAA Administrator or their designee.",
+              "text": "With informal verbal permission from whichever agency happens to be controlling that airspace at the time.",
               "image": null,
-              "correct": true
+              "correct": false
             },
             {
               "label": "C",
-              "text": "With verbal permission from the controlling agency.",
+              "text": "Never at all -- Prohibited Areas may not be entered under any circumstance, no matter the reason given.",
               "image": null,
               "correct": false
             },
             {
               "label": "D",
-              "text": "Any time between official sunset and official sunrise.",
+              "text": "Only with a written waiver from the CAA Administrator or their designee.",
               "image": null,
-              "correct": false
+              "correct": true
             }
           ],
           "stem_image": null,
@@ -1550,27 +1550,27 @@
           "options": [
             {
               "label": "A",
-              "text": "126.7 MHz",
-              "image": null,
-              "correct": false
-            },
-            {
-              "label": "B",
-              "text": "124.8 MHz",
-              "image": null,
-              "correct": false
-            },
-            {
-              "label": "C",
               "text": "130.35 MHz",
               "image": null,
               "correct": false
             },
             {
-              "label": "D",
+              "label": "B",
+              "text": "126.7 MHz",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
               "text": "121.5 MHz",
               "image": null,
               "correct": true
+            },
+            {
+              "label": "D",
+              "text": "124.8 MHz",
+              "image": null,
+              "correct": false
             }
           ],
           "stem_image": null,
@@ -1593,19 +1593,19 @@
             },
             {
               "label": "B",
-              "text": "Only a stronger headwind; the other factors make no real difference.",
+              "text": "Mainly a stronger headwind -- the other factors listed make comparatively little practical difference to the length of run needed.",
               "image": null,
               "correct": false
             },
             {
               "label": "C",
-              "text": "Only higher altitude; humidity and QNH are negligible.",
+              "text": "Mainly higher altitude -- humidity and the current QNH setting are largely negligible by comparison for take-off performance.",
               "image": null,
               "correct": false
             },
             {
               "label": "D",
-              "text": "Only lower QNH; wind and altitude have no effect.",
+              "text": "Mainly a lower QNH reading -- wind strength and altitude have comparatively little effect on the length of the take-off run.",
               "image": null,
               "correct": false
             }
@@ -1624,25 +1624,25 @@
           "options": [
             {
               "label": "A",
+              "text": "Adjusted the same way regardless of altitude, QNH or humidity, since none of those affect mixture in practice.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
               "text": "Richened as altitude decreases (the denser, lower air needs more fuel for the same ratio).",
               "image": null,
               "correct": true
             },
             {
-              "label": "B",
-              "text": "Richened whenever QNH is low, regardless of altitude flown.",
-              "image": null,
-              "correct": false
-            },
-            {
               "label": "C",
-              "text": "Richened for higher humidity, since damp air needs extra fuel to combust cleanly.",
+              "text": "Richened whenever the QNH reading is low that day, regardless of the actual altitude being flown at the time.",
               "image": null,
               "correct": false
             },
             {
               "label": "D",
-              "text": "Adjusted the same way regardless of altitude, QNH or humidity.",
+              "text": "Richened for higher humidity conditions, since the theory goes that damp air needs extra fuel to combust cleanly.",
               "image": null,
               "correct": false
             }
@@ -1667,19 +1667,19 @@
             },
             {
               "label": "B",
-              "text": "Below 1500ft AGL the subscale is set to QNE; above transition altitude it's set to local QNH.",
+              "text": "Altitude is always given in feet throughout the flight, even once the subscale has been switched over to the standard QNE setting above the transition altitude.",
               "image": null,
               "correct": false
             },
             {
               "label": "C",
-              "text": "The altimeter subscale is always set to QNE, regardless of altitude flown.",
+              "text": "The altimeter subscale is always kept set to standard pressure QNE regardless of altitude flown, with altitude reported in feet at every stage of the flight, never as a Flight Level.",
               "image": null,
               "correct": false
             },
             {
               "label": "D",
-              "text": "Altitude is always given in feet, even once the subscale is set to QNE.",
+              "text": "Below 1500ft AGL the subscale is set to QNE while above transition altitude it's set to local QNH, with altitude given as a Flight Level only below that transition layer.",
               "image": null,
               "correct": false
             }
@@ -1698,25 +1698,25 @@
           "options": [
             {
               "label": "A",
+              "text": "Increased when flying into a headwind and correspondingly reduced when flying with a tailwind.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
               "text": "Affected by your throttle setting; unaffected by windspeed or direction.",
               "image": null,
               "correct": true
             },
             {
-              "label": "B",
-              "text": "Increased in a headwind and reduced in a tailwind.",
-              "image": null,
-              "correct": false
-            },
-            {
               "label": "C",
-              "text": "Reduced in a headwind and increased in a tailwind.",
+              "text": "Reduced when flying into a headwind and correspondingly increased when flying with a tailwind.",
               "image": null,
               "correct": false
             },
             {
               "label": "D",
-              "text": "Unaffected by throttle setting; determined entirely by wind.",
+              "text": "Unaffected by throttle setting at all -- determined entirely by the wind's speed and direction.",
               "image": null,
               "correct": false
             }
@@ -1735,25 +1735,25 @@
           "options": [
             {
               "label": "A",
-              "text": "Increased in a headwind, increased with added power, reduced at a faster airspeed trim, and reduced in turns.",
+              "text": "Mainly increased in a headwind -- power setting and trim speed make comparatively little difference to the resulting angle of climb.",
               "image": null,
-              "correct": true
+              "correct": false
             },
             {
               "label": "B",
-              "text": "Only increased with added power -- wind and trim speed make no difference to angle of climb.",
+              "text": "Reduced in a headwind and increased at a faster airspeed trim, the reverse of how rate of climb typically behaves in those same conditions.",
               "image": null,
               "correct": false
             },
             {
               "label": "C",
-              "text": "Only increased in a headwind -- power setting and trim speed make no difference.",
+              "text": "Increased in a headwind, increased with added power, reduced at a faster airspeed trim, and reduced in turns.",
               "image": null,
-              "correct": false
+              "correct": true
             },
             {
               "label": "D",
-              "text": "Reduced in a headwind and increased at a faster airspeed trim.",
+              "text": "Mainly increased with added power -- wind strength and trim speed setting make comparatively little difference to the resulting angle of climb.",
               "image": null,
               "correct": false
             }
@@ -1772,25 +1772,25 @@
           "options": [
             {
               "label": "A",
-              "text": "Go to full power immediately and increase brake pressure.",
-              "image": null,
-              "correct": false
-            },
-            {
-              "label": "B",
-              "text": "Come to idle power immediately and pump the brakes.",
-              "image": null,
-              "correct": false
-            },
-            {
-              "label": "C",
               "text": "Maintain roughly 3/4 power and catch the pendulum as the glider surges forward.",
               "image": null,
               "correct": true
             },
             {
+              "label": "B",
+              "text": "Come to idle power immediately and pump the brakes rapidly to try to force the glider back overhead.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Go to full power immediately while also increasing brake pressure to try to punch straight through the thermal.",
+              "image": null,
+              "correct": false
+            },
+            {
               "label": "D",
-              "text": "Do nothing and let the glider recover on its own.",
+              "text": "Do nothing at all and simply let the glider find its own way to recover without any pilot input.",
               "image": null,
               "correct": false
             }

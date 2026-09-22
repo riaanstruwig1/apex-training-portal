@@ -71,13 +71,13 @@ export async function buildExamDocx(
   exam: ExamDetail,
   attempt: AttemptView
 ) {
-  // The PG exam's cover page is a byte-for-byte replica of the official
-  // SAHPA/SACAA master paper the student handed us -- logo, the fraction
-  // marks table, and verbatim instructional text -- and none of that
-  // belongs on any other exam. Every other category (currently just the
-  // RT radio exam) gets a plain, honest cover instead: no SAHPA branding,
-  // no invented regulatory text, just the student's answers and score.
-  const isPGMasterPaper = exam.category === "pg";
+  // The PG and PPG exams' cover pages are byte-for-byte replicas of their
+  // official SAHPA/SACAA master papers -- logo, the fraction marks table,
+  // and verbatim instructional text -- and none of that belongs on any
+  // other exam. Every other category (currently just the RT radio exam)
+  // gets a plain, honest cover instead: no SAHPA branding, no invented
+  // regulatory text, just the student's answers and score.
+  const useSahpaMasterCover = exam.category === "pg" || exam.category === "ppg";
 
   const dateWritten = attempt.submittedAt
     ? attempt.submittedAt.toLocaleDateString()
@@ -85,7 +85,7 @@ export async function buildExamDocx(
   const dateMarked = attempt.verifiedAt ? attempt.verifiedAt.toLocaleDateString() : "";
   const instructorName = attempt.verifiedByName ?? "";
 
-  const logoPara = isPGMasterPaper
+  const logoPara = useSahpaMasterCover
     ? await loadLogo().then(
         (logo) =>
           new Paragraph({
@@ -186,7 +186,7 @@ export async function buildExamDocx(
   // that multi-section "airlaw etc." shape. Every other exam (the
   // single-section RT radio exam, and anything else added later) gets a
   // plain "score / total (percent)" line instead -- no invented table.
-  const marksTable = isPGMasterPaper
+  const marksTable = useSahpaMasterCover
     ? new Table({
         width: { size: 100, type: WidthType.PERCENTAGE },
         borders: NO_BORDERS,
@@ -213,7 +213,7 @@ export async function buildExamDocx(
         bold: true,
         color: attempt.passed ? "1a7a3a" : "c0392b",
       }),
-      ...(isPGMasterPaper && !attempt.mustPassSectionsOk
+      ...(useSahpaMasterCover && !attempt.mustPassSectionsOk
         ? [
             new TextRun({
               text: "  (not every Airlaw question was correct -- those must all be right to pass)",
@@ -239,66 +239,119 @@ export async function buildExamDocx(
     );
   }
 
-  // Verbatim from the SACAA/SAHPA master paper -- do not reword, this is
-  // the instruction block students and instructors expect to see. Only
-  // applies to the PG exam that paper actually belongs to; other exams
-  // get a short factual note instead of borrowed regulatory language.
-  const instructionParas = isPGMasterPaper
-    ? [
-        new Paragraph({
-          spacing: { after: 80 },
-          children: [
-            new TextRun({
-              text: "You are encouraged to complete this paper as soon as convenient, during or after your course, whilst all information is still fresh in your mind.",
-            }),
-          ],
+  // Verbatim from each exam's own SACAA/SAHPA master paper -- do not
+  // reword, this is the instruction block students and instructors
+  // expect to see. Only PG and PPG have a master paper this text belongs
+  // to; other exams get a short factual note instead of borrowed
+  // regulatory language.
+  const pgInstructionParas = [
+    new Paragraph({
+      spacing: { after: 80 },
+      children: [
+        new TextRun({
+          text: "You are encouraged to complete this paper as soon as convenient, during or after your course, whilst all information is still fresh in your mind.",
         }),
-        new Paragraph({
-          spacing: { after: 200 },
-          children: [new TextRun({ text: "All 'airlaw' questions to be passed.", bold: true })],
+      ],
+    }),
+    new Paragraph({
+      spacing: { after: 200 },
+      children: [new TextRun({ text: "All 'airlaw' questions to be passed.", bold: true })],
+    }),
+    new Paragraph({
+      spacing: { after: 40 },
+      children: [
+        new TextRun({
+          text: "NOTE: This is an open book research examination. Please answer concisely. The test answers must be your own effort and should not be copied from others!",
         }),
-        new Paragraph({
-          spacing: { after: 40 },
-          children: [
-            new TextRun({
-              text: "NOTE: This is an open book research examination. Please answer concisely. The test answers must be your own effort and should not be copied from others!",
-            }),
-          ],
+      ],
+    }),
+    new Paragraph({
+      spacing: { after: 40 },
+      children: [
+        new TextRun({
+          text: "Draw sketches where required (distinguish between describe and/or illustrate).",
         }),
-        new Paragraph({
-          spacing: { after: 40 },
-          children: [
-            new TextRun({
-              text: "Draw sketches where required (distinguish between describe and/or illustrate).",
-            }),
-          ],
+      ],
+    }),
+    new Paragraph({
+      spacing: { after: 40 },
+      children: [
+        new TextRun({ text: "Where sketches are provided, write/draw answers on them." }),
+      ],
+    }),
+    new Paragraph({
+      spacing: { after: 300 },
+      children: [
+        new TextRun({
+          text: "The test can be completed online and then printed to finish the drawings/illustrations and hard copy to be submitted to your instructor.",
         }),
-        new Paragraph({
-          spacing: { after: 40 },
-          children: [
-            new TextRun({ text: "Where sketches are provided, write/draw answers on them." }),
-          ],
+      ],
+    }),
+  ];
+
+  const ppgInstructionParas = [
+    new Paragraph({
+      spacing: { after: 80 },
+      children: [
+        new TextRun({
+          text: "You are encouraged to complete this paper as soon as convenient, after or during your course, whilst all information is still fresh in your mind.",
         }),
-        new Paragraph({
-          spacing: { after: 300 },
-          children: [
-            new TextRun({
-              text: "The test can be completed online and then printed to finish the drawings/illustrations and hard copy to be submitted to your instructor.",
-            }),
-          ],
+      ],
+    }),
+    new Paragraph({
+      spacing: { after: 200 },
+      children: [new TextRun({ text: "Air law questions to be passed, 100%", bold: true })],
+    }),
+    new Paragraph({
+      spacing: { after: 40 },
+      children: [
+        new TextRun({
+          text: "NOTE: This is an open book research examination. Please answer concisely. The test answers must be your own effort, and should not be copied from others!",
         }),
-      ]
-    : [
-        new Paragraph({
-          spacing: { after: 300 },
-          children: [
-            new TextRun({
-              text: "Printed record of a completed online exam, for the training file.",
-              italics: true,
-            }),
-          ],
+      ],
+    }),
+    new Paragraph({
+      spacing: { after: 40 },
+      children: [
+        new TextRun({
+          text: "Draw sketches where required (distinguish between describe and/or illustrate).",
         }),
-      ];
+      ],
+    }),
+    new Paragraph({
+      spacing: { after: 40 },
+      children: [
+        new TextRun({ text: "Where sketches are provided, write answers on them." }),
+      ],
+    }),
+    new Paragraph({
+      spacing: { after: 300 },
+      children: [
+        new TextRun({
+          text: "All Answers must be typed out, NO handwritten Answers and must be in English.",
+        }),
+      ],
+    }),
+  ];
+
+  const genericInstructionParas = [
+    new Paragraph({
+      spacing: { after: 300 },
+      children: [
+        new TextRun({
+          text: "Printed record of a completed online exam, for the training file.",
+          italics: true,
+        }),
+      ],
+    }),
+  ];
+
+  const instructionParas =
+    exam.category === "pg"
+      ? pgInstructionParas
+      : exam.category === "ppg"
+        ? ppgInstructionParas
+        : genericInstructionParas;
 
   const body: (Paragraph | Table)[] = [
     ...(logoPara ? [logoPara] : []),
