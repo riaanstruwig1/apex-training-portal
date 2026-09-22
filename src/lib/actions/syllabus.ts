@@ -90,7 +90,10 @@ export async function addExercise(
       order: nextOrder,
     });
   } catch (err) {
-    const message = String(err);
+    // node:sqlite throws the actual "UNIQUE constraint failed" text on
+    // `err.cause`, not on the outer Drizzle "Failed query" error -- check
+    // both so this keeps working if that wrapping ever changes.
+    const message = `${String(err)} ${String((err as { cause?: unknown })?.cause ?? "")}`;
     if (message.includes("UNIQUE constraint failed") && message.includes("exercises.code")) {
       return {
         error: `Code "${parsed.code}" is already used somewhere else in the syllabus -- exercise codes must be unique across every section, not just this one. Try a different code (e.g. "${parsed.code}-2").`,
