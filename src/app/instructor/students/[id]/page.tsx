@@ -93,6 +93,13 @@ export default async function StudentFolioPage(
           {profile?.phone ? ` · ${profile.phone}` : ""}
           {profile?.dtoNumber ? ` · DTO ${profile.dtoNumber}` : ""}
         </p>
+        {/* Account creation date -- "when did they sign up", distinct from
+            profile.startDate below (when their actual TRAINING started,
+            which the CFI sets/edits by hand and is often blank). Riaan
+            asked for this 22 Sep 2026. */}
+        <p className="mt-0.5 text-xs text-slate-400">
+          Signed up {student.createdAt.toLocaleDateString()}
+        </p>
         {isCFI ? (
           <CallSignEditor
             studentUserId={id}
