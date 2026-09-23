@@ -7,6 +7,7 @@ const links = [
   { href: "/student", label: "My Portfolio" },
   { href: "/student/exercises", label: "Training folio" },
   { href: "/student/logbook", label: "Logbook" },
+  { href: "/student/forms-procedures", label: "Forms & procedures" },
 ];
 
 export default async function StudentLayout({

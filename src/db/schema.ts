@@ -563,6 +563,33 @@ export const studyMaterials = sqliteTable(
   (table) => [uniqueIndex("study_materials_slot_unique").on(table.slot)]
 );
 
+// ---------------------------------------------------------------------------
+// Forms & procedures: a separate CFI/Admin-managed upload library shown to
+// BOTH students and pilots (V22 rollout item 2, 23 Sep 2026) -- distinct
+// from study material above, which is student-only and has a fixed 8-slot
+// cap. This one starts at 10 slots but is open-ended ("10 plus an add
+// more"), so unlike study_materials there's no hard maximum enforced here;
+// getFormsProcedures() in lib/actions/forms-procedures.ts pads to whatever
+// the highest real slot number is, at minimum 10.
+// ---------------------------------------------------------------------------
+
+export const formsProcedures = sqliteTable(
+  "forms_procedures",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    slot: integer("slot").notNull(), // 1-10+, open-ended position in the list
+    title: text("title"), // null = this slot is empty/unused
+    filename: text("filename"), // stored filename under data/uploads/forms-procedures/
+    originalName: text("original_name"), // shown as the downloaded file's name
+    fileSize: integer("file_size"),
+    uploadedAt: integer("uploaded_at", { mode: "timestamp" }),
+    uploadedByUserId: text("uploaded_by_user_id").references(() => users.id),
+  },
+  (table) => [uniqueIndex("forms_procedures_slot_unique").on(table.slot)]
+);
+
 export const examAnswers = sqliteTable(
   "exam_answers",
   {

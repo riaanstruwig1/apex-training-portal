@@ -176,6 +176,13 @@
       "when": 1790090981651,
       "tag": "0024_overrated_donald_blake",
       "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "6",
+      "when": 1790157209581,
+      "tag": "0025_hot_mastermind",
+      "breakpoints": true
     }
   ]
 }

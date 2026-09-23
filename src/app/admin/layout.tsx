@@ -12,6 +12,7 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
   const sharedLinks = [
     { href: "/admin", label: "Verification queue", badge: pendingCount },
     { href: "/admin/pilots", label: "Pilots", badge: pendingPilotCount },
+    { href: "/admin/forms-procedures", label: "Forms & procedures" },
   ];
 
   return (

@@ -26,6 +26,7 @@ export default async function InstructorLayout({
     { href: "/instructor/syllabus", label: "Manage syllabus" },
     { href: "/instructor/exams", label: "Exam content" },
     { href: "/instructor/study-material", label: "Study material" },
+    { href: "/admin/forms-procedures", label: "Forms & procedures" },
     { href: "/admin", label: "Verification queue", badge: pendingCount },
     { href: "/admin/pilots", label: "Pilots", badge: pendingPilotCount },
     { href: "/instructor/settings", label: "Settings" },
