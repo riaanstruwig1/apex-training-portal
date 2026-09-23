@@ -17,6 +17,17 @@ export const users = sqliteTable("users", {
     .$defaultFn(() => crypto.randomUUID()),
   email: text("email").notNull().unique(),
   passwordHash: text("password_hash"), // null until an invited student/instructor sets a password
+  // Set when someone uses the "Forgot your password?" link on the login
+  // page (V22 rollout item 11, 23 Sep 2026) -- this app has no outbound
+  // email provider (see adminResetPassword's own comment), so there's no
+  // reset link to send. Instead this just flags the account for CFI/Admin
+  // attention on a dedicated queue page, same spirit as the verification
+  // queue; they call/message the person and reset it via the existing
+  // admin-reset-password flow. Cleared (set back to null) once a CFI/Admin
+  // has dealt with the request, whether by resetting or dismissing it.
+  passwordResetRequestedAt: integer("password_reset_requested_at", {
+    mode: "timestamp",
+  }),
   name: text("name").notNull(),
   // "cfi" = Chief Flight Instructor / admin: full access, incl. managing
   // students and other instructors, the syllabus, and settings.
@@ -89,6 +100,12 @@ export const users = sqliteTable("users", {
   // is routed to download-sign-upload (flightMedicalCertFile) instead.
   medicalDeclarationSignedAt: integer("medical_declaration_signed_at", { mode: "timestamp" }),
   medicalDeclarationSignedName: text("medical_declaration_signed_name"),
+  // When the declaration above stops counting -- V22 rollout item 9 (23 Sep
+  // 2026), always 12 months from medicalDeclarationSignedAt, set at sign
+  // time (see signOwnMedicalDeclaration). Null until first signed. Read-only
+  // derived data, kept as a real column (rather than computed on the fly)
+  // so it's a plain indexable date wherever it's displayed.
+  medicalDeclarationExpiresAt: integer("medical_declaration_expires_at", { mode: "timestamp" }),
   // Consent (CA 183-540) and Indemnity/Release -- required on every
   // application. Simple e-sign for now (typed full name + timestamp counts
   // as signature); populating the actual SACAA/SAHPA PDF is a later stage.

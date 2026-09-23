@@ -37,6 +37,13 @@ export default async function StudentProfileViewPage() {
         flightMedicalCertFile={fullUser?.flightMedicalCertFile ?? null}
         medicalDeclarationSignedAt={fullUser?.medicalDeclarationSignedAt ?? null}
         medicalDeclarationSignedName={fullUser?.medicalDeclarationSignedName ?? null}
+        medicalDeclarationExpiresAt={fullUser?.medicalDeclarationExpiresAt ?? null}
+        consentSigned={fullUser?.consentSigned ?? false}
+        consentSignedAt={fullUser?.consentSignedAt ?? null}
+        consentSignedName={fullUser?.consentSignedName ?? null}
+        indemnitySigned={fullUser?.indemnitySigned ?? false}
+        indemnitySignedAt={fullUser?.indemnitySignedAt ?? null}
+        indemnitySignedName={fullUser?.indemnitySignedName ?? null}
         signatureFile={fullUser?.signatureFile ?? null}
       />
     </div>

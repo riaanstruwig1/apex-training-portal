@@ -33,6 +33,35 @@ export function medicalDeclarationEligibility(
   return { eligible: true };
 }
 
+// How long a signed declaration counts for (V22 rollout item 9, 23 Sep
+// 2026) -- Riaan asked for a 12-month expiry, no separate reminder/renewal
+// mechanism requested yet, just a visible expiry date with colour-coded
+// warning as it approaches. Applied at sign time, not computed off a fixed
+// "12 months ago" cutoff, so a signature keeps its own expiry even if this
+// constant ever changes later.
+export const MEDICAL_DECLARATION_VALID_MONTHS = 12;
+
+export function medicalDeclarationExpiresAt(signedAt: Date): Date {
+  const expires = new Date(signedAt);
+  expires.setMonth(expires.getMonth() + MEDICAL_DECLARATION_VALID_MONTHS);
+  return expires;
+}
+
+export type MedicalDeclarationExpiryStatus = "none" | "valid" | "expiring_soon" | "expired";
+
+const EXPIRY_WARNING_WINDOW_DAYS = 30;
+
+export function medicalDeclarationExpiryStatus(
+  expiresAt: Date | null | undefined,
+  asOf: Date = new Date()
+): MedicalDeclarationExpiryStatus {
+  if (!expiresAt) return "none";
+  const daysLeft = (expiresAt.getTime() - asOf.getTime()) / (1000 * 60 * 60 * 24);
+  if (daysLeft < 0) return "expired";
+  if (daysLeft <= EXPIRY_WARNING_WINDOW_DAYS) return "expiring_soon";
+  return "valid";
+}
+
 // The Pilot's Declaration of Medical Fitness, quoted verbatim from the real
 // form so the online self-declare flow attests to exactly the same text the
 // paper form does -- never paraphrased.

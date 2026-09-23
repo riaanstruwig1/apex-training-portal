@@ -56,6 +56,7 @@ export default function ProfileEditForm({
   dob,
   medicalDeclarationSignedAt,
   medicalDeclarationSignedName,
+  medicalDeclarationExpiresAt,
   signatureFile,
   pilot,
 }: {
@@ -78,6 +79,7 @@ export default function ProfileEditForm({
   dob?: Date | null;
   medicalDeclarationSignedAt?: Date | null;
   medicalDeclarationSignedName?: string | null;
+  medicalDeclarationExpiresAt?: Date | null;
   signatureFile?: string | null;
   pilot?: {
     callSign: string | null;
@@ -213,6 +215,7 @@ export default function ProfileEditForm({
                   signatureFile={signatureFile}
                   signedAt={medicalDeclarationSignedAt ?? null}
                   signedName={medicalDeclarationSignedName ?? null}
+                  expiresAt={medicalDeclarationExpiresAt ?? null}
                 />
                 <p className="mt-3 text-xs text-slate-500">
                   Or, if you&rsquo;d rather not sign online:

@@ -2,17 +2,20 @@ import { requireAdminOrCFI } from "@/lib/auth/dal";
 import NavHeader from "@/components/nav-header";
 import { countPendingApplicants } from "@/lib/verification";
 import { countPendingPilotEndorsements } from "@/lib/pilots";
+import { countPasswordResetRequests } from "@/lib/password-resets";
 
 export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
   const user = await requireAdminOrCFI();
-  const [pendingCount, pendingPilotCount] = await Promise.all([
+  const [pendingCount, pendingPilotCount, pendingResetCount] = await Promise.all([
     countPendingApplicants(),
     countPendingPilotEndorsements(),
+    countPasswordResetRequests(),
   ]);
   const sharedLinks = [
     { href: "/admin", label: "Verification queue", badge: pendingCount },
     { href: "/admin/pilots", label: "Pilots", badge: pendingPilotCount },
     { href: "/admin/forms-procedures", label: "Forms & procedures" },
+    { href: "/admin/password-resets", label: "Password resets", badge: pendingResetCount },
   ];
 
   return (

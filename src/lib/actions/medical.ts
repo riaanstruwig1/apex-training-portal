@@ -6,7 +6,7 @@ import * as z from "zod";
 import { db } from "@/db";
 import { users } from "@/db/schema";
 import { getCurrentUser } from "@/lib/auth/dal";
-import { medicalDeclarationEligibility } from "@/lib/medical";
+import { medicalDeclarationEligibility, medicalDeclarationExpiresAt } from "@/lib/medical";
 
 /**
  * Online self-declare path for the SAHPA Appendix R62.22 "Pilot's
@@ -53,11 +53,13 @@ export async function signOwnMedicalDeclaration(
     return { error: parsed.error.issues[0]?.message ?? "Please type your full name." };
   }
 
+  const signedAt = new Date();
   await db
     .update(users)
     .set({
-      medicalDeclarationSignedAt: new Date(),
+      medicalDeclarationSignedAt: signedAt,
       medicalDeclarationSignedName: parsed.data.declaredName,
+      medicalDeclarationExpiresAt: medicalDeclarationExpiresAt(signedAt),
     })
     .where(eq(users.id, user.id));
 

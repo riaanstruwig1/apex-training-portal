@@ -7,7 +7,9 @@ import {
   MEDICAL_DECLARATION_BULLETS_1,
   MEDICAL_DECLARATION_FURTHER,
   MEDICAL_DECLARATION_BULLETS_2,
+  medicalDeclarationExpiresAt as computeExpiresAt,
 } from "@/lib/medical";
+import MedicalDeclarationStatus from "@/components/medical-declaration-status";
 
 /**
  * Online self-declare option for the SAHPA Appendix R62.22 "Pilot's
@@ -27,11 +29,13 @@ export default function MedicalDeclarationForm({
   signatureFile,
   signedAt,
   signedName,
+  expiresAt,
 }: {
   name: string;
   signatureFile?: string | null;
   signedAt: Date | null;
   signedName: string | null;
+  expiresAt?: Date | null;
 }) {
   const [isPending, startTransition] = useTransition();
   const [declaredName, setDeclaredName] = useState(signatureFile ? name : "");
@@ -56,14 +60,12 @@ export default function MedicalDeclarationForm({
 
   if (signedAt && !open && !justSigned) {
     return (
-      <div className="mt-2 flex items-center justify-between rounded-md border border-green-200 bg-green-50 px-3 py-2 text-xs text-green-800">
-        <span>
-          Signed by {signedName} on {signedAt.toLocaleDateString()}
-        </span>
+      <div className="mt-2 flex items-center justify-between gap-2 rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-xs">
+        <MedicalDeclarationStatus signedAt={signedAt} signedName={signedName} expiresAt={expiresAt ?? null} />
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="font-medium text-green-700 underline hover:text-green-900"
+          className="font-medium text-red-600 underline hover:text-red-700"
         >
           Re-sign
         </button>
@@ -72,9 +74,13 @@ export default function MedicalDeclarationForm({
   }
 
   if (justSigned) {
+    const now = new Date();
     return (
-      <div className="mt-2 rounded-md border border-green-200 bg-green-50 px-3 py-2 text-xs text-green-800">
-        Declaration saved -- signed by {declaredName} on {new Date().toLocaleDateString()}.
+      <div className="mt-2 space-y-1 rounded-md border border-green-200 bg-green-50 px-3 py-2 text-xs text-green-800">
+        <p>
+          Declaration saved -- signed by {declaredName} on {now.toLocaleDateString()}.
+        </p>
+        <p>Valid until {computeExpiresAt(now).toLocaleDateString()}.</p>
       </div>
     );
   }

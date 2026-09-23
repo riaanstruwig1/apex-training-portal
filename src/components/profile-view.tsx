@@ -1,5 +1,7 @@
 import Link from "next/link";
 import Avatar from "@/components/avatar";
+import MedicalDeclarationStatus from "@/components/medical-declaration-status";
+import ConsentBadge from "@/components/consent-badge";
 
 /** Read-only mirror of ProfileEditForm's own fields (V22 rollout item 5,
  * 23 Sep 2026 -- Riaan: "a button to view profile [alongside] the edit
@@ -63,6 +65,13 @@ export default function ProfileView({
   flightMedicalCertFile,
   medicalDeclarationSignedAt,
   medicalDeclarationSignedName,
+  medicalDeclarationExpiresAt,
+  consentSigned,
+  consentSignedAt,
+  consentSignedName,
+  indemnitySigned,
+  indemnitySignedAt,
+  indemnitySignedName,
   signatureFile,
   pilot,
 }: {
@@ -85,6 +94,13 @@ export default function ProfileView({
   flightMedicalCertFile: string | null;
   medicalDeclarationSignedAt: Date | null;
   medicalDeclarationSignedName: string | null;
+  medicalDeclarationExpiresAt: Date | null;
+  consentSigned: boolean;
+  consentSignedAt: Date | null;
+  consentSignedName: string | null;
+  indemnitySigned: boolean;
+  indemnitySignedAt: Date | null;
+  indemnitySignedName: string | null;
   signatureFile: string | null;
   pilot?: {
     callSign: string | null;
@@ -157,19 +173,40 @@ export default function ProfileView({
             filename={flightMedicalCertFile}
             label="Flight medical certificate"
           />
-          {medicalDeclarationSignedAt ? (
-            <div className="flex items-center justify-between rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-700">
-              Pilot&rsquo;s Declaration of Medical Fitness
-              <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800">
-                Signed by {medicalDeclarationSignedName} on{" "}
-                {medicalDeclarationSignedAt.toLocaleDateString()}
-              </span>
-            </div>
-          ) : (
-            <div className="flex items-center justify-between rounded-md border border-dashed border-slate-300 px-3 py-2 text-sm text-slate-400">
-              Pilot&rsquo;s Declaration of Medical Fitness <span>not signed</span>
-            </div>
-          )}
+          <div className="flex items-center justify-between rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-700">
+            Pilot&rsquo;s Declaration of Medical Fitness
+            <MedicalDeclarationStatus
+              signedAt={medicalDeclarationSignedAt}
+              signedName={medicalDeclarationSignedName}
+              expiresAt={medicalDeclarationExpiresAt}
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="rounded-xl border border-slate-200 bg-white p-5">
+        <h3 className="mb-2 text-sm font-semibold text-slate-900">Consent &amp; indemnity</h3>
+        <div className="flex flex-wrap gap-3">
+          <ConsentBadge signed={consentSigned} at={consentSignedAt} name={consentSignedName} />
+          <ConsentBadge signed={indemnitySigned} at={indemnitySignedAt} name={indemnitySignedName} />
+        </div>
+        <div className="mt-3 space-y-2">
+          <a
+            href="/documents/sacaa-client-consent-form.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-between rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50"
+          >
+            Client Consent Form (SACAA CA 183-540) <span className="text-red-600">View →</span>
+          </a>
+          <a
+            href="/documents/indemnity-assumption-of-risk.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-between rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50"
+          >
+            Indemnity / Assumption of Risk &amp; Release <span className="text-red-600">View →</span>
+          </a>
         </div>
       </div>
 

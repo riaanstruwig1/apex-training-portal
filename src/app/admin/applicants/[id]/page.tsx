@@ -10,6 +10,8 @@ import PilotEndorsementToggle from "./pilot-endorsement-toggle";
 import AdminProfileEditor from "./admin-profile-editor";
 import AdminGrantEndorsement from "./admin-grant-endorsement";
 import InstructorRatingsGrid from "./instructor-ratings-grid";
+import ConsentBadge from "@/components/consent-badge";
+import MedicalDeclarationStatus from "@/components/medical-declaration-status";
 
 const STAFF_ROLES = new Set(["cfi", "instructor"]);
 
@@ -49,18 +51,6 @@ function DocLink({
     >
       {label} <span className="text-red-600">View →</span>
     </a>
-  );
-}
-
-function ConsentBadge({ signed, at, name }: { signed: boolean; at: Date | null; name: string | null }) {
-  return signed ? (
-    <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800">
-      Signed by {name} on {at?.toLocaleDateString()}
-    </span>
-  ) : (
-    <span className="inline-flex items-center gap-1 rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800">
-      Not signed
-    </span>
   );
 }
 
@@ -171,10 +161,10 @@ export default async function ApplicantReviewPage({
           {applicant.medicalDeclarationSignedAt && (
             <div className="flex items-center justify-between rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-700">
               Pilot&rsquo;s Declaration of Medical Fitness (self-declared online)
-              <ConsentBadge
-                signed
-                at={applicant.medicalDeclarationSignedAt}
-                name={applicant.medicalDeclarationSignedName}
+              <MedicalDeclarationStatus
+                signedAt={applicant.medicalDeclarationSignedAt}
+                signedName={applicant.medicalDeclarationSignedName}
+                expiresAt={applicant.medicalDeclarationExpiresAt}
               />
             </div>
           )}
@@ -229,6 +219,24 @@ export default async function ApplicantReviewPage({
             at={applicant.indemnitySignedAt}
             name={applicant.indemnitySignedName}
           />
+        </div>
+        <div className="mt-3 space-y-2">
+          <a
+            href="/documents/sacaa-client-consent-form.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-between rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50"
+          >
+            Client Consent Form (SACAA CA 183-540) <span className="text-red-600">View →</span>
+          </a>
+          <a
+            href="/documents/indemnity-assumption-of-risk.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-between rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50"
+          >
+            Indemnity / Assumption of Risk &amp; Release <span className="text-red-600">View →</span>
+          </a>
         </div>
         {(applicant.role === "student" || applicant.role === "pilot") &&
           (!applicant.consentSigned || !applicant.indemnitySigned) && (
