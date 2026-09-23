@@ -33,14 +33,17 @@ function stateOf(endorsements: InstructorEndorsement[], key: string) {
 
 /**
  * Three-column instructor-ratings grid (Notes4 item 15) -- PG / PPG / PPT
- * columns, each a mutually-exclusive Grade C -> B -> A pick (selecting a
- * higher grade clears any lower one already declared for that equipment,
- * handled server-side in adminSetInstructorGrade), plus the single shared
- * "Assistant Instructor" toggle above the grid since that rating isn't
- * tracked per equipment (see INSTRUCTOR_RATING_REFERENCE_TEXT). Replaces the
- * old flat checkbox/Apply/Grant list for this one group, which let a pilot
- * end up with contradictory state like both Grade C and Grade A declared
- * at once.
+ * columns, each grade independently toggleable on/off, with one built-in
+ * conflict rule (V22 rollout item 8, 23 Sep 2026, per Riaan's confirmed
+ * combinations): Grade B and Grade A can't both be held for the same
+ * equipment type at once -- turning one on clears the other if it was
+ * held -- but Grade C is independent and can be held alongside either one
+ * (or alone, or with neither). Enforced server-side in
+ * adminSetInstructorGrade. Plus the single shared "Assistant Instructor"
+ * toggle above the grid since that rating isn't tracked per equipment
+ * (see INSTRUCTOR_RATING_REFERENCE_TEXT). Replaces the old flat checkbox/
+ * Apply/Grant list for this one group, which let a pilot end up with
+ * contradictory state like both Grade B and Grade A declared at once.
  */
 export default function InstructorRatingsGrid({
   pilotProfileId,
@@ -56,9 +59,9 @@ export default function InstructorRatingsGrid({
 
   const assistantState = stateOf(endorsements, "assistant_instructor");
 
-  function setGrade(equipment: Equipment, grade: Grade | null) {
+  function setGrade(equipment: Equipment, grade: Grade, held: boolean) {
     startTransition(async () => {
-      await adminSetInstructorGrade(pilotProfileId, applicantUserId, equipment, grade);
+      await adminSetInstructorGrade(pilotProfileId, applicantUserId, equipment, grade, held);
       router.refresh();
     });
   }
@@ -115,7 +118,7 @@ export default function InstructorRatingsGrid({
                       key={g.key}
                       type="button"
                       disabled={isPending}
-                      onClick={() => setGrade(eq.key, state === "held" ? null : g.key)}
+                      onClick={() => setGrade(eq.key, g.key, state !== "held")}
                       className={`block w-full rounded-md border px-2 py-1 text-left text-xs font-medium disabled:opacity-60 ${stateClass[state]}`}
                     >
                       {g.label}{" "}

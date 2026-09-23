@@ -1,6 +1,6 @@
 "use server";
 
-import { eq, and, inArray } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import * as z from "zod";
 import { db } from "@/db";
@@ -180,42 +180,56 @@ export async function adminGrantEndorsement(
 }
 
 /**
- * Sets (or clears) a pilot's held instructor grade for one equipment type
- * (PG/PPG/PPT) -- Notes4 item 15, the three-column instructor-ratings grid.
- * A pilot only ever holds one grade per equipment (Grade A supersedes B
- * supersedes C), so setting a new grade removes any other grade row already
- * declared for that same equipment -- there's no separate "un-declare"
- * control needed, selecting the new grade (or "None") is the whole
- * interaction. Passing `grade: null` clears the column entirely.
+ * Toggles one grade (C, B, or A) on/off for one equipment type (PG/PPG/
+ * PPT) -- Notes4 item 15, the three-column instructor-ratings grid, later
+ * refined by "V22 rollout" item 8 (23 Sep 2026): Riaan confirmed the
+ * allowed combinations are Grade C alone, Grade B alone, Grade A alone,
+ * Grade C + Grade B together, or Grade C + Grade A together -- Grade B and
+ * Grade A can never both be held at the same time (and all three together
+ * is never valid), but Grade C is independent and can combine with
+ * either one. So Grade C toggles on/off on its own; turning ON Grade B
+ * clears Grade A if it was held (and vice versa) for that same equipment
+ * type, but neither ever touches Grade C. Previously this was a strict
+ * single-select per equipment (any new grade replaced whatever was
+ * already held) -- this is the looser combination rule Riaan actually
+ * wants, replacing that.
  */
 export async function adminSetInstructorGrade(
   pilotProfileId: string,
   applicantUserId: string,
   equipment: "pg" | "ppg" | "ppt",
-  grade: "c" | "b" | "a" | null
+  grade: "c" | "b" | "a",
+  held: boolean
 ) {
   const reviewer = await requireAdminOrCFI();
 
-  const gradeKeys: Record<"c" | "b" | "a", string> = {
-    c: `instructor_${equipment}_grade_c`,
-    b: `instructor_${equipment}_grade_b`,
-    a: `instructor_${equipment}_grade_a`,
-  };
-  const targetKey = grade ? gradeKeys[grade] : null;
-  const keysToRemove = Object.values(gradeKeys).filter((k) => k !== targetKey);
+  const keyFor = (g: "c" | "b" | "a") => `instructor_${equipment}_grade_${g}`;
+  const targetKey = keyFor(grade);
+  // Only B and A conflict with each other -- C never clears, or gets
+  // cleared by, either of them.
+  const conflictingKey = grade === "b" ? keyFor("a") : grade === "a" ? keyFor("b") : null;
 
-  if (keysToRemove.length > 0) {
+  if (held && conflictingKey) {
     await db
       .delete(pilotEndorsements)
       .where(
         and(
           eq(pilotEndorsements.pilotProfileId, pilotProfileId),
-          inArray(pilotEndorsements.key, keysToRemove)
+          eq(pilotEndorsements.key, conflictingKey)
         )
       );
   }
 
-  if (targetKey) {
+  if (!held) {
+    await db
+      .delete(pilotEndorsements)
+      .where(
+        and(
+          eq(pilotEndorsements.pilotProfileId, pilotProfileId),
+          eq(pilotEndorsements.key, targetKey)
+        )
+      );
+  } else {
     const [existing] = await db
       .select()
       .from(pilotEndorsements)
