@@ -71,10 +71,10 @@ export default function NavHeader({
               <Link
                 key={link.href}
                 href={link.href}
-                className={`flex items-center text-sm ${
+                className={`flex origin-left items-center text-sm transition-all duration-150 ease-out hover:scale-110 hover:text-red-600 ${
                   (link.badge ?? 0) > 0
                     ? "font-semibold text-red-600 hover:text-red-700"
-                    : "text-slate-600 hover:text-slate-900"
+                    : "text-slate-600"
                 }`}
               >
                 {link.label}
