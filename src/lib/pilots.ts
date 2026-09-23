@@ -13,6 +13,7 @@ export type PilotSummary = {
   pilotProfileId: string;
   verifiedCount: number;
   pendingCount: number;
+  caaLicenceExpiryDate: Date | null;
 };
 
 /** Every active pilot profile, whether it belongs to a plain "pilot"
@@ -37,6 +38,7 @@ export async function getAllPilotsWithSummary(): Promise<PilotSummary[]> {
       apexNumber: users.apexNumber,
       callSign: pilotProfiles.callSign,
       pilotProfileId: pilotProfiles.id,
+      caaLicenceExpiryDate: pilotProfiles.caaLicenceExpiryDate,
     })
     .from(pilotProfiles)
     .innerJoin(users, eq(pilotProfiles.userId, users.id))
@@ -65,6 +67,7 @@ export async function getAllPilotsWithSummary(): Promise<PilotSummary[]> {
       pilotProfileId: r.pilotProfileId,
       verifiedCount: byProfile.get(r.pilotProfileId)?.verified ?? 0,
       pendingCount: byProfile.get(r.pilotProfileId)?.pending ?? 0,
+      caaLicenceExpiryDate: r.caaLicenceExpiryDate,
     }))
     .sort((a, b) => a.name.localeCompare(b.name));
 }

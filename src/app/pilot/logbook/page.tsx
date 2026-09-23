@@ -3,6 +3,7 @@ import { getLogbookEntries, getInstructorRoster } from "@/lib/logbook";
 import LogEntryForm from "@/components/logbook/log-entry-form";
 import LogbookEntries from "@/components/logbook/logbook-entries";
 import CsvImportForm from "@/components/logbook/csv-import-form";
+import FlightSummary from "@/components/flight-summary";
 
 // Same flight logbook as the student side (Notes4: "as instructor, CFI ...
 // have we added it in that an instructor is also a pilot with the same
@@ -13,7 +14,7 @@ import CsvImportForm from "@/components/logbook/csv-import-form";
 // server actions as /student/logbook rather than a parallel pilot-only
 // implementation.
 export default async function PilotLogbookPage() {
-  const { user } = await requirePilot();
+  const { user, profile } = await requirePilot();
   const [entries, instructors] = await Promise.all([
     getLogbookEntries(user.id),
     getInstructorRoster(),
@@ -37,6 +38,15 @@ export default async function PilotLogbookPage() {
           instructors={instructors}
         />
       </div>
+
+      {/* V22 rollout item 7 (23 Sep 2026): cumulative + renewal-window
+       * flight totals, right above the CSV import so a pilot sees where
+       * they stand before importing/reviewing more entries. */}
+      <FlightSummary
+        entries={entries.map((e) => ({ date: e.date.getTime(), durationMinutes: e.durationMinutes }))}
+        startingFlightCount={profile?.startingFlightCount ?? 0}
+        startingFlightHours={profile?.startingFlightHours ?? 0}
+      />
 
       <CsvImportForm />
 

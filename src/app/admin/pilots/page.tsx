@@ -7,6 +7,21 @@ const roleLabel: Record<string, string> = {
   instructor: "Instructor",
 };
 
+/** V22 rollout items 6/7: surface an at-a-glance licence status so Admin/CFI
+ * can spot lapsed pilots without opening each profile. Mirrors the
+ * red-when-expired treatment already used on the applicant detail page.
+ * `null` means no expiry date has been captured yet (e.g. a pilot who
+ * signed up before this field existed) -- shown as a plain dash, not a
+ * warning, since there's nothing wrong to flag. */
+function licenceStatus(date: Date | null): { label: string; className: string } {
+  if (!date) return { label: "—", className: "text-slate-300" };
+  const formatted = date.toLocaleDateString("en-ZA", { year: "numeric", month: "short", day: "numeric" });
+  if (date < new Date()) {
+    return { label: `Expired ${formatted}`, className: "font-medium text-red-600" };
+  }
+  return { label: formatted, className: "text-slate-600" };
+}
+
 export default async function PilotsPage() {
   const pilots = await getAllPilotsWithSummary();
   const pendingTotal = pilots.reduce((sum, p) => sum + p.pendingCount, 0);
@@ -65,6 +80,12 @@ export default async function PilotsPage() {
                     <dt className="text-xs text-slate-400">Verified</dt>
                     <dd className="text-slate-700">{p.verifiedCount}</dd>
                   </div>
+                  <div className="col-span-3">
+                    <dt className="text-xs text-slate-400">Licence</dt>
+                    <dd className={licenceStatus(p.caaLicenceExpiryDate).className}>
+                      {licenceStatus(p.caaLicenceExpiryDate).label}
+                    </dd>
+                  </div>
                 </dl>
                 <Link
                   href={`/admin/applicants/${p.id}`}
@@ -86,6 +107,7 @@ export default async function PilotsPage() {
                   <th className="px-4 py-3">Apex No.</th>
                   <th className="px-4 py-3">Verified</th>
                   <th className="px-4 py-3">Pending</th>
+                  <th className="px-4 py-3">Licence</th>
                   <th className="px-4 py-3"></th>
                 </tr>
               </thead>
@@ -97,6 +119,9 @@ export default async function PilotsPage() {
                     <td className="px-4 py-3 text-slate-600">{p.callSign ?? "—"}</td>
                     <td className="px-4 py-3 text-slate-600">{p.apexNumber ?? "—"}</td>
                     <td className="px-4 py-3 text-slate-600">{p.verifiedCount}</td>
+                    <td className={`px-4 py-3 ${licenceStatus(p.caaLicenceExpiryDate).className}`}>
+                      {licenceStatus(p.caaLicenceExpiryDate).label}
+                    </td>
                     <td className="px-4 py-3">
                       {p.pendingCount > 0 ? (
                         <span className="rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700">

@@ -38,6 +38,9 @@ const PilotOnlyProfileSchema = z.object({
   sacaaNumber: z.string().trim().optional(),
   sahpaNumber: z.string().trim().optional(),
   sahpaExpiryDate: z.string().trim().optional(),
+  caaLicenceExpiryDate: z.string().trim().optional(),
+  startingFlightCount: z.string().trim().optional(),
+  startingFlightHours: z.string().trim().optional(),
 });
 
 export type ProfileFormState = { error: string; success?: never } | { error?: never; success: true } | undefined;
@@ -141,6 +144,9 @@ export async function updateOwnProfile(
         sacaaNumber: formData.get("sacaaNumber") || undefined,
         sahpaNumber: formData.get("sahpaNumber") || undefined,
         sahpaExpiryDate: formData.get("sahpaExpiryDate") || undefined,
+        caaLicenceExpiryDate: formData.get("caaLicenceExpiryDate") || undefined,
+        startingFlightCount: formData.get("startingFlightCount") || undefined,
+        startingFlightHours: formData.get("startingFlightHours") || undefined,
       });
       if (!pilotOnly.success) {
         return { error: pilotOnly.error.issues[0]?.message ?? "Invalid input." };
@@ -156,6 +162,15 @@ export async function updateOwnProfile(
           sahpaExpiryDate: pilotOnly.data.sahpaExpiryDate
             ? new Date(pilotOnly.data.sahpaExpiryDate)
             : null,
+          caaLicenceExpiryDate: pilotOnly.data.caaLicenceExpiryDate
+            ? new Date(pilotOnly.data.caaLicenceExpiryDate)
+            : null,
+          startingFlightCount: pilotOnly.data.startingFlightCount
+            ? parseInt(pilotOnly.data.startingFlightCount, 10) || 0
+            : 0,
+          startingFlightHours: pilotOnly.data.startingFlightHours
+            ? parseFloat(pilotOnly.data.startingFlightHours) || 0
+            : 0,
           ...(caaLicenceFile ? { caaLicenceFile } : {}),
         })
         .where(eq(pilotProfiles.userId, user.id));
@@ -270,6 +285,9 @@ export async function adminUpdateProfile(
     sacaaNumber: formData.get("sacaaNumber") || undefined,
     sahpaNumber: formData.get("sahpaNumber") || undefined,
     sahpaExpiryDate: formData.get("sahpaExpiryDate") || undefined,
+    caaLicenceExpiryDate: formData.get("caaLicenceExpiryDate") || undefined,
+    startingFlightCount: formData.get("startingFlightCount") || undefined,
+    startingFlightHours: formData.get("startingFlightHours") || undefined,
   });
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Invalid input." };
@@ -330,6 +348,19 @@ export async function adminUpdateProfile(
         sahpaExpiryDate: parsed.data.sahpaExpiryDate
           ? new Date(parsed.data.sahpaExpiryDate)
           : null,
+        // Renewal review (V22 rollout items 6/7, 23 Sep 2026): this is how
+        // a CFI/Admin clears the hard-lock gate (LicenceExpiredGate) once
+        // they've reviewed a pilot's renewed licence -- push this date
+        // forward, same field the pilot themselves set at sign-up.
+        caaLicenceExpiryDate: parsed.data.caaLicenceExpiryDate
+          ? new Date(parsed.data.caaLicenceExpiryDate)
+          : null,
+        startingFlightCount: parsed.data.startingFlightCount
+          ? parseInt(parsed.data.startingFlightCount, 10) || 0
+          : 0,
+        startingFlightHours: parsed.data.startingFlightHours
+          ? parseFloat(parsed.data.startingFlightHours) || 0
+          : 0,
         ...(caaLicenceFile ? { caaLicenceFile } : {}),
       })
       .where(eq(pilotProfiles.userId, targetUserId));

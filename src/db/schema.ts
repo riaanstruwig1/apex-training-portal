@@ -366,6 +366,27 @@ export const pilotProfiles = sqliteTable("pilot_profiles", {
   sahpaNumber: text("sahpa_number"),
   sahpaExpiryDate: integer("sahpa_expiry_date", { mode: "timestamp" }),
   caaLicenceFile: text("caa_licence_file"), // filename under data/uploads/<userId>/
+  // The pilot's own flying licence (CAA/SACAA) expiry -- distinct from
+  // sahpaExpiryDate above, which is SAHPA *membership*, not the licence
+  // itself. V22 rollout items 6/7 (23 Sep 2026): entered by the pilot at
+  // sign-up (self-declared, sourced from their current licence, same
+  // pattern as every other pilot-only field here), editable later by
+  // CFI/Admin once a renewed licence is reviewed. Once this date passes,
+  // PilotLayout hard-locks the account (LicenceExpiredGate, mirroring the
+  // existing Consent/Indemnity gate) until a CFI/Admin pushes it forward
+  // again. Null means never declared -- no gate applies in that case
+  // (nothing to compare against), same "don't invent a lock nobody asked
+  // for" reasoning as everywhere else optional dates are treated.
+  caaLicenceExpiryDate: integer("caa_licence_expiry_date", { mode: "timestamp" }),
+  // Historical baseline for a pilot transferring from a paper logbook --
+  // V22 rollout items 6/7. Added to this app's own logged flightLogEntries
+  // totals (see lib/logbook.ts's summarizeLogbook) to show a true
+  // cumulative "total flights"/"total hours", not just what's been logged
+  // here. Self-declared like the rest of this table; startingFlightHours
+  // is a plain decimal figure (not minutes) since a historical total is
+  // rarely known to the exact minute.
+  startingFlightCount: integer("starting_flight_count").notNull().default(0),
+  startingFlightHours: real("starting_flight_hours").notNull().default(0),
   status: text("status", {
     enum: ["pending_verification", "active", "suspended"],
   })

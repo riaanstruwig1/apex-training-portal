@@ -199,6 +199,9 @@ export default async function ApplicantReviewPage({
                     sacaaNumber: pilot.profile.sacaaNumber,
                     sahpaNumber: pilot.profile.sahpaNumber,
                     sahpaExpiryDate: pilot.profile.sahpaExpiryDate,
+                    caaLicenceExpiryDate: pilot.profile.caaLicenceExpiryDate,
+                    startingFlightCount: pilot.profile.startingFlightCount,
+                    startingFlightHours: pilot.profile.startingFlightHours,
                   }
                 : null
             }
@@ -271,6 +274,23 @@ export default async function ApplicantReviewPage({
             <Row label="Call sign (self-declared)" value={pilot.profile.callSign} />
             <Row label="SACAA License No." value={pilot.profile.sahpaNumber} />
             <Row label="SACAA License expiry" value={pilot.profile.sahpaExpiryDate?.toLocaleDateString()} />
+            <Row
+              label="Flying licence expiry"
+              value={
+                pilot.profile.caaLicenceExpiryDate ? (
+                  <span
+                    className={
+                      pilot.profile.caaLicenceExpiryDate < new Date()
+                        ? "font-medium text-red-700"
+                        : "text-slate-900"
+                    }
+                  >
+                    {pilot.profile.caaLicenceExpiryDate.toLocaleDateString()}
+                    {pilot.profile.caaLicenceExpiryDate < new Date() && " -- expired, pilot is locked out"}
+                  </span>
+                ) : null
+              }
+            />
           </dl>
 
           {/* Ladder + flat-list Verify/Decline controls used to be gated to

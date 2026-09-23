@@ -2,12 +2,16 @@ import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { users } from "@/db/schema";
 import { requirePilot } from "@/lib/auth/dal";
+import { getLogbookEntries } from "@/lib/logbook";
 import ProfileView from "@/components/profile-view";
 
 export default async function PilotProfileViewPage() {
   const { user, profile } = await requirePilot();
 
-  const [fullUser] = await db.select().from(users).where(eq(users.id, user.id)).limit(1);
+  const [fullUser, entries] = await Promise.all([
+    db.select().from(users).where(eq(users.id, user.id)).limit(1).then((rows) => rows[0]),
+    getLogbookEntries(user.id),
+  ]);
 
   return (
     <div className="space-y-6">
@@ -53,6 +57,13 @@ export default async function PilotProfileViewPage() {
                 sahpaNumber: profile.sahpaNumber,
                 sahpaExpiryDate: profile.sahpaExpiryDate,
                 caaLicenceFile: profile.caaLicenceFile,
+                caaLicenceExpiryDate: profile.caaLicenceExpiryDate,
+                startingFlightCount: profile.startingFlightCount,
+                startingFlightHours: profile.startingFlightHours,
+                flightLogEntries: entries.map((e) => ({
+                  date: e.date,
+                  durationMinutes: e.durationMinutes,
+                })),
               }
             : null
         }

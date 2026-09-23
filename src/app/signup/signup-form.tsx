@@ -32,6 +32,9 @@ const TEXT_FIELDS = [
   "sacaaNumber",
   "sahpaNumber",
   "sahpaExpiryDate",
+  "caaLicenceExpiryDate",
+  "startingFlightCount",
+  "startingFlightHours",
   "consentName",
   "indemnityName",
 ] as const;
@@ -333,6 +336,47 @@ export default function SignupForm() {
               className={`${inputClass} file:mr-3 file:rounded file:border-0 file:bg-slate-100 file:px-3 file:py-1.5 file:text-sm`}
             />
           </Field>
+          <Field id="caaLicenceExpiryDate" label="Licence expiry date (from your current licence)">
+            <input
+              id="caaLicenceExpiryDate"
+              name="caaLicenceExpiryDate"
+              type="date"
+              value={values.caaLicenceExpiryDate}
+              onChange={set("caaLicenceExpiryDate")}
+              className={inputClass}
+            />
+          </Field>
+
+          <div className="grid grid-cols-2 gap-4">
+            <Field id="startingFlightCount" label="Flights logged before joining (paper logbook)">
+              <input
+                id="startingFlightCount"
+                name="startingFlightCount"
+                type="number"
+                min="0"
+                step="1"
+                value={values.startingFlightCount}
+                onChange={set("startingFlightCount")}
+                className={inputClass}
+              />
+            </Field>
+            <Field id="startingFlightHours" label="Hours logged before joining (paper logbook)">
+              <input
+                id="startingFlightHours"
+                name="startingFlightHours"
+                type="number"
+                min="0"
+                step="0.1"
+                value={values.startingFlightHours}
+                onChange={set("startingFlightHours")}
+                className={inputClass}
+              />
+            </Field>
+          </div>
+          <p className="text-xs text-slate-500">
+            Leave the two above at 0 if this is your first logbook -- they&rsquo;re only for
+            carrying over a total from flights logged before you joined here.
+          </p>
 
           <div>
             <p className={labelClass}>Licence type &amp; endorsements you hold</p>

@@ -102,6 +102,9 @@ export default function AdminProfileEditor({
     sacaaNumber: string | null;
     sahpaNumber: string | null;
     sahpaExpiryDate: Date | null;
+    caaLicenceExpiryDate: Date | null;
+    startingFlightCount: number | null;
+    startingFlightHours: number | null;
   } | null;
 }) {
   const [open, setOpen] = useState(false);
@@ -285,7 +288,46 @@ export default function AdminProfileEditor({
                   className={fileClass}
                 />
               </Field>
+              <Field id="caaLicenceExpiryDate" label="Licence expiry date">
+                <input
+                  id="caaLicenceExpiryDate"
+                  name="caaLicenceExpiryDate"
+                  type="date"
+                  defaultValue={
+                    pilot?.caaLicenceExpiryDate
+                      ? pilot.caaLicenceExpiryDate.toISOString().slice(0, 10)
+                      : ""
+                  }
+                  className={inputClass}
+                />
+              </Field>
+              <Field id="startingFlightCount" label="Flights logged before joining">
+                <input
+                  id="startingFlightCount"
+                  name="startingFlightCount"
+                  type="number"
+                  min="0"
+                  step="1"
+                  defaultValue={pilot?.startingFlightCount ?? 0}
+                  className={inputClass}
+                />
+              </Field>
+              <Field id="startingFlightHours" label="Hours logged before joining">
+                <input
+                  id="startingFlightHours"
+                  name="startingFlightHours"
+                  type="number"
+                  min="0"
+                  step="0.1"
+                  defaultValue={pilot?.startingFlightHours ?? 0}
+                  className={inputClass}
+                />
+              </Field>
             </div>
+            <p className="mt-2 text-xs text-slate-500">
+              Pushing the licence expiry date forward is how you clear a pilot&rsquo;s hard-lock
+              screen once you&rsquo;ve reviewed their renewed licence.
+            </p>
           </div>
         )}
 

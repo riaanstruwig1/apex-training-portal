@@ -2,6 +2,7 @@ import Link from "next/link";
 import Avatar from "@/components/avatar";
 import MedicalDeclarationStatus from "@/components/medical-declaration-status";
 import ConsentBadge from "@/components/consent-badge";
+import FlightSummary from "@/components/flight-summary";
 
 /** Read-only mirror of ProfileEditForm's own fields (V22 rollout item 5,
  * 23 Sep 2026 -- Riaan: "a button to view profile [alongside] the edit
@@ -108,6 +109,10 @@ export default function ProfileView({
     sahpaNumber: string | null;
     sahpaExpiryDate: Date | null;
     caaLicenceFile: string | null;
+    caaLicenceExpiryDate: Date | null;
+    startingFlightCount: number | null;
+    startingFlightHours: number | null;
+    flightLogEntries: { date: Date; durationMinutes: number }[];
   } | null;
 }) {
   return (
@@ -152,11 +157,37 @@ export default function ProfileView({
               label="SAHPA membership expiry"
               value={pilot.sahpaExpiryDate?.toLocaleDateString()}
             />
+            <Row
+              label="Flying licence expiry"
+              value={
+                pilot.caaLicenceExpiryDate ? (
+                  <span
+                    className={
+                      pilot.caaLicenceExpiryDate < new Date() ? "font-medium text-red-600" : undefined
+                    }
+                  >
+                    {pilot.caaLicenceExpiryDate.toLocaleDateString()}
+                    {pilot.caaLicenceExpiryDate < new Date() && " -- expired, submit your renewed licence"}
+                  </span>
+                ) : null
+              }
+            />
           </dl>
           <div className="mt-3">
             <DocLink userId={userId} filename={pilot.caaLicenceFile} label="Current CAA licence" />
           </div>
         </div>
+      )}
+
+      {pilot && (
+        <FlightSummary
+          entries={pilot.flightLogEntries.map((e) => ({
+            date: e.date.getTime(),
+            durationMinutes: e.durationMinutes,
+          }))}
+          startingFlightCount={pilot.startingFlightCount ?? 0}
+          startingFlightHours={pilot.startingFlightHours ?? 0}
+        />
       )}
 
       <div className="rounded-xl border border-slate-200 bg-white p-5">

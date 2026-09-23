@@ -40,6 +40,9 @@ const SignupSchema = z
     sacaaNumber: z.string().trim().optional(),
     sahpaNumber: z.string().trim().optional(),
     sahpaExpiryDate: z.string().trim().optional(),
+    caaLicenceExpiryDate: z.string().trim().optional(),
+    startingFlightCount: z.string().trim().optional(),
+    startingFlightHours: z.string().trim().optional(),
     endorsements: z.array(z.string()).optional(),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -84,6 +87,9 @@ export async function submitSignup(
     sacaaNumber: formData.get("sacaaNumber") || undefined,
     sahpaNumber: formData.get("sahpaNumber") || undefined,
     sahpaExpiryDate: formData.get("sahpaExpiryDate") || undefined,
+    caaLicenceExpiryDate: formData.get("caaLicenceExpiryDate") || undefined,
+    startingFlightCount: formData.get("startingFlightCount") || undefined,
+    startingFlightHours: formData.get("startingFlightHours") || undefined,
     endorsements: formData.getAll("endorsements").map(String),
   };
 
@@ -195,6 +201,9 @@ export async function submitSignup(
           sahpaNumber: data.sahpaNumber || null,
           sahpaExpiryDate: data.sahpaExpiryDate ? new Date(data.sahpaExpiryDate) : null,
           caaLicenceFile,
+          caaLicenceExpiryDate: data.caaLicenceExpiryDate ? new Date(data.caaLicenceExpiryDate) : null,
+          startingFlightCount: data.startingFlightCount ? parseInt(data.startingFlightCount, 10) || 0 : 0,
+          startingFlightHours: data.startingFlightHours ? parseFloat(data.startingFlightHours) || 0 : 0,
           status: "pending_verification",
         })
         .returning();
