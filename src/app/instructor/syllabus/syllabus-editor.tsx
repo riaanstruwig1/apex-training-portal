@@ -7,6 +7,7 @@ import {
   updateSection,
   moveSection,
   addExercise,
+  updateExercise,
   deleteExercise,
   deleteSection,
 } from "@/lib/actions/syllabus";
@@ -16,6 +17,8 @@ import type { sections, exercises } from "@/db/schema";
 type Section = InferSelectModel<typeof sections> & {
   exercises: InferSelectModel<typeof exercises>[];
 };
+
+type Exercise = InferSelectModel<typeof exercises>;
 
 function useServerAction() {
   const [isPending, startTransition] = useTransition();
@@ -27,6 +30,102 @@ function useServerAction() {
     });
   }
   return { isPending, run };
+}
+
+function ExerciseRow({ exercise }: { exercise: Exercise }) {
+  const [editing, setEditing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const { isPending, run } = useServerAction();
+
+  if (editing) {
+    return (
+      <form
+        action={(formData) => {
+          setError(null);
+          run(async () => {
+            const result = await updateExercise(exercise.id, formData);
+            if ("error" in result) {
+              setError(result.error);
+            } else {
+              setEditing(false);
+            }
+          });
+        }}
+        className="flex flex-wrap items-end gap-2 px-4 py-2"
+      >
+        <div>
+          <label className="block text-xs text-slate-500">Code</label>
+          <input
+            name="code"
+            required
+            defaultValue={exercise.code}
+            className="w-24 rounded-md border border-slate-300 px-2 py-1 text-sm"
+          />
+        </div>
+        <div className="flex-1 min-w-[10rem]">
+          <label className="block text-xs text-slate-500">Title</label>
+          <input
+            name="title"
+            required
+            defaultValue={exercise.title}
+            className="w-full rounded-md border border-slate-300 px-2 py-1 text-sm"
+          />
+        </div>
+        <div className="flex-1 min-w-[10rem]">
+          <label className="block text-xs text-slate-500">
+            Description (optional)
+          </label>
+          <input
+            name="description"
+            defaultValue={exercise.description ?? ""}
+            className="w-full rounded-md border border-slate-300 px-2 py-1 text-sm"
+          />
+        </div>
+        <button
+          type="submit"
+          disabled={isPending}
+          className="rounded-md bg-slate-900 px-3 py-1.5 text-sm text-white hover:bg-slate-700 disabled:opacity-60"
+        >
+          {isPending ? "Saving..." : "Save"}
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            setEditing(false);
+            setError(null);
+          }}
+          className="rounded-md border border-slate-300 px-3 py-1.5 text-sm text-slate-700"
+        >
+          Cancel
+        </button>
+        {error && <p className="w-full text-sm text-red-600">{error}</p>}
+      </form>
+    );
+  }
+
+  return (
+    <div className="flex items-center justify-between px-4 py-2">
+      <div className="text-sm">
+        <span className="font-medium">Ex {exercise.code}</span> &mdash; {exercise.title}
+      </div>
+      <div className="flex items-center gap-3">
+        <button
+          disabled={isPending}
+          onClick={() => setEditing(true)}
+          className="text-xs text-red-600 hover:underline"
+        >
+          Edit
+        </button>
+        <button
+          disabled={isPending}
+          onClick={() => run(() => deleteExercise(exercise.id))}
+          className="text-xs text-red-600 hover:underline"
+        >
+          Remove
+        </button>
+      </div>
+    </div>
+  );
 }
 
 function SectionCard({
@@ -93,18 +192,7 @@ function SectionCard({
 
       <div className="divide-y divide-slate-100">
         {section.exercises.map((ex) => (
-          <div key={ex.id} className="flex items-center justify-between px-4 py-2">
-            <div className="text-sm">
-              <span className="font-medium">Ex {ex.code}</span> &mdash; {ex.title}
-            </div>
-            <button
-              disabled={isPending}
-              onClick={() => run(() => deleteExercise(ex.id))}
-              className="text-xs text-red-600 hover:underline"
-            >
-              Remove
-            </button>
-          </div>
+          <ExerciseRow key={ex.id} exercise={ex} />
         ))}
       </div>
 

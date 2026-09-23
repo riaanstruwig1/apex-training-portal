@@ -106,6 +106,45 @@ export async function addExercise(
   return { success: true };
 }
 
+export type UpdateExerciseResult = { error: string } | { success: true };
+
+// Same unique-code handling as addExercise above -- editing an exercise's
+// code can collide with another exercise elsewhere in the syllabus just as
+// easily as adding a new one can.
+export async function updateExercise(
+  exerciseId: string,
+  formData: FormData
+): Promise<UpdateExerciseResult> {
+  await assertInstructor();
+  const parsed = NewExerciseSchema.parse({
+    code: formData.get("code"),
+    title: formData.get("title"),
+    description: formData.get("description") || undefined,
+  });
+
+  try {
+    await db
+      .update(exercises)
+      .set({
+        code: parsed.code,
+        title: parsed.title,
+        description: parsed.description || null,
+      })
+      .where(eq(exercises.id, exerciseId));
+  } catch (err) {
+    const message = `${String(err)} ${String((err as { cause?: unknown })?.cause ?? "")}`;
+    if (message.includes("UNIQUE constraint failed") && message.includes("exercises.code")) {
+      return {
+        error: `Code "${parsed.code}" is already used somewhere else in the syllabus -- exercise codes must be unique across every section, not just this one.`,
+      };
+    }
+    return { error: "Something went wrong updating this exercise. Please try again." };
+  }
+
+  revalidatePath("/instructor/syllabus");
+  return { success: true };
+}
+
 export async function deleteExercise(exerciseId: string) {
   await assertInstructor();
   await db.delete(exercises).where(eq(exercises.id, exerciseId));
