@@ -197,6 +197,13 @@
       "when": 1790164862651,
       "tag": "0027_loving_master_chief",
       "breakpoints": true
+    },
+    {
+      "idx": 28,
+      "version": "6",
+      "when": 1790337032561,
+      "tag": "0028_elite_firebird",
+      "breakpoints": true
     }
   ]
 }

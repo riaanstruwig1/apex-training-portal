@@ -176,16 +176,23 @@ export default async function StudentDashboard() {
                   </div>
                 ))}
                 {examSummaries.map((e) => {
+                  const isPaper = e.source === "paper";
                   const statusLabel =
                     e.status === "not_started"
                       ? "Not started"
                       : e.status === "in_progress"
                         ? `In progress — ${e.answeredCount} / ${e.totalQuestions} answered`
                         : e.status === "submitted"
-                          ? "Submitted — awaiting verification"
+                          ? isPaper
+                            ? "Paper exam submitted — awaiting review"
+                            : "Submitted — awaiting verification"
                           : e.passed
-                            ? `Verified — PASS (${e.scorePercent?.toFixed(0)}%)`
-                            : `Verified — FAIL (${e.scorePercent?.toFixed(0)}%)`;
+                            ? isPaper
+                              ? "Verified — PASS (paper)"
+                              : `Verified — PASS (${e.scorePercent?.toFixed(0)}%)`
+                            : isPaper
+                              ? "Verified — FAIL (paper)"
+                              : `Verified — FAIL (${e.scorePercent?.toFixed(0)}%)`;
                   const badgeColor =
                     e.status === "verified"
                       ? e.passed
@@ -196,28 +203,42 @@ export default async function StudentDashboard() {
                         : "bg-slate-100 text-slate-600";
 
                   return (
-                    <Link
+                    <div
                       key={e.examId}
-                      href={`/student/exams/${e.examId}`}
-                      className="flex items-center justify-between rounded-xl border border-slate-200 bg-white p-4 hover:border-red-300"
+                      className="rounded-xl border border-slate-200 bg-white hover:border-red-300"
                     >
-                      <div>
-                        <div className="text-sm font-medium text-slate-900">{e.title}</div>
-                        <span className={`mt-1 inline-block rounded-full px-2 py-0.5 text-xs font-medium ${badgeColor}`}>
-                          {statusLabel}
-                        </span>
-                      </div>
-                      {e.status !== "not_started" && e.status !== "submitted" && e.status !== "verified" && (
-                        <div className="h-2 w-24 overflow-hidden rounded-full bg-slate-100">
-                          <div
-                            className="h-full rounded-full bg-red-600"
-                            style={{
-                              width: `${e.totalQuestions ? (e.answeredCount / e.totalQuestions) * 100 : 0}%`,
-                            }}
-                          />
+                      <Link
+                        href={`/student/exams/${e.examId}`}
+                        className="flex items-center justify-between p-4"
+                      >
+                        <div>
+                          <div className="text-sm font-medium text-slate-900">{e.title}</div>
+                          <span className={`mt-1 inline-block rounded-full px-2 py-0.5 text-xs font-medium ${badgeColor}`}>
+                            {statusLabel}
+                          </span>
                         </div>
+                        {e.status !== "not_started" && e.status !== "submitted" && e.status !== "verified" && (
+                          <div className="h-2 w-24 overflow-hidden rounded-full bg-slate-100">
+                            <div
+                              className="h-full rounded-full bg-red-600"
+                              style={{
+                                width: `${e.totalQuestions ? (e.answeredCount / e.totalQuestions) * 100 : 0}%`,
+                              }}
+                            />
+                          </div>
+                        )}
+                      </Link>
+                      {e.canSubmitPaper && (
+                        <Link
+                          href={`/student/exams/${e.examId}/paper`}
+                          className="block border-t border-slate-100 px-4 py-2 text-xs font-medium text-red-600 hover:underline"
+                        >
+                          {e.category === "rt"
+                            ? "Already hold a radio licence? Submit it →"
+                            : "Already wrote this on paper? Submit it →"}
+                        </Link>
                       )}
-                    </Link>
+                    </div>
                   );
                 })}
               </div>

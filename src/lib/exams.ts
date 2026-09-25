@@ -87,6 +87,16 @@ export type ExamSummary = {
   /** When a cooldown-gated retry becomes available. Null if there's no
    * cooldown (or none currently running). */
   nextRetryAt: Date | null;
+  /** "paper" once the current attempt is a pre-written exam / already-held
+   * licence the student submitted for review rather than an online
+   * attempt (see schema.ts's examAttempts.source doc comment). Always
+   * "online" when there's no attempt yet. */
+  source: "online" | "paper";
+  /** True when the student has no attempt yet, or their latest attempt is
+   * a verified fail -- i.e. they're free to submit a paper exam right
+   * now (mirrors the online startNewAttempt gate in lib/actions/exams.ts,
+   * so "submit paper" and "retry online" are equally available). */
+  canSubmitPaper: boolean;
 };
 
 function computeNextRetryAt(
@@ -154,6 +164,10 @@ export async function getExamsForStudent(
   return allExams.map((e) => {
     const attempt = latestByExam.get(e.id);
     const canRetry = attempt?.status === "verified" && attempt.passed === false;
+    // Same eligibility as canRetry, but also true for a student with no
+    // attempt at all -- unlike the online retry action, submitting a
+    // paper exam is a valid FIRST move, not just a retake path.
+    const canSubmitPaper = !attempt || canRetry;
     return {
       examId: e.id,
       slug: e.slug,
@@ -171,6 +185,8 @@ export async function getExamsForStudent(
       nextRetryAt: canRetry
         ? computeNextRetryAt(attempt?.verifiedAt ?? null, e.retryCooldownDays)
         : null,
+      source: (attempt?.source as "online" | "paper") ?? "online",
+      canSubmitPaper,
     };
   });
 }
@@ -231,11 +247,21 @@ export type AttemptView = {
   scorePercent: number | null;
   passed: boolean | null;
   mustPassSectionsOk: boolean | null;
+  source: "online" | "paper";
+  proofFile: string | null;
+  externalLicenseNumber: string | null;
 };
 
 export type AttemptSummary = Pick<
   AttemptView,
-  "id" | "attemptNumber" | "status" | "submittedAt" | "verifiedAt" | "scorePercent" | "passed"
+  | "id"
+  | "attemptNumber"
+  | "status"
+  | "submittedAt"
+  | "verifiedAt"
+  | "scorePercent"
+  | "passed"
+  | "source"
 >;
 
 /** Every attempt a student has made at one exam, most recent first --
@@ -258,6 +284,7 @@ export async function getAttemptHistory(
     verifiedAt: a.verifiedAt,
     scorePercent: a.scorePercent,
     passed: a.passed,
+    source: a.source as "online" | "paper",
   }));
 }
 
@@ -398,6 +425,9 @@ export async function getExamDetail(
           scorePercent: attemptRow.scorePercent,
           passed: attemptRow.passed,
           mustPassSectionsOk: attemptRow.mustPassSectionsOk,
+          source: attemptRow.source as "online" | "paper",
+          proofFile: attemptRow.proofFile,
+          externalLicenseNumber: attemptRow.externalLicenseNumber,
         }
       : null,
   };

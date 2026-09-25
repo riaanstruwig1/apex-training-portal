@@ -276,16 +276,23 @@ export default async function StudentFolioPage(
               </div>
             ))}
             {examSummaries.map((e) => {
+              const isPaper = e.source === "paper";
               const statusLabel =
                 e.status === "not_started"
                   ? "Not started"
                   : e.status === "in_progress"
                     ? `Attempt ${e.attemptNumber} — in progress — ${e.answeredCount} / ${e.totalQuestions} answered`
                     : e.status === "submitted"
-                      ? `Attempt ${e.attemptNumber} — submitted, awaiting verification`
+                      ? isPaper
+                        ? `Attempt ${e.attemptNumber} — paper submission, awaiting verification`
+                        : `Attempt ${e.attemptNumber} — submitted, awaiting verification`
                       : e.passed
-                        ? `Attempt ${e.attemptNumber} — Verified — PASS (${e.scorePercent?.toFixed(0)}%)`
-                        : `Attempt ${e.attemptNumber} — Verified — FAIL (${e.scorePercent?.toFixed(0)}%)${e.canRetry ? " — retake pending" : ""}`;
+                        ? isPaper
+                          ? `Attempt ${e.attemptNumber} — Verified — PASS (paper)`
+                          : `Attempt ${e.attemptNumber} — Verified — PASS (${e.scorePercent?.toFixed(0)}%)`
+                        : isPaper
+                          ? `Attempt ${e.attemptNumber} — Verified — FAIL (paper)${e.canRetry ? " — retake pending" : ""}`
+                          : `Attempt ${e.attemptNumber} — Verified — FAIL (${e.scorePercent?.toFixed(0)}%)${e.canRetry ? " — retake pending" : ""}`;
               const badgeColor =
                 e.status === "verified"
                   ? e.passed

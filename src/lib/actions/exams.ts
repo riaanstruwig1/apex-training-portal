@@ -12,6 +12,7 @@ import {
   examAnswers,
 } from "@/db/schema";
 import { requireStudent, requireInstructor, requireCFI } from "@/lib/auth/dal";
+import { saveUpload, UploadError } from "@/lib/uploads";
 
 async function latestAttempt(studentId: string, examId: string) {
   const [row] = await db
@@ -241,6 +242,126 @@ export async function verifyExamAttempt(attemptId: string) {
     .update(examAttempts)
     .set({
       status: "verified",
+      verifiedAt: new Date(),
+      verifiedByUserId: instructor.id,
+    })
+    .where(eq(examAttempts.id, attemptId));
+
+  revalidatePath(`/instructor/students/${attempt.studentId}`);
+  revalidatePath(`/instructor/students/${attempt.studentId}/exams/${attempt.examId}`);
+  revalidatePath("/instructor");
+  revalidatePath("/student");
+}
+
+export type SubmitPaperExamState = { error: string } | undefined;
+
+/**
+ * Student self-submits a pre-written (paper) exam, or an SACAA radio
+ * licence they already hold for the RT exam specifically -- added 25 Sep
+ * 2026 per Riaan: some students already wrote the Basic/PPG exam on
+ * paper, and a student may already hold a radio licence from outside
+ * this school. This does NOT mark the exam passed by itself (unlike an
+ * online submission, there's no score to compute it from) -- it only
+ * gets the attempt to "submitted", same as an online exam waiting on
+ * verifyExamAttempt. A CFI/Admin must review the uploaded proof and
+ * explicitly decide pass/fail via verifyPaperExam below, mirroring the
+ * flight logbook's log-then-countersign pattern rather than the
+ * instructor grade-rating's instant-effect one -- a student's own upload
+ * shouldn't be able to mark itself as a pass.
+ *
+ * Eligible exactly when a fresh online attempt would also be eligible to
+ * start (no attempt yet, or the latest one is a verified fail past its
+ * cooldown) -- see ExamSummary.canSubmitPaper in lib/exams.ts, computed
+ * the same way as the online startNewAttempt gate above.
+ */
+export async function submitPaperExam(
+  examId: string,
+  _prevState: SubmitPaperExamState,
+  formData: FormData
+): Promise<SubmitPaperExamState> {
+  const { user } = await requireStudent();
+
+  const [exam] = await db.select().from(exams).where(eq(exams.id, examId)).limit(1);
+  if (!exam) return { error: "Exam not found." };
+
+  const current = await latestAttempt(user.id, examId);
+  if (current && !(current.status === "verified" && current.passed === false)) {
+    return {
+      error:
+        current.status === "verified"
+          ? "This exam is already passed."
+          : "This exam already has an attempt in progress or awaiting review.",
+    };
+  }
+  if (current?.verifiedAt && exam.retryCooldownDays) {
+    const eligibleAt = new Date(
+      current.verifiedAt.getTime() + exam.retryCooldownDays * 24 * 60 * 60 * 1000
+    );
+    if (new Date() < eligibleAt) {
+      return {
+        error: `You can submit again from ${eligibleAt.toLocaleDateString()} (${exam.retryCooldownDays}-day wait after a fail).`,
+      };
+    }
+  }
+
+  const file = formData.get("proofFile");
+  if (!(file instanceof File) || file.size === 0) {
+    return { error: "Upload a photo or scan of the exam (or licence) to submit." };
+  }
+  const licenseNumberRaw = formData.get("licenseNumber");
+  const licenseNumber = typeof licenseNumberRaw === "string" ? licenseNumberRaw.trim() : "";
+  if (exam.category === "rt" && !licenseNumber) {
+    return { error: "Enter the radio licence number shown on your SACAA licence." };
+  }
+
+  let proofFile: string | null;
+  try {
+    proofFile = await saveUpload(user.id, `paper-exam-${exam.slug}`, file);
+  } catch (err) {
+    return { error: err instanceof UploadError ? err.message : "proofFile: upload failed." };
+  }
+  if (!proofFile) {
+    return { error: "Upload a photo or scan of the exam (or licence) to submit." };
+  }
+
+  await db.insert(examAttempts).values({
+    studentId: user.id,
+    examId,
+    attemptNumber: (current?.attemptNumber ?? 0) + 1,
+    status: "submitted",
+    submittedAt: new Date(),
+    source: "paper",
+    proofFile,
+    externalLicenseNumber: exam.category === "rt" ? licenseNumber : null,
+  });
+
+  revalidatePath(`/student/exams/${examId}`);
+  revalidatePath("/student");
+  revalidatePath("/instructor");
+  revalidatePath(`/instructor/students/${user.id}`);
+  return undefined;
+}
+
+/** CFI/Admin reviews a paper submission and decides pass/fail -- the
+ * counterpart to verifyExamAttempt above, but for a "paper" attempt
+ * `passed` isn't already computed, so the reviewer sets it explicitly
+ * instead of just confirming a number. Same permission level as
+ * verifying an online attempt. */
+export async function verifyPaperExam(attemptId: string, passed: boolean) {
+  const instructor = await requireInstructor();
+
+  const [attempt] = await db
+    .select()
+    .from(examAttempts)
+    .where(eq(examAttempts.id, attemptId))
+    .limit(1);
+  if (!attempt || attempt.status !== "submitted" || attempt.source !== "paper") return;
+
+  await db
+    .update(examAttempts)
+    .set({
+      status: "verified",
+      passed,
       verifiedAt: new Date(),
       verifiedByUserId: instructor.id,
     })

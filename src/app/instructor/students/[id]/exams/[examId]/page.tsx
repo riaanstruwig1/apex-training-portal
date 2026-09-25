@@ -5,14 +5,28 @@ import { users } from "@/db/schema";
 import { requireInstructor } from "@/lib/auth/dal";
 import { getExamDetail, getAttemptHistory } from "@/lib/exams";
 import VerifyButton from "./verify-button";
+import VerifyPaperButton from "./verify-paper-button";
 
 function mediaUrl(slug: string, filename: string) {
   return `/exam-media/${slug}/${filename}`;
 }
 
-function attemptLabel(a: { attemptNumber: number; status: string; passed: boolean | null; scorePercent: number | null }) {
-  if (a.status !== "verified") return `Attempt ${a.attemptNumber} — awaiting verification`;
-  return `Attempt ${a.attemptNumber} — ${a.passed ? "PASS" : "FAIL"} (${a.scorePercent?.toFixed(0)}%)`;
+function attemptLabel(a: {
+  attemptNumber: number;
+  status: string;
+  passed: boolean | null;
+  scorePercent: number | null;
+  source: "online" | "paper";
+}) {
+  if (a.status !== "verified") {
+    return a.source === "paper"
+      ? `Attempt ${a.attemptNumber} — paper, awaiting verification`
+      : `Attempt ${a.attemptNumber} — awaiting verification`;
+  }
+  const outcome = a.passed ? "PASS" : "FAIL";
+  return a.source === "paper"
+    ? `Attempt ${a.attemptNumber} — ${outcome} (paper)`
+    : `Attempt ${a.attemptNumber} — ${outcome} (${a.scorePercent?.toFixed(0)}%)`;
 }
 
 export default async function ExamReviewPage(
@@ -38,25 +52,91 @@ export default async function ExamReviewPage(
 
   const { exam, attempt } = detail;
 
+  const historyTabs = history.length > 1 && (
+    <div className="flex flex-wrap gap-2 text-xs">
+      {history.map((a) => (
+        <a
+          key={a.id}
+          href={`/instructor/students/${id}/exams/${examId}?attempt=${a.id}`}
+          className={`rounded-full border px-3 py-1 ${
+            a.id === attempt.id
+              ? "border-red-600 bg-red-50 text-red-700 font-medium"
+              : "border-slate-200 text-slate-500 hover:bg-slate-50"
+          }`}
+        >
+          {attemptLabel(a)}
+        </a>
+      ))}
+    </div>
+  );
+
+  // A "paper" attempt (pre-written exam, or an already-held radio licence
+  // -- see schema.ts) has no exam_answers at all, so there's no question
+  // breakdown to walk and no .docx to generate -- just the uploaded proof
+  // and a pass/fail decision the reviewer has to make themselves (a paper
+  // attempt is never auto-scored the way an online one is).
+  if (attempt.source === "paper") {
+    return (
+      <div className="space-y-6">
+        {historyTabs}
+        <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-start">
+          <div>
+            <h1 className="text-xl font-semibold text-slate-900">{exam.title}</h1>
+            <p className="text-sm text-slate-500">
+              {student.name} — Attempt {attempt.attemptNumber} — paper submission
+            </p>
+          </div>
+          {attempt.status === "submitted" && <VerifyPaperButton attemptId={attempt.id} />}
+        </div>
+
+        <div
+          className={`rounded-xl border px-4 py-3 text-sm ${
+            attempt.status === "verified"
+              ? attempt.passed
+                ? "border-green-200 bg-green-50 text-green-800"
+                : "border-red-200 bg-red-50 text-red-800"
+              : "border-amber-200 bg-amber-50 text-amber-800"
+          }`}
+        >
+          {attempt.status === "verified" ? (
+            <>
+              <span className="font-semibold">{attempt.passed ? "PASS" : "FAIL"}</span> — paper
+              submission, verified by {attempt.verifiedByName}
+              {attempt.verifiedAt ? ` on ${attempt.verifiedAt.toLocaleDateString()}` : ""}.
+            </>
+          ) : (
+            <>
+              Submitted
+              {attempt.submittedAt ? ` on ${attempt.submittedAt.toLocaleDateString()}` : ""} as a
+              paper exam. Not yet reviewed.
+            </>
+          )}
+        </div>
+
+        {attempt.externalLicenseNumber && (
+          <p className="text-sm text-slate-600">
+            Radio licence number: <span className="font-medium">{attempt.externalLicenseNumber}</span>
+          </p>
+        )}
+        {attempt.proofFile ? (
+          <a
+            href={`/api/uploads/${id}/${attempt.proofFile}`}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-block rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+          >
+            View what was submitted
+          </a>
+        ) : (
+          <p className="text-sm text-slate-400">No file on record.</p>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
-      {history.length > 1 && (
-        <div className="flex flex-wrap gap-2 text-xs">
-          {history.map((a) => (
-            <a
-              key={a.id}
-              href={`/instructor/students/${id}/exams/${examId}?attempt=${a.id}`}
-              className={`rounded-full border px-3 py-1 ${
-                a.id === attempt.id
-                  ? "border-red-600 bg-red-50 text-red-700 font-medium"
-                  : "border-slate-200 text-slate-500 hover:bg-slate-50"
-              }`}
-            >
-              {attemptLabel(a)}
-            </a>
-          ))}
-        </div>
-      )}
+      {historyTabs}
 
       <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-start">
         <div>

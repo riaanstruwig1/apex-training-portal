@@ -575,6 +575,30 @@ export const examAttempts = sqliteTable("exam_attempts", {
   scorePercent: real("score_percent"),
   passed: integer("passed", { mode: "boolean" }),
   mustPassSectionsOk: integer("must_pass_sections_ok", { mode: "boolean" }),
+  // "Pre-written" exams (25 Sep 2026 -- Riaan: some students already wrote
+  // the Basic/PPG exam on paper, or already hold an SACAA radio (RT)
+  // licence obtained outside this school). `source` distinguishes such an
+  // attempt from a normal online one -- a "paper" attempt has no
+  // exam_answers rows at all (there was no online exam to answer), so
+  // every place that walks a submitted exam's question/answer breakdown
+  // (the CFI review page, the marked-exam .docx download) must branch on
+  // this instead of assuming online content exists. Student self-submits
+  // (uploads proofFile via a dedicated route, status -> "submitted"),
+  // exactly like a flight logbook entry needing a CFI countersign -- it
+  // is NOT auto-passed; a CFI/Admin still reviews and sets `passed`
+  // explicitly via verifyPaperExam (see lib/actions/exams.ts), since
+  // there's no online score to compute it from.
+  source: text("source", { enum: ["online", "paper"] })
+    .notNull()
+    .default("online"),
+  proofFile: text("proof_file"), // uploaded scan/photo of the paper exam or radio licence
+  // Only meaningful for a "paper" attempt against the RT-category exam --
+  // the SACAA radio licence number the student says they already hold.
+  // Typing this in + uploading proof IS how the RT exam gets marked
+  // passed (Riaan's answer, 25 Sep 2026: "same thing", not a separate
+  // field elsewhere) -- there's no dedicated radio-licence column on
+  // studentProfiles, this is it.
+  externalLicenseNumber: text("external_license_number"),
 });
 
 // ---------------------------------------------------------------------------

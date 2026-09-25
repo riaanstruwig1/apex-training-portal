@@ -23,6 +23,16 @@ export async function GET(
   if (!detail || !detail.attempt || detail.attempt.status === "in_progress") {
     return new Response("This exam hasn't been submitted yet.", { status: 400 });
   }
+  // A "paper" attempt has no exam_answers to mark up -- buildExamDocx
+  // assumes real online content, so this would otherwise render every
+  // question as unanswered instead of failing loudly. The uploaded proof
+  // file (served via /api/uploads) is the actual record for these.
+  if (detail.attempt.source === "paper") {
+    return new Response(
+      "This was a paper submission -- there's no online answer sheet to download. See the uploaded proof file on the review page instead.",
+      { status: 400 }
+    );
+  }
 
   const doc = await buildExamDocx(student.name, detail.exam, detail.attempt);
   const buffer = await Packer.toBuffer(doc);

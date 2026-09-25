@@ -40,6 +40,59 @@ export default async function StudentExamPage(
     notFound();
   }
 
+  // A "paper" attempt (submitted via /paper -- pre-written exam or an
+  // already-held radio licence) has no online answers at all, so it never
+  // goes through ensureAttempt/ExamForm below -- those assume real exam
+  // content to answer. Just show where the review stands.
+  if (peek.attempt?.source === "paper") {
+    const a = peek.attempt;
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-xl font-semibold text-slate-900">{peek.exam.title}</h1>
+          {peek.exam.subtitle && <p className="text-sm text-slate-500">{peek.exam.subtitle}</p>}
+        </div>
+        <div
+          className={`rounded-xl border px-4 py-3 text-sm ${
+            a.status === "verified"
+              ? a.passed
+                ? "border-green-200 bg-green-50 text-green-800"
+                : "border-red-200 bg-red-50 text-red-800"
+              : "border-amber-200 bg-amber-50 text-amber-800"
+          }`}
+        >
+          {a.status === "verified" ? (
+            <>
+              <span className="font-semibold">{a.passed ? "PASS" : "FAIL"}</span> -- submitted as a
+              paper exam, verified by {a.verifiedByName}
+              {a.verifiedAt ? ` on ${a.verifiedAt.toLocaleDateString()}` : ""}.
+            </>
+          ) : (
+            <>
+              Submitted{a.submittedAt ? ` on ${a.submittedAt.toLocaleDateString()}` : ""} as a paper
+              exam -- awaiting review by your CFI or Admin.
+            </>
+          )}
+        </div>
+        {a.externalLicenseNumber && (
+          <p className="text-sm text-slate-600">
+            Radio licence number: <span className="font-medium">{a.externalLicenseNumber}</span>
+          </p>
+        )}
+        {a.proofFile && (
+          <a
+            href={`/api/uploads/${user.id}/${a.proofFile}`}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-block rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+          >
+            View what you submitted
+          </a>
+        )}
+      </div>
+    );
+  }
+
   if (peek.exam.timeLimitMinutes && !peek.attempt) {
     return (
       <div className="space-y-6">
