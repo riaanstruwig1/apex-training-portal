@@ -1,7 +1,8 @@
 import { requireStudent } from "@/lib/auth/dal";
-import { getRadioCallScript } from "@/lib/settings";
+import { getRadioCallScript, getStudentNotice } from "@/lib/settings";
 import NavHeader from "@/components/nav-header";
 import ConsentGate from "@/components/consent-gate";
+import StudentNoticeBanner from "@/components/student-notice-banner";
 
 const links = [
   { href: "/student", label: "My Portfolio" },
@@ -13,9 +14,10 @@ const links = [
 export default async function StudentLayout({
   children,
 }: LayoutProps<"/student">) {
-  const [{ user, profile }, radioCallScript] = await Promise.all([
+  const [{ user, profile }, radioCallScript, studentNotice] = await Promise.all([
     requireStudent(),
     getRadioCallScript(),
+    getStudentNotice(),
   ]);
 
   // Hard gate (Notes3 item 9): a student added directly by a CFI/Admin --
@@ -34,6 +36,7 @@ export default async function StudentLayout({
         sacaaNumber={profile?.sacaaNumber}
         profileHref={needsConsent ? null : "/student/profile"}
       />
+      {!needsConsent && <StudentNoticeBanner notice={studentNotice} />}
       <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8">
         {needsConsent ? (
           <ConsentGate name={user.name} hasSignature={!!user.signatureFile} />

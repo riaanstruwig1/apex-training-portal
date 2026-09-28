@@ -487,6 +487,17 @@ export const pilotEndorsements = sqliteTable(
 export const siteSettings = sqliteTable("site_settings", {
   id: text("id").primaryKey(), // always "singleton"
   radioCallScript: text("radio_call_script"),
+  // Student-portal notification bar (28 Sep 2026, Riaan: "One line big
+  // ORANGE... type a note and add a button... doc, or hyperlink... option
+  // to hide or show"). noticeFile and noticeLinkUrl are mutually exclusive
+  // -- the button links to whichever was set most recently; see
+  // updateStudentNotice in lib/actions/settings.ts.
+  noticeMessage: text("notice_message"),
+  noticeButtonLabel: text("notice_button_label"),
+  noticeLinkUrl: text("notice_link_url"),
+  noticeFile: text("notice_file"), // filename under data/uploads/forms-procedures/
+  noticeFileOriginalName: text("notice_file_original_name"),
+  noticeVisible: integer("notice_visible", { mode: "boolean" }).notNull().default(false),
   updatedAt: integer("updated_at", { mode: "timestamp" })
     .notNull()
     .default(sql`(unixepoch())`),

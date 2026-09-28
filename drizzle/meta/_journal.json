@@ -211,6 +211,13 @@
       "when": 1790573510455,
       "tag": "0029_square_kree",
       "breakpoints": true
+    },
+    {
+      "idx": 30,
+      "version": "6",
+      "when": 1790593986206,
+      "tag": "0030_student_notice_bar",
+      "breakpoints": true
     }
   ]
 }
