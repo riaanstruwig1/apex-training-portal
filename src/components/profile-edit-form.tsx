@@ -87,6 +87,7 @@ export default function ProfileEditForm({
     sahpaNumber: string | null;
     sahpaExpiryDate: Date | null;
     caaLicenceExpiryDate?: Date | null;
+    licenceFirstIssuedAt?: Date | null;
     startingFlightCount?: number | null;
     startingFlightHours?: number | null;
   } | null;
@@ -340,6 +341,23 @@ export default function ProfileEditForm({
                   defaultValue={
                     pilot.caaLicenceExpiryDate
                       ? pilot.caaLicenceExpiryDate.toISOString().slice(0, 10)
+                      : ""
+                  }
+                  className={inputClass}
+                />
+              </Field>
+              {/* "V23" item 3 (25 Sep 2026): not the upload date, and not
+               * the expiry date above -- the date this licence was FIRST
+               * ever issued, so years of existing history carry over
+               * correctly. */}
+              <Field id="licenceFirstIssuedAt" label="Date licence was first issued (not today's date)">
+                <input
+                  id="licenceFirstIssuedAt"
+                  name="licenceFirstIssuedAt"
+                  type="date"
+                  defaultValue={
+                    pilot.licenceFirstIssuedAt
+                      ? pilot.licenceFirstIssuedAt.toISOString().slice(0, 10)
                       : ""
                   }
                   className={inputClass}

@@ -2,14 +2,22 @@
 // logbook tables. Deliberately has no `server-only` import (unlike
 // lib/logbook.ts) since both call sites are client components.
 import { LOGBOOK_EXERCISES } from "@/lib/logbook-exercises";
+import { PILOT_FLIGHT_TASKS } from "@/lib/logbook-flight-tasks";
 
-const exerciseLabelByCode = new Map(
-  LOGBOOK_EXERCISES.map((e) => [e.code, e.label])
-);
+// Both lists feed the same lookup -- student exercise codes are bare numbers
+// ("1", "4") and pilot flight-task codes are words ("solo", "xc"), so there's
+// no collision between them and a single map can format either kind of
+// stored value without needing to know which list a given row was logged
+// under (see logbook-flight-tasks.ts's own note).
+const exerciseLabelByCode = new Map([
+  ...LOGBOOK_EXERCISES.map((e) => [e.code, e.label] as const),
+  ...PILOT_FLIGHT_TASKS.map((t) => [t.code, t.label] as const),
+]);
 
-/** Turns the stored comma-separated exercise codes ("1, 4, 9") into their
- * short labels for display, falling back to the raw code for anything that
- * doesn't match the current list (e.g. an older entry). */
+/** Turns the stored comma-separated exercise/flight-task codes ("1, 4, 9" on
+ * the student side, "solo, xc" on the pilot side) into their short labels
+ * for display, falling back to the raw code for anything that doesn't match
+ * either current list (e.g. an older entry). */
 export function formatExerciseCodes(codesCsv: string | null): string {
   if (!codesCsv) return "—";
   return codesCsv

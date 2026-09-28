@@ -10,9 +10,7 @@ export default function ForgotPasswordPage() {
             Forgot your password?
           </h1>
           <p className="mt-1 text-sm text-slate-500">
-            This app doesn&rsquo;t send reset emails yet -- enter your account email below and
-            we&rsquo;ll flag your account for your CFI or Admin, who can reset it and get the new
-            password to you directly.
+            Enter your account email and we&rsquo;ll send you a link to reset your password.
           </p>
         </div>
         <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">

@@ -4,7 +4,7 @@ import { db } from "@/db";
 import { users, studentProfiles, studentEndorsements } from "@/db/schema";
 import Link from "next/link";
 import { getStudentProgress } from "@/lib/progress";
-import { getLogbookEntries, summarizeLogbook } from "@/lib/logbook";
+import { getLogbookEntries, getInstructorRoster, summarizeLogbook } from "@/lib/logbook";
 import {
   getExamsForStudent,
   visibleExamCategories,
@@ -51,10 +51,11 @@ export default async function StudentFolioPage(
     .where(eq(studentProfiles.userId, id))
     .limit(1);
 
-  const [sections, logEntries, examSummaries] = await Promise.all([
+  const [sections, logEntries, examSummaries, instructors] = await Promise.all([
     getStudentProgress(id),
     getLogbookEntries(id),
     getExamsForStudent(id, profile?.trainingType),
+    getInstructorRoster(),
   ]);
 
   const summary = summarizeLogbook(logEntries);
@@ -333,7 +334,7 @@ export default async function StudentFolioPage(
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">
           Flight log
         </h2>
-        <LogbookTable studentId={id} entries={logEntries} />
+        <LogbookTable studentId={id} entries={logEntries} instructors={instructors} />
       </section>
     </div>
   );

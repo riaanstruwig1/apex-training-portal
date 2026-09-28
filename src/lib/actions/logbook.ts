@@ -72,6 +72,15 @@ export async function addLogbookEntry(
     instructorUserId = staff?.id ?? null;
   }
 
+  // "V23" items 7-9 (25 Sep 2026): a pilot-side account (pilot, or a
+  // cfi/instructor's own linked pilot profile) self-signs the moment they
+  // log the flight -- no per-entry CFI/instructor countersign at all. Only
+  // a genuine student account still lands as unverified/pending here.
+  // verifiedByUserId === studentId is how the rest of the app tells a
+  // self-signed entry apart from a CFI-countersigned one (see
+  // getLogbookEntries's `selfSigned`) -- no separate column needed.
+  const selfSign = user.role !== "student";
+
   await db.insert(flightLogEntries).values({
     studentId: user.id,
     date: new Date(data.date),
@@ -83,9 +92,176 @@ export async function addLogbookEntry(
     exerciseCodesCovered: data.exerciseCodesCovered || null,
     notes: data.notes || null,
     instructorUserId,
+    verified: selfSign,
+    verifiedByUserId: selfSign ? user.id : null,
+    verifiedAt: selfSign ? new Date() : null,
   });
 
   revalidatePath(logbookPathFor(user.role));
+}
+
+/** Pilot-side self-edit of one of their OWN entries ("V23" item 7, 25 Sep
+ * 2026) -- a student can't call this (their entries need a CFI/instructor's
+ * edit instead, see adminUpdateLogbookEntry below); it's guarded on both the
+ * caller's role and actual ownership, not just ownership, since a student
+ * account is technically allowed to call requireStudentOrPilot()-gated
+ * actions too. Re-validates with the exact same schema as adding a new
+ * entry -- editing doesn't get a looser set of rules than logging one. */
+export async function updateLogbookEntry(
+  entryId: string,
+  _prevState: LogEntryState,
+  formData: FormData
+): Promise<LogEntryState> {
+  const user = await requireStudentOrPilot();
+  if (user.role === "student") {
+    return { error: "Students can't edit a logged flight themselves -- ask your instructor." };
+  }
+
+  const [existing] = await db
+    .select({ studentId: flightLogEntries.studentId })
+    .from(flightLogEntries)
+    .where(eq(flightLogEntries.id, entryId))
+    .limit(1);
+  if (!existing || existing.studentId !== user.id) {
+    return { error: "That flight isn't on your logbook." };
+  }
+
+  const checkedCodes = formData.getAll("exerciseCodesCovered") as string[];
+  const parsed = LogEntrySchema.safeParse({
+    date: formData.get("date"),
+    site: formData.get("site"),
+    aircraftType: formData.get("aircraftType"),
+    flightType: formData.get("flightType"),
+    durationMinutes: formData.get("durationMinutes"),
+    launches: formData.get("launches") || 1,
+    exerciseCodesCovered: checkedCodes.length ? checkedCodes.join(", ") : undefined,
+    notes: formData.get("notes") || undefined,
+    instructorUserId: formData.get("instructorUserId") || undefined,
+  });
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Invalid input." };
+  }
+  const data = parsed.data;
+
+  let instructorUserId: string | null = null;
+  if (data.instructorUserId) {
+    const [staff] = await db
+      .select({ id: users.id })
+      .from(users)
+      .where(and(eq(users.id, data.instructorUserId), inArray(users.role, ["cfi", "instructor"])))
+      .limit(1);
+    instructorUserId = staff?.id ?? null;
+  }
+
+  await db
+    .update(flightLogEntries)
+    .set({
+      date: new Date(data.date),
+      site: data.site,
+      aircraftType: data.aircraftType,
+      flightType: data.flightType,
+      durationMinutes: data.durationMinutes,
+      launches: data.launches,
+      exerciseCodesCovered: data.exerciseCodesCovered || null,
+      notes: data.notes || null,
+      instructorUserId,
+    })
+    .where(eq(flightLogEntries.id, entryId));
+
+  revalidatePath(logbookPathFor(user.role));
+}
+
+/** Pilot-side self-delete of one of their OWN entries ("V23" item 7). Same
+ * role + ownership guard as updateLogbookEntry above. */
+export async function deleteLogbookEntry(entryId: string): Promise<{ error: string } | undefined> {
+  const user = await requireStudentOrPilot();
+  if (user.role === "student") {
+    return { error: "Students can't delete a logged flight themselves -- ask your instructor." };
+  }
+
+  const [existing] = await db
+    .select({ studentId: flightLogEntries.studentId })
+    .from(flightLogEntries)
+    .where(eq(flightLogEntries.id, entryId))
+    .limit(1);
+  if (!existing || existing.studentId !== user.id) {
+    return { error: "That flight isn't on your logbook." };
+  }
+
+  await db.delete(flightLogEntries).where(eq(flightLogEntries.id, entryId));
+  revalidatePath(logbookPathFor(user.role));
+}
+
+/** CFI/Instructor edit of a STUDENT's flight-log entry ("V23" item 6, 25 Sep
+ * 2026) -- students still get CFI/instructor oversight of their logbook
+ * (item 9: "Instructor ONLY review Student logbook"), now including editing
+ * and deleting an entry outright, not just verifying/commenting on it.
+ * Deliberately does NOT touch `verified` -- an instructor fixing a typo on
+ * an already-verified entry shouldn't silently un-verify it. */
+export async function adminUpdateLogbookEntry(
+  entryId: string,
+  studentId: string,
+  _prevState: LogEntryState,
+  formData: FormData
+): Promise<LogEntryState> {
+  await requireInstructor();
+
+  const checkedCodes = formData.getAll("exerciseCodesCovered") as string[];
+  const parsed = LogEntrySchema.safeParse({
+    date: formData.get("date"),
+    site: formData.get("site"),
+    aircraftType: formData.get("aircraftType"),
+    flightType: formData.get("flightType"),
+    durationMinutes: formData.get("durationMinutes"),
+    launches: formData.get("launches") || 1,
+    exerciseCodesCovered: checkedCodes.length ? checkedCodes.join(", ") : undefined,
+    notes: formData.get("notes") || undefined,
+    instructorUserId: formData.get("instructorUserId") || undefined,
+  });
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Invalid input." };
+  }
+  const data = parsed.data;
+
+  let instructorUserId: string | null = null;
+  if (data.instructorUserId) {
+    const [staff] = await db
+      .select({ id: users.id })
+      .from(users)
+      .where(and(eq(users.id, data.instructorUserId), inArray(users.role, ["cfi", "instructor"])))
+      .limit(1);
+    instructorUserId = staff?.id ?? null;
+  }
+
+  await db
+    .update(flightLogEntries)
+    .set({
+      date: new Date(data.date),
+      site: data.site,
+      aircraftType: data.aircraftType,
+      flightType: data.flightType,
+      durationMinutes: data.durationMinutes,
+      launches: data.launches,
+      exerciseCodesCovered: data.exerciseCodesCovered || null,
+      notes: data.notes || null,
+      instructorUserId,
+    })
+    .where(and(eq(flightLogEntries.id, entryId), eq(flightLogEntries.studentId, studentId)));
+
+  revalidatePath(`/instructor/students/${studentId}`);
+  revalidatePath("/student/logbook");
+}
+
+/** CFI/Instructor delete of a STUDENT's flight-log entry ("V23" item 6). */
+export async function adminDeleteLogbookEntry(entryId: string, studentId: string) {
+  await requireInstructor();
+
+  await db
+    .delete(flightLogEntries)
+    .where(and(eq(flightLogEntries.id, entryId), eq(flightLogEntries.studentId, studentId)));
+
+  revalidatePath(`/instructor/students/${studentId}`);
+  revalidatePath("/student/logbook");
 }
 
 /** Instructor countersigns a student's logbook entry, with an optional comment. */
@@ -238,6 +414,7 @@ export async function importLogbookCsv(
   formData: FormData
 ): Promise<CsvImportState> {
   const user = await requireStudentOrPilot();
+  const selfSign = user.role !== "student";
 
   const file = formData.get("csvFile");
   const flightType = formData.get("flightType");
@@ -338,6 +515,13 @@ export async function importLogbookCsv(
         flightType,
         durationMinutes,
         launches: 1,
+        // Same self-sign rule as addLogbookEntry above ("V23" items 7-9) --
+        // a CSV/Excel import is still the pilot logging their own flights,
+        // just in bulk, so it self-signs the same way a manually-typed
+        // entry does. A student's import stays unverified/pending as before.
+        verified: selfSign,
+        verifiedByUserId: selfSign ? user.id : null,
+        verifiedAt: selfSign ? new Date() : null,
       });
     });
   }

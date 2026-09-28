@@ -200,6 +200,7 @@ export default async function ApplicantReviewPage({
                     sahpaNumber: pilot.profile.sahpaNumber,
                     sahpaExpiryDate: pilot.profile.sahpaExpiryDate,
                     caaLicenceExpiryDate: pilot.profile.caaLicenceExpiryDate,
+                    licenceFirstIssuedAt: pilot.profile.licenceFirstIssuedAt,
                     startingFlightCount: pilot.profile.startingFlightCount,
                     startingFlightHours: pilot.profile.startingFlightHours,
                   }
@@ -290,6 +291,10 @@ export default async function ApplicantReviewPage({
                   </span>
                 ) : null
               }
+            />
+            <Row
+              label="Licence first issued"
+              value={pilot.profile.licenceFirstIssuedAt?.toLocaleDateString()}
             />
           </dl>
 

@@ -204,6 +204,13 @@
       "when": 1790337032561,
       "tag": "0028_elite_firebird",
       "breakpoints": true
+    },
+    {
+      "idx": 29,
+      "version": "6",
+      "when": 1790573510455,
+      "tag": "0029_square_kree",
+      "breakpoints": true
     }
   ]
 }

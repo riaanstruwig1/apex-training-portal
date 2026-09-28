@@ -9,8 +9,9 @@ export default function ForgotPasswordForm() {
   if (state?.success) {
     return (
       <p className="rounded-md bg-green-50 px-3 py-2 text-sm text-green-800">
-        Thanks -- if that email matches an account here, it&rsquo;s now flagged for your CFI or
-        Admin&rsquo;s attention. They&rsquo;ll be in touch with a new password.
+        Thanks -- if that email matches an account here, a reset link is on its way. It&rsquo;s
+        good for 1 hour. If it doesn&rsquo;t arrive, check spam, or ask your CFI/Admin to reset it
+        for you directly.
       </p>
     );
   }
@@ -40,7 +41,7 @@ export default function ForgotPasswordForm() {
         disabled={pending}
         className="w-full rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-700 disabled:opacity-60"
       >
-        {pending ? "Sending..." : "Flag my account for a password reset"}
+        {pending ? "Sending..." : "Send me a reset link"}
       </button>
     </form>
   );

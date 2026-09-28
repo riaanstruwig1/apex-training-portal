@@ -26,6 +26,14 @@ export async function getLogbookEntries(studentId: string) {
   return entries.map((e) => ({
     ...e,
     instructorName: e.instructorUserId ? (instructorNames.get(e.instructorUserId) ?? null) : null,
+    // "V23" items 7-9 (25 Sep 2026): an entry is self-signed when its owner
+    // is also who verified it -- true for every pilot-side entry going
+    // forward (addLogbookEntry sets verifiedByUserId to the owner's own id
+    // for a non-student), and for pre-existing pilot-owned rows the 0029
+    // migration backfilled the same way. A CFI/instructor countersigning a
+    // STUDENT's entry always has a different id here, so this is never
+    // true for a student-owned row.
+    selfSigned: e.verified && e.verifiedByUserId === e.studentId,
   }));
 }
 

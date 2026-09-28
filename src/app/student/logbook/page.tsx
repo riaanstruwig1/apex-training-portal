@@ -28,6 +28,7 @@ export default async function StudentLogbookPage() {
 
       <div className="rounded-xl border border-slate-200 bg-white p-4">
         <LogEntryForm
+          mode="student"
           defaultSite={lastEntry?.site}
           defaultAircraftType={lastEntry?.aircraftType}
           instructors={instructors}

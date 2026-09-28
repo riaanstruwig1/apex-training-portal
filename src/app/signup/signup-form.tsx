@@ -33,6 +33,7 @@ const TEXT_FIELDS = [
   "sahpaNumber",
   "sahpaExpiryDate",
   "caaLicenceExpiryDate",
+  "licenceFirstIssuedAt",
   "startingFlightCount",
   "startingFlightHours",
   "consentName",
@@ -343,6 +344,21 @@ export default function SignupForm() {
               type="date"
               value={values.caaLicenceExpiryDate}
               onChange={set("caaLicenceExpiryDate")}
+              className={inputClass}
+            />
+          </Field>
+          {/* "V23" item 3 (25 Sep 2026): NOT the upload date, and not the
+           * expiry date above -- the date this licence was FIRST ever
+           * issued, so an existing pilot's years of history carry over
+           * correctly into this system. CFI/Admin can correct it later once
+           * they've actually looked at the uploaded licence. */}
+          <Field id="licenceFirstIssuedAt" label="Date this licence was first issued (not today's date)">
+            <input
+              id="licenceFirstIssuedAt"
+              name="licenceFirstIssuedAt"
+              type="date"
+              value={values.licenceFirstIssuedAt}
+              onChange={set("licenceFirstIssuedAt")}
               className={inputClass}
             />
           </Field>

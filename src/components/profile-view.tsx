@@ -110,6 +110,7 @@ export default function ProfileView({
     sahpaExpiryDate: Date | null;
     caaLicenceFile: string | null;
     caaLicenceExpiryDate: Date | null;
+    licenceFirstIssuedAt: Date | null;
     startingFlightCount: number | null;
     startingFlightHours: number | null;
     flightLogEntries: { date: Date; durationMinutes: number }[];
@@ -171,6 +172,10 @@ export default function ProfileView({
                   </span>
                 ) : null
               }
+            />
+            <Row
+              label="Licence first issued"
+              value={pilot.licenceFirstIssuedAt?.toLocaleDateString()}
             />
           </dl>
           <div className="mt-3">

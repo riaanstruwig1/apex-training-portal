@@ -18,14 +18,36 @@ export const users = sqliteTable("users", {
   email: text("email").notNull().unique(),
   passwordHash: text("password_hash"), // null until an invited student/instructor sets a password
   // Set when someone uses the "Forgot your password?" link on the login
-  // page (V22 rollout item 11, 23 Sep 2026) -- this app has no outbound
-  // email provider (see adminResetPassword's own comment), so there's no
-  // reset link to send. Instead this just flags the account for CFI/Admin
-  // attention on a dedicated queue page, same spirit as the verification
-  // queue; they call/message the person and reset it via the existing
-  // admin-reset-password flow. Cleared (set back to null) once a CFI/Admin
+  // page (V22 rollout item 11, 23 Sep 2026). Originally the ONLY path here
+  // (this app had no outbound email provider yet), so it just flagged the
+  // account for CFI/Admin attention on a dedicated queue page, same spirit
+  // as the verification queue -- they'd call/message the person and reset
+  // it via the existing admin-reset-password flow below. Now that Resend's
+  // sending domain is verified ("V23" item 5, 25 Sep 2026), this is the
+  // FALLBACK: requestPasswordReset only sets this when the reset email
+  // itself couldn't be sent (not configured, or Resend failed), so the
+  // person isn't just stuck. Cleared (set back to null) once a CFI/Admin
   // has dealt with the request, whether by resetting or dismissing it.
   passwordResetRequestedAt: integer("password_reset_requested_at", {
+    mode: "timestamp",
+  }),
+  // "V23" item 5 (25 Sep 2026): a real, emailed self-service reset link --
+  // now that Resend's sending domain is verified in production (confirmed
+  // by Riaan), src/lib/email.ts's sendEmail() actually reaches people, so
+  // this no longer has to be the CFI/Admin-mediated-only flow above.
+  // passwordResetToken is a single-use, random, unguessable token; null
+  // once unused/expired/consumed. Deliberately NOT unique-indexed the same
+  // way email is -- a null column with a unique index would collide across
+  // every account that has never requested a reset, and SQLite treats every
+  // NULL as unique for that anyway, so it works, but the safer/simpler
+  // choice here is just to look it up directly (a random 32-byte token has
+  // no realistic collision risk) rather than relying on the DB to enforce
+  // it. passwordResetRequestedAt (above) and the CFI/Admin queue it drives
+  // are KEPT, not replaced -- this is a fallback for whenever the email
+  // doesn't get through (or arrives late), not removed just because the
+  // happy path is now automated.
+  passwordResetToken: text("password_reset_token"),
+  passwordResetTokenExpiresAt: integer("password_reset_token_expires_at", {
     mode: "timestamp",
   }),
   name: text("name").notNull(),
@@ -387,6 +409,15 @@ export const pilotProfiles = sqliteTable("pilot_profiles", {
   // rarely known to the exact minute.
   startingFlightCount: integer("starting_flight_count").notNull().default(0),
   startingFlightHours: real("starting_flight_hours").notNull().default(0),
+  // "V23" item 3 (25 Sep 2026): the date the pilot's CAA licence was FIRST
+  // ever issued -- not the date it was uploaded here, and not the renewal/
+  // expiry date above. Self-declared at sign-up from the pilot's existing
+  // licence (critical for an existing pilot with years of hours carrying
+  // over into this system unchanged), editable later by CFI/Admin once
+  // they've actually looked at the uploaded licence and confirmed the real
+  // date. Null just means "not entered yet" -- nothing else depends on it
+  // being set (unlike caaLicenceExpiryDate, this never gates anything).
+  licenceFirstIssuedAt: integer("licence_first_issued_at", { mode: "timestamp" }),
   status: text("status", {
     enum: ["pending_verification", "active", "suspended"],
   })

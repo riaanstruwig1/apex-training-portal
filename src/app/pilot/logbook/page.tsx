@@ -1,7 +1,7 @@
 import { requirePilot } from "@/lib/auth/dal";
 import { getLogbookEntries, getInstructorRoster } from "@/lib/logbook";
 import LogEntryForm from "@/components/logbook/log-entry-form";
-import LogbookEntries from "@/components/logbook/logbook-entries";
+import PilotLogbookEntries from "@/components/logbook/pilot-logbook-entries";
 import CsvImportForm from "@/components/logbook/csv-import-form";
 import FlightSummary from "@/components/flight-summary";
 
@@ -27,12 +27,14 @@ export default async function PilotLogbookPage() {
       <div>
         <h1 className="mb-1 text-xl font-semibold text-slate-900">Flight logbook</h1>
         <p className="text-sm text-slate-500">
-          Log every flight. Your instructor countersigns entries once verified.
+          Log every flight -- it&apos;s self-signed the moment you add it, no CFI/instructor
+          countersign needed. You can edit or delete any entry of your own afterwards.
         </p>
       </div>
 
       <div className="rounded-xl border border-slate-200 bg-white p-4">
         <LogEntryForm
+          mode="pilot"
           defaultSite={lastEntry?.site}
           defaultAircraftType={lastEntry?.aircraftType}
           instructors={instructors}
@@ -50,7 +52,7 @@ export default async function PilotLogbookPage() {
 
       <CsvImportForm />
 
-      <LogbookEntries entries={entries} />
+      <PilotLogbookEntries entries={entries} instructors={instructors} />
     </div>
   );
 }

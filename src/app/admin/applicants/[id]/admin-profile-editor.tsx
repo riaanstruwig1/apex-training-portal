@@ -103,6 +103,7 @@ export default function AdminProfileEditor({
     sahpaNumber: string | null;
     sahpaExpiryDate: Date | null;
     caaLicenceExpiryDate: Date | null;
+    licenceFirstIssuedAt: Date | null;
     startingFlightCount: number | null;
     startingFlightHours: number | null;
   } | null;
@@ -296,6 +297,22 @@ export default function AdminProfileEditor({
                   defaultValue={
                     pilot?.caaLicenceExpiryDate
                       ? pilot.caaLicenceExpiryDate.toISOString().slice(0, 10)
+                      : ""
+                  }
+                  className={inputClass}
+                />
+              </Field>
+              {/* "V23" item 3 (25 Sep 2026): correct this once you've
+               * actually looked at the uploaded licence -- not the date it
+               * was uploaded here. */}
+              <Field id="licenceFirstIssuedAt" label="Date licence was first issued">
+                <input
+                  id="licenceFirstIssuedAt"
+                  name="licenceFirstIssuedAt"
+                  type="date"
+                  defaultValue={
+                    pilot?.licenceFirstIssuedAt
+                      ? pilot.licenceFirstIssuedAt.toISOString().slice(0, 10)
                       : ""
                   }
                   className={inputClass}

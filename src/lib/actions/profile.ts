@@ -39,6 +39,8 @@ const PilotOnlyProfileSchema = z.object({
   sahpaNumber: z.string().trim().optional(),
   sahpaExpiryDate: z.string().trim().optional(),
   caaLicenceExpiryDate: z.string().trim().optional(),
+  // "V23" item 3 (25 Sep 2026): see the matching schema.ts comment.
+  licenceFirstIssuedAt: z.string().trim().optional(),
   startingFlightCount: z.string().trim().optional(),
   startingFlightHours: z.string().trim().optional(),
 });
@@ -145,6 +147,7 @@ export async function updateOwnProfile(
         sahpaNumber: formData.get("sahpaNumber") || undefined,
         sahpaExpiryDate: formData.get("sahpaExpiryDate") || undefined,
         caaLicenceExpiryDate: formData.get("caaLicenceExpiryDate") || undefined,
+        licenceFirstIssuedAt: formData.get("licenceFirstIssuedAt") || undefined,
         startingFlightCount: formData.get("startingFlightCount") || undefined,
         startingFlightHours: formData.get("startingFlightHours") || undefined,
       });
@@ -164,6 +167,9 @@ export async function updateOwnProfile(
             : null,
           caaLicenceExpiryDate: pilotOnly.data.caaLicenceExpiryDate
             ? new Date(pilotOnly.data.caaLicenceExpiryDate)
+            : null,
+          licenceFirstIssuedAt: pilotOnly.data.licenceFirstIssuedAt
+            ? new Date(pilotOnly.data.licenceFirstIssuedAt)
             : null,
           startingFlightCount: pilotOnly.data.startingFlightCount
             ? parseInt(pilotOnly.data.startingFlightCount, 10) || 0
@@ -202,9 +208,9 @@ const ChangePasswordSchema = z
 export type ChangePasswordState = { error: string; success?: never } | { error?: never; success: true } | undefined;
 
 /** Self-service password change for any signed-in user -- current password
- * required, no email involved (this app has no outbound email provider
- * yet, see the project status doc). For a locked-out user who can't sign
- * in to reach this form, see adminResetPassword below instead. */
+ * required. For a user who's locked OUT (can't sign in to reach this form
+ * at all), see either the emailed self-service link at /forgot-password
+ * (lib/actions/password-reset-request.ts) or adminResetPassword below. */
 export async function changeOwnPassword(
   _prevState: ChangePasswordState,
   formData: FormData
@@ -286,6 +292,7 @@ export async function adminUpdateProfile(
     sahpaNumber: formData.get("sahpaNumber") || undefined,
     sahpaExpiryDate: formData.get("sahpaExpiryDate") || undefined,
     caaLicenceExpiryDate: formData.get("caaLicenceExpiryDate") || undefined,
+    licenceFirstIssuedAt: formData.get("licenceFirstIssuedAt") || undefined,
     startingFlightCount: formData.get("startingFlightCount") || undefined,
     startingFlightHours: formData.get("startingFlightHours") || undefined,
   });
@@ -355,6 +362,12 @@ export async function adminUpdateProfile(
         caaLicenceExpiryDate: parsed.data.caaLicenceExpiryDate
           ? new Date(parsed.data.caaLicenceExpiryDate)
           : null,
+        // "V23" item 3 (25 Sep 2026): CFI/Admin corrects this once they've
+        // actually looked at the uploaded licence and confirmed the real
+        // first-issue date -- see schema.ts's own comment.
+        licenceFirstIssuedAt: parsed.data.licenceFirstIssuedAt
+          ? new Date(parsed.data.licenceFirstIssuedAt)
+          : null,
         startingFlightCount: parsed.data.startingFlightCount
           ? parseInt(parsed.data.startingFlightCount, 10) || 0
           : 0,
@@ -377,9 +390,12 @@ export async function adminUpdateProfile(
 
 /**
  * Resets a locked-out user's password to a freshly generated one, shown
- * once so the CFI/Admin can hand it over (call, message, in person) -- this
- * app has no outbound email provider yet (see the status doc), so there's
- * no "reset link" to send; this is the pragmatic stand-in until one exists.
+ * once so the CFI/Admin can hand it over (call, message, in person). This
+ * is the CFI/Admin-mediated path -- kept as a fallback for whenever the
+ * person can't get (or doesn't trust) the emailed self-service link at
+ * /forgot-password (lib/actions/password-reset-request.ts), e.g. because
+ * the email didn't arrive, went to spam, or they no longer have access to
+ * that inbox at all.
  */
 export async function adminResetPassword(
   targetUserId: string

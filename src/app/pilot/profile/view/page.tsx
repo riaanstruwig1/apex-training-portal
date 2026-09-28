@@ -58,6 +58,7 @@ export default async function PilotProfileViewPage() {
                 sahpaExpiryDate: profile.sahpaExpiryDate,
                 caaLicenceFile: profile.caaLicenceFile,
                 caaLicenceExpiryDate: profile.caaLicenceExpiryDate,
+                licenceFirstIssuedAt: profile.licenceFirstIssuedAt,
                 startingFlightCount: profile.startingFlightCount,
                 startingFlightHours: profile.startingFlightHours,
                 flightLogEntries: entries.map((e) => ({
