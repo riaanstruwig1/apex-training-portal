@@ -418,6 +418,16 @@ export const pilotProfiles = sqliteTable("pilot_profiles", {
   // date. Null just means "not entered yet" -- nothing else depends on it
   // being set (unlike caaLicenceExpiryDate, this never gates anything).
   licenceFirstIssuedAt: integer("licence_first_issued_at", { mode: "timestamp" }),
+  // Set by submitRenewedLicence (src/lib/actions/licence-renewal.ts) the
+  // moment a pilot re-uploads their licence after LicenceExpiredGate locks
+  // them out -- this is what actually surfaces the submission to a CFI/
+  // Admin. Before this existed, a resubmission just quietly overwrote
+  // caaLicenceFile with nothing anywhere flagging that review was needed
+  // (Riaan, 28 Sep 2026: "i submit a file... but then there is nothing to
+  // review or verification queue" -- confirmed MAJOR). Cleared by
+  // adminUpdateProfile the moment a CFI/Admin saves a caaLicenceExpiryDate
+  // for this pilot, since doing that is the review action itself.
+  caaLicenceRenewalSubmittedAt: integer("caa_licence_renewal_submitted_at", { mode: "timestamp" }),
   status: text("status", {
     enum: ["pending_verification", "active", "suspended"],
   })

@@ -1,0 +1,1 @@
+ALTER TABLE `pilot_profiles` ADD `caa_licence_renewal_submitted_at` integer;

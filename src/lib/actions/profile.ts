@@ -362,6 +362,13 @@ export async function adminUpdateProfile(
         caaLicenceExpiryDate: parsed.data.caaLicenceExpiryDate
           ? new Date(parsed.data.caaLicenceExpiryDate)
           : null,
+        // Clears the "renewal submitted, needs review" flag the moment a
+        // CFI/Admin actually sets a new expiry date here -- that's the
+        // review action itself (28 Sep 2026 fix, see licence-renewal.ts).
+        // Left untouched if this save doesn't set a date, so an unrelated
+        // profile edit can't accidentally wave through an unreviewed
+        // submission.
+        ...(parsed.data.caaLicenceExpiryDate ? { caaLicenceRenewalSubmittedAt: null } : {}),
         // "V23" item 3 (25 Sep 2026): CFI/Admin corrects this once they've
         // actually looked at the uploaded licence and confirmed the real
         // first-issue date -- see schema.ts's own comment.
@@ -385,6 +392,7 @@ export async function adminUpdateProfile(
 
   revalidatePath(`/admin/applicants/${targetUserId}`);
   revalidatePath(`/instructor/students/${targetUserId}`);
+  revalidatePath("/admin/pilots");
   return { success: true };
 }
 

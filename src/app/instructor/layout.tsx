@@ -1,7 +1,7 @@
 import { requireInstructor } from "@/lib/auth/dal";
 import NavHeader from "@/components/nav-header";
 import { countPendingApplicants } from "@/lib/verification";
-import { countPendingPilotEndorsements, ensurePilotProfile } from "@/lib/pilots";
+import { countPendingPilotEndorsements, countPendingLicenceRenewals, ensurePilotProfile } from "@/lib/pilots";
 import { countPasswordResetRequests } from "@/lib/password-resets";
 
 const staffLinks = [{ href: "/instructor", label: "Students" }];
@@ -16,9 +16,10 @@ export default async function InstructorLayout({
   // (created on first visit here if it didn't already exist), so the
   // "My Portfolio" link and clickable profile name always work, not just
   // for staff who happened to already have one.
-  const [pendingCount, pendingPilotCount, pendingResetCount] = await Promise.all([
+  const [pendingCount, pendingPilotCount, pendingRenewalCount, pendingResetCount] = await Promise.all([
     isCFI ? countPendingApplicants() : Promise.resolve(0),
     isCFI ? countPendingPilotEndorsements() : Promise.resolve(0),
+    isCFI ? countPendingLicenceRenewals() : Promise.resolve(0),
     isCFI ? countPasswordResetRequests() : Promise.resolve(0),
     ensurePilotProfile(staff.id),
   ]);
@@ -30,7 +31,7 @@ export default async function InstructorLayout({
     { href: "/instructor/study-material", label: "Study material" },
     { href: "/admin/forms-procedures", label: "Forms & procedures" },
     { href: "/admin", label: "Verification queue", badge: pendingCount },
-    { href: "/admin/pilots", label: "Pilots", badge: pendingPilotCount },
+    { href: "/admin/pilots", label: "Pilots", badge: pendingPilotCount + pendingRenewalCount },
     { href: "/admin/password-resets", label: "Password resets", badge: pendingResetCount },
     { href: "/instructor/settings", label: "Settings" },
   ];

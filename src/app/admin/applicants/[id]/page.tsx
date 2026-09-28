@@ -140,11 +140,21 @@ export default async function ApplicantReviewPage({
           <DocLink userId={applicant.id} filename={applicant.idPassportFile} label="ID / Passport copy" />
           <DocLink userId={applicant.id} filename={applicant.profilePictureFile} label="Profile picture" />
           {applicant.role === "pilot" && (
-            <DocLink
-              userId={applicant.id}
-              filename={pilot?.profile.caaLicenceFile ?? null}
-              label="Current CAA licence"
-            />
+            <>
+              <DocLink
+                userId={applicant.id}
+                filename={pilot?.profile.caaLicenceFile ?? null}
+                label="Current CAA licence"
+              />
+              {pilot?.profile.caaLicenceRenewalSubmittedAt && (
+                <p className="rounded-md bg-red-50 px-3 py-2 text-xs font-semibold text-red-700">
+                  New licence submitted{" "}
+                  {pilot.profile.caaLicenceRenewalSubmittedAt.toLocaleDateString()} -- open the
+                  file above, then set a new expiry date below to clear their lock and mark this
+                  reviewed.
+                </p>
+              )}
+            </>
           )}
           {applicant.role === "student" && (
             <DocLink

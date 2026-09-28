@@ -16,6 +16,14 @@ import { saveUpload, UploadError } from "@/lib/uploads";
  * document. Submitting here just replaces the file on record; the pilot
  * stays behind LicenceExpiredGate (wired into PilotLayout) until a CFI/
  * Admin reviews it and updates the expiry date.
+ *
+ * Also stamps caaLicenceRenewalSubmittedAt (28 Sep 2026 fix -- Riaan
+ * reported that after submitting, "there is nothing to review or
+ * verification queue": nothing previously surfaced a resubmission to a
+ * CFI/Admin at all, so it could sit unreviewed indefinitely). This stamp is
+ * what now flags the pilot on the Pilots list and rolls into that page's
+ * nav badge; adminUpdateProfile clears it the moment a CFI/Admin saves a
+ * new expiry date for this pilot.
  */
 export type LicenceRenewalState =
   | { error: string; success?: never }
@@ -49,9 +57,10 @@ export async function submitRenewedLicence(
 
   await db
     .update(pilotProfiles)
-    .set({ caaLicenceFile: filename })
+    .set({ caaLicenceFile: filename, caaLicenceRenewalSubmittedAt: new Date() })
     .where(eq(pilotProfiles.userId, user.id));
 
   revalidatePath("/pilot");
+  revalidatePath("/admin/pilots");
   return { success: true };
 }

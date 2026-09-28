@@ -12,8 +12,27 @@ const roleLabel: Record<string, string> = {
  * red-when-expired treatment already used on the applicant detail page.
  * `null` means no expiry date has been captured yet (e.g. a pilot who
  * signed up before this field existed) -- shown as a plain dash, not a
- * warning, since there's nothing wrong to flag. */
-function licenceStatus(date: Date | null): { label: string; className: string } {
+ * warning, since there's nothing wrong to flag.
+ *
+ * 28 Sep 2026 fix: also flags a submitted-but-unreviewed renewal
+ * (caaLicenceRenewalSubmittedAt) distinctly from a plain expiry, since that
+ * used to be invisible here -- a pilot could resubmit and nothing on this
+ * page (or anywhere else) showed it needed review. */
+function licenceStatus(
+  date: Date | null,
+  renewalSubmittedAt: Date | null
+): { label: string; className: string } {
+  if (renewalSubmittedAt) {
+    const submittedFmt = renewalSubmittedAt.toLocaleDateString("en-ZA", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+    return {
+      label: `New licence submitted ${submittedFmt} -- needs review`,
+      className: "font-semibold text-red-600",
+    };
+  }
   if (!date) return { label: "—", className: "text-slate-300" };
   const formatted = date.toLocaleDateString("en-ZA", { year: "numeric", month: "short", day: "numeric" });
   if (date < new Date()) {
@@ -25,16 +44,30 @@ function licenceStatus(date: Date | null): { label: string; className: string } 
 export default async function PilotsPage() {
   const pilots = await getAllPilotsWithSummary();
   const pendingTotal = pilots.reduce((sum, p) => sum + p.pendingCount, 0);
+  const renewalPending = pilots.filter((p) => p.caaLicenceRenewalSubmittedAt).length;
 
   return (
     <div>
       <div className="mb-6">
         <h1 className="text-xl font-semibold text-slate-900">Pilots</h1>
-        {pendingTotal > 0 ? (
+        {pendingTotal > 0 || renewalPending > 0 ? (
           <p className="mt-1 text-sm font-semibold text-red-600">
-            Action needed: {pendingTotal} endorsement application{pendingTotal > 1 ? "s" : ""} across
-            {" "}
-            {pilots.filter((p) => p.pendingCount > 0).length} pilot(s) waiting for review.
+            Action needed:
+            {pendingTotal > 0 && (
+              <>
+                {" "}
+                {pendingTotal} endorsement application{pendingTotal > 1 ? "s" : ""} across{" "}
+                {pilots.filter((p) => p.pendingCount > 0).length} pilot(s)
+              </>
+            )}
+            {pendingTotal > 0 && renewalPending > 0 && " and"}
+            {renewalPending > 0 && (
+              <>
+                {" "}
+                {renewalPending} licence renewal{renewalPending > 1 ? "s" : ""} waiting for review
+              </>
+            )}
+            .
           </p>
         ) : (
           <p className="mt-1 text-sm text-slate-500">
@@ -82,8 +115,8 @@ export default async function PilotsPage() {
                   </div>
                   <div className="col-span-3">
                     <dt className="text-xs text-slate-400">Licence</dt>
-                    <dd className={licenceStatus(p.caaLicenceExpiryDate).className}>
-                      {licenceStatus(p.caaLicenceExpiryDate).label}
+                    <dd className={licenceStatus(p.caaLicenceExpiryDate, p.caaLicenceRenewalSubmittedAt).className}>
+                      {licenceStatus(p.caaLicenceExpiryDate, p.caaLicenceRenewalSubmittedAt).label}
                     </dd>
                   </div>
                 </dl>
@@ -119,8 +152,8 @@ export default async function PilotsPage() {
                     <td className="px-4 py-3 text-slate-600">{p.callSign ?? "—"}</td>
                     <td className="px-4 py-3 text-slate-600">{p.apexNumber ?? "—"}</td>
                     <td className="px-4 py-3 text-slate-600">{p.verifiedCount}</td>
-                    <td className={`px-4 py-3 ${licenceStatus(p.caaLicenceExpiryDate).className}`}>
-                      {licenceStatus(p.caaLicenceExpiryDate).label}
+                    <td className={`px-4 py-3 ${licenceStatus(p.caaLicenceExpiryDate, p.caaLicenceRenewalSubmittedAt).className}`}>
+                      {licenceStatus(p.caaLicenceExpiryDate, p.caaLicenceRenewalSubmittedAt).label}
                     </td>
                     <td className="px-4 py-3">
                       {p.pendingCount > 0 ? (

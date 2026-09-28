@@ -1,5 +1,5 @@
 import "server-only";
-import { eq, and } from "drizzle-orm";
+import { eq, and, isNotNull } from "drizzle-orm";
 import { db } from "@/db";
 import { users, pilotProfiles, pilotEndorsements } from "@/db/schema";
 
@@ -14,6 +14,7 @@ export type PilotSummary = {
   verifiedCount: number;
   pendingCount: number;
   caaLicenceExpiryDate: Date | null;
+  caaLicenceRenewalSubmittedAt: Date | null;
 };
 
 /** Every active pilot profile, whether it belongs to a plain "pilot"
@@ -39,6 +40,7 @@ export async function getAllPilotsWithSummary(): Promise<PilotSummary[]> {
       callSign: pilotProfiles.callSign,
       pilotProfileId: pilotProfiles.id,
       caaLicenceExpiryDate: pilotProfiles.caaLicenceExpiryDate,
+      caaLicenceRenewalSubmittedAt: pilotProfiles.caaLicenceRenewalSubmittedAt,
     })
     .from(pilotProfiles)
     .innerJoin(users, eq(pilotProfiles.userId, users.id))
@@ -68,6 +70,7 @@ export async function getAllPilotsWithSummary(): Promise<PilotSummary[]> {
       verifiedCount: byProfile.get(r.pilotProfileId)?.verified ?? 0,
       pendingCount: byProfile.get(r.pilotProfileId)?.pending ?? 0,
       caaLicenceExpiryDate: r.caaLicenceExpiryDate,
+      caaLicenceRenewalSubmittedAt: r.caaLicenceRenewalSubmittedAt,
     }))
     .sort((a, b) => a.name.localeCompare(b.name));
 }
@@ -120,6 +123,23 @@ export async function countPendingPilotEndorsements(): Promise<number> {
         eq(pilotEndorsements.verified, false),
         eq(pilotEndorsements.declined, false),
         eq(pilotProfiles.status, "active")
+      )
+    );
+  return rows.length;
+}
+
+/** Count of active pilots with an unreviewed licence renewal submission --
+ * rolls into the "Pilots" nav badge alongside pending endorsements (28 Sep
+ * 2026 fix: a resubmission after LicenceExpiredGate previously surfaced
+ * nowhere at all). Cleared per-pilot by adminUpdateProfile. */
+export async function countPendingLicenceRenewals(): Promise<number> {
+  const rows = await db
+    .select({ id: pilotProfiles.id })
+    .from(pilotProfiles)
+    .where(
+      and(
+        eq(pilotProfiles.status, "active"),
+        isNotNull(pilotProfiles.caaLicenceRenewalSubmittedAt)
       )
     );
   return rows.length;
