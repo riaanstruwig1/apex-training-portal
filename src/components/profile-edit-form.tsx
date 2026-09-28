@@ -36,6 +36,26 @@ function Field({
   );
 }
 
+/** "V23" item 4 (25 Sep 2026, Riaan: "there must be view button next to
+ * upload for pilot to make sure correct doc is uploaded") -- a small inline
+ * link next to a file input showing what's currently on file, so a pilot or
+ * student can check the right document is there before (or after) replacing
+ * it, without leaving this form. Same /api/uploads/[userId]/[filename] route
+ * already used on the read-only View profile page. */
+function ViewCurrentFile({ userId, filename }: { userId: string; filename: string | null }) {
+  if (!filename) return null;
+  return (
+    <a
+      href={`/api/uploads/${userId}/${filename}`}
+      target="_blank"
+      rel="noreferrer"
+      className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-red-600 hover:text-red-700"
+    >
+      View current copy &rarr;
+    </a>
+  );
+}
+
 export default function ProfileEditForm({
   role,
   userId,
@@ -90,6 +110,7 @@ export default function ProfileEditForm({
     licenceFirstIssuedAt?: Date | null;
     startingFlightCount?: number | null;
     startingFlightHours?: number | null;
+    caaLicenceFile?: string | null;
   } | null;
 }) {
   const action = role === "student" ? updateOwnStudentProfile : updateOwnProfile;
@@ -245,7 +266,10 @@ export default function ProfileEditForm({
                 className="mt-1 block w-full text-sm text-slate-600 file:mr-3 file:rounded-md file:border-0 file:bg-slate-100 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-slate-700 hover:file:bg-slate-200"
               />
               {flightMedicalCertFile && (
-                <p className="mt-1 text-xs text-slate-400">A copy is already on file.</p>
+                <p className="mt-1 flex items-center gap-2 text-xs text-slate-400">
+                  A copy is already on file.
+                  <ViewCurrentFile userId={userId} filename={flightMedicalCertFile} />
+                </p>
               )}
             </div>
           </div>
@@ -332,6 +356,11 @@ export default function ProfileEditForm({
                   accept="application/pdf,image/png,image/jpeg,image/webp"
                   className="mt-1 block w-full text-sm text-slate-600 file:mr-3 file:rounded-md file:border-0 file:bg-slate-100 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-slate-700 hover:file:bg-slate-200"
                 />
+                {pilot?.caaLicenceFile ? (
+                  <ViewCurrentFile userId={userId} filename={pilot.caaLicenceFile} />
+                ) : (
+                  <p className="mt-1 text-xs text-slate-400">Nothing on file yet.</p>
+                )}
               </Field>
               <Field id="caaLicenceExpiryDate" label="Licence expiry date">
                 <input

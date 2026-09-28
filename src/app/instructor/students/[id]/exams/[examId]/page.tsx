@@ -6,6 +6,7 @@ import { requireInstructor } from "@/lib/auth/dal";
 import { getExamDetail, getAttemptHistory } from "@/lib/exams";
 import VerifyButton from "./verify-button";
 import VerifyPaperButton from "./verify-paper-button";
+import PaperAttemptAdminActions from "./paper-attempt-admin-actions";
 
 function mediaUrl(slug: string, filename: string) {
   return `/exam-media/${slug}/${filename}`;
@@ -118,18 +119,21 @@ export default async function ExamReviewPage(
             Radio licence number: <span className="font-medium">{attempt.externalLicenseNumber}</span>
           </p>
         )}
-        {attempt.proofFile ? (
-          <a
-            href={`/api/uploads/${id}/${attempt.proofFile}`}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-block rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
-          >
-            View what was submitted
-          </a>
-        ) : (
-          <p className="text-sm text-slate-400">No file on record.</p>
-        )}
+        <div className="flex flex-wrap items-center gap-3">
+          {attempt.proofFile ? (
+            <a
+              href={`/api/uploads/${id}/${attempt.proofFile}`}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-block rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+            >
+              View what was submitted
+            </a>
+          ) : (
+            <p className="text-sm text-slate-400">No file on record.</p>
+          )}
+          <PaperAttemptAdminActions attemptId={attempt.id} studentId={id} />
+        </div>
       </div>
     );
   }

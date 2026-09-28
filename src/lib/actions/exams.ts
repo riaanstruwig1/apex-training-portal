@@ -373,6 +373,89 @@ export async function verifyPaperExam(attemptId: string, passed: boolean) {
   revalidatePath("/student");
 }
 
+/** "V24" item 73 (28 Sep 2026 renumbering -- Riaan: "Instructor must be able
+ * to delete the exam and/or upload a new one"): removes a student's paper
+ * submission outright (wrong file, wrong exam, duplicate, etc.) so the
+ * student can submit fresh -- submitPaperExam only blocks a new submission
+ * while a non-failed attempt exists, and this clears that. Deliberately
+ * scoped to "paper" attempts only -- an online attempt's answers/score are
+ * a real exam record, not something a bad upload can accidentally corrupt,
+ * so this action doesn't touch those. Only removes the database row; the
+ * uploaded file itself is left on disk (harmless, same as every other
+ * delete action in this app). */
+export async function deletePaperExamAttempt(attemptId: string) {
+  const instructor = await requireInstructor();
+
+  const [attempt] = await db
+    .select()
+    .from(examAttempts)
+    .where(eq(examAttempts.id, attemptId))
+    .limit(1);
+  if (!attempt || attempt.source !== "paper") return;
+
+  await db.delete(examAttempts).where(eq(examAttempts.id, attemptId));
+
+  revalidatePath(`/instructor/students/${attempt.studentId}`);
+  revalidatePath(`/instructor/students/${attempt.studentId}/exams/${attempt.examId}`);
+  revalidatePath("/instructor");
+  revalidatePath("/student");
+  revalidatePath(`/student/exams/${attempt.examId}`);
+}
+
+export type ReplacePaperProofState = { error: string } | { success: true } | undefined;
+
+/** "V24" item 73, the other half -- instead of deleting and making the
+ * student redo the whole submission, the reviewer swaps in a corrected
+ * scan/photo directly (e.g. the first upload was blurry, cut off, or the
+ * wrong page). If the attempt had already been verified, replacing the
+ * file resets it back to "submitted" -- a decision made against the old
+ * file shouldn't silently keep standing once the file behind it has
+ * changed; the reviewer just re-marks it against the new one. */
+export async function replacePaperExamProof(
+  attemptId: string,
+  _prevState: ReplacePaperProofState,
+  formData: FormData
+): Promise<ReplacePaperProofState> {
+  const instructor = await requireInstructor();
+
+  const [attempt] = await db
+    .select()
+    .from(examAttempts)
+    .where(eq(examAttempts.id, attemptId))
+    .limit(1);
+  if (!attempt || attempt.source !== "paper") return { error: "Attempt not found." };
+
+  const file = formData.get("proofFile");
+  if (!(file instanceof File) || file.size === 0) {
+    return { error: "Choose a replacement photo or scan to upload." };
+  }
+
+  let proofFile: string | null;
+  try {
+    proofFile = await saveUpload(attempt.studentId, `paper-exam-${attempt.examId}`, file);
+  } catch (err) {
+    return { error: err instanceof UploadError ? err.message : "Upload failed." };
+  }
+  if (!proofFile) return { error: "Choose a replacement photo or scan to upload." };
+
+  const wasVerified = attempt.status === "verified";
+  await db
+    .update(examAttempts)
+    .set({
+      proofFile,
+      ...(wasVerified
+        ? { status: "submitted", passed: null, verifiedAt: null, verifiedByUserId: null }
+        : {}),
+    })
+    .where(eq(examAttempts.id, attemptId));
+
+  revalidatePath(`/instructor/students/${attempt.studentId}`);
+  revalidatePath(`/instructor/students/${attempt.studentId}/exams/${attempt.examId}`);
+  revalidatePath("/instructor");
+  revalidatePath("/student");
+  return { success: true };
+}
+
 export type UpdateQuestionState = { error: string } | { success: true } | undefined;
 
 /** CFI-only: full edit of an existing question -- wording, marks, and

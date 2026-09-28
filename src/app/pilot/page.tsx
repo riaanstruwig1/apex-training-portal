@@ -46,9 +46,31 @@ export default async function PilotDashboard() {
   // Non-tiered items (add-ons, instructor ratings, display ratings) the
   // pilot hasn't declared yet -- offered with an "Apply" button, same as
   // the ladder's own Apply action.
+  //
+  // "V23" item 61 (28 Sep 2026 renumbering -- Riaan: "under Apply for
+  // something, Paraglider/PPG/Paratrike -- Intermediate, Sport and Tandem
+  // ... if the pilot does not have the ratings"): also offer the
+  // Intermediate/Sport/Tandem ladder tiers here, but ONLY for an equipment
+  // type that isn't already shown in the "Ratings & progress" ladder above
+  // -- that ladder already has its own Apply action (gated on time-in-tier
+  // eligibility) for equipment the pilot has engaged with, so duplicating
+  // those tiers here would put two separate Apply buttons on the same row.
+  // A pilot who's never touched (say) PPG at all previously had no way to
+  // apply for PPG Intermediate/Sport/Tandem anywhere -- this fixes that.
+  // Basic is deliberately left out: Riaan's list names only Intermediate/
+  // Sport/Tandem -- Basic is earned through initial training, not self-
+  // applied here.
+  const unengagedLadderTiers = ENDORSEMENT_OPTIONS.filter(
+    (o) =>
+      o.tier != null &&
+      o.tier !== "basic" &&
+      o.equipment != null &&
+      !relevantEquipment.includes(o.equipment) &&
+      !declaredKeys.has(o.key)
+  );
   const notYetDeclared = ENDORSEMENT_OPTIONS.filter(
     (o) => o.tier === null && !declaredKeys.has(o.key)
-  );
+  ).concat(unengagedLadderTiers);
   const groupedAvailable = groupEndorsementItems(notYetDeclared.map((o) => ({ key: o.key })));
 
   return (

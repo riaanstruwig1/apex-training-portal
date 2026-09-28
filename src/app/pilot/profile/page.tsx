@@ -52,6 +52,7 @@ export default async function PilotProfilePage() {
                 licenceFirstIssuedAt: profile.licenceFirstIssuedAt,
                 startingFlightCount: profile.startingFlightCount,
                 startingFlightHours: profile.startingFlightHours,
+                caaLicenceFile: profile.caaLicenceFile,
               }
             : null
         }
