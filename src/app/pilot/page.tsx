@@ -50,27 +50,30 @@ export default async function PilotDashboard() {
   // "V23" item 61 (28 Sep 2026 renumbering -- Riaan: "under Apply for
   // something, Paraglider/PPG/Paratrike -- Intermediate, Sport and Tandem
   // ... if the pilot does not have the ratings"): also offer the
-  // Intermediate/Sport/Tandem ladder tiers here, but ONLY for an equipment
-  // type that isn't already shown in the "Ratings & progress" ladder above
-  // -- that ladder already has its own Apply action (gated on time-in-tier
-  // eligibility) for equipment the pilot has engaged with, so duplicating
-  // those tiers here would put two separate Apply buttons on the same row.
-  // A pilot who's never touched (say) PPG at all previously had no way to
-  // apply for PPG Intermediate/Sport/Tandem anywhere -- this fixes that.
-  // Basic is deliberately left out: Riaan's list names only Intermediate/
-  // Sport/Tandem -- Basic is earned through initial training, not self-
-  // applied here.
-  const unengagedLadderTiers = ENDORSEMENT_OPTIONS.filter(
-    (o) =>
-      o.tier != null &&
-      o.tier !== "basic" &&
-      o.equipment != null &&
-      !relevantEquipment.includes(o.equipment) &&
-      !declaredKeys.has(o.key)
+  // Intermediate/Sport/Tandem ladder tiers here for ANY equipment type the
+  // pilot doesn't hold that tier in -- including equipment they're already
+  // engaged with. First cut of this (28 Sep 2026) only showed a tier here
+  // when the whole equipment type was unengaged, on the theory that the
+  // ladder above already offers its own Apply for engaged equipment -- but
+  // that ladder only shows Apply once the tier is time-in-rank eligible
+  // (Notes: CAR Part 106), so a pilot who already holds Basic but isn't
+  // yet eligible for Intermediate had NO Apply option anywhere for it.
+  // Riaan confirmed (28 Sep 2026, after seeing PG/PPG both fully engaged
+  // via Basic but Intermediate/Sport/Tandem showing nowhere) that this
+  // list should simply be "not held", full stop, regardless of ladder
+  // engagement or eligibility -- so it may occasionally show alongside an
+  // eligible ladder tier's own Apply button too, which is fine (same
+  // action, offered from two places, rather than the tier being
+  // unreachable from either one before it's eligible). Basic is still
+  // deliberately left out: Riaan's list names only Intermediate/Sport/
+  // Tandem -- Basic is earned through initial training, not self-applied
+  // here.
+  const notHeldLadderTiers = ENDORSEMENT_OPTIONS.filter(
+    (o) => o.tier != null && o.tier !== "basic" && o.equipment != null && !declaredKeys.has(o.key)
   );
   const notYetDeclared = ENDORSEMENT_OPTIONS.filter(
     (o) => o.tier === null && !declaredKeys.has(o.key)
-  ).concat(unengagedLadderTiers);
+  ).concat(notHeldLadderTiers);
   const groupedAvailable = groupEndorsementItems(notYetDeclared.map((o) => ({ key: o.key })));
 
   return (
