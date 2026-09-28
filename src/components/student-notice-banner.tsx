@@ -11,12 +11,15 @@ export default function StudentNoticeBanner({ notice }: { notice: StudentNotice 
 
   const href = notice.file ? `/api/forms-procedures/${notice.file}` : notice.linkUrl;
 
+  // Boxed to the same mx-auto max-w-7xl px-4 column as the page content below
+  // it (e.g. the logbook card) instead of stretching edge-to-edge, per
+  // Riaan's request (28 Sep 2026: "same lenght as the log book bar"). Message
+  // + button are centered together as one group ("center the text and button
+  // from center outwards"), not spread to opposite ends.
   return (
-    <div className="bg-orange-500 px-4 py-2 text-white">
-      <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-center gap-x-3 gap-y-1 text-center sm:flex-nowrap sm:justify-between sm:text-left">
-        <p className="min-w-0 flex-1 truncate text-sm font-semibold sm:whitespace-nowrap">
-          {notice.message}
-        </p>
+    <div className="mx-auto w-full max-w-7xl px-4 pt-4">
+      <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 rounded-xl bg-orange-500 px-4 py-2 text-center text-white">
+        <p className="text-sm font-semibold">{notice.message}</p>
         {notice.buttonLabel && href && (
           <a
             href={href}
