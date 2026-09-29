@@ -105,6 +105,16 @@ export function isLadderTierKey(key: string): boolean {
   return ENDORSEMENT_OPTIONS.find((o) => o.key === key)?.tier != null;
 }
 
+/** True for the three ladder "Basic" keys (pg_basic, ppg_footlaunch,
+ * ppt_base) -- 29 Sep 2026 fix: verifying Basic now defaults its "held
+ * since" date to the pilot's licenceFirstIssuedAt instead of today (see
+ * setEndorsementVerified in lib/actions/verification.ts), since Basic is
+ * effectively the licence itself, not something earned on the day a
+ * CFI happened to click Verify in this app. */
+export function isBasicTierKey(key: string): boolean {
+  return ENDORSEMENT_OPTIONS.find((o) => o.key === key)?.tier === "basic";
+}
+
 /** True for the 10 "Instructor Ratings" group keys (Assistant Instructor
  * plus PG/PPG/PPT Grade C/B/A) -- Notes4 item 15 gives these their own
  * three-column grid with built-in mutual exclusivity (instructor-ratings-

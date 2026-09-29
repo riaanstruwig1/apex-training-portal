@@ -7,6 +7,7 @@ import Avatar from "@/components/avatar";
 import ApplicantReviewActions from "./applicant-review-actions";
 import ApplicantTrainingTypeEditor from "./applicant-training-type-editor";
 import PilotEndorsementToggle from "./pilot-endorsement-toggle";
+import HeldSinceEditor from "./held-since-editor";
 import AdminProfileEditor from "./admin-profile-editor";
 import AdminGrantEndorsement from "./admin-grant-endorsement";
 import InstructorRatingsGrid from "./instructor-ratings-grid";
@@ -327,11 +328,16 @@ export default async function ApplicantReviewPage({
                     const row = pilot.endorsements.find((e) => e.key === t.key);
                     if (!row) return null;
                     return (
-                      <PilotEndorsementToggle
-                        endorsementId={row.id}
-                        verified={row.verified}
-                        declined={row.declined}
-                      />
+                      <div className="space-y-1">
+                        <PilotEndorsementToggle
+                          endorsementId={row.id}
+                          verified={row.verified}
+                          declined={row.declined}
+                        />
+                        {row.verified && (
+                          <HeldSinceEditor endorsementId={row.id} currentDate={row.verifiedAt} />
+                        )}
+                      </div>
                     );
                   }}
                 />

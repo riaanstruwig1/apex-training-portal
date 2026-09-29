@@ -6,7 +6,7 @@ import * as z from "zod";
 import { db } from "@/db";
 import { users, pilotProfiles, pilotEndorsements, studentProfiles } from "@/db/schema";
 import { requireAdminOrCFI } from "@/lib/auth/dal";
-import { ENDORSEMENT_OPTIONS, endorsementLabel } from "@/lib/pilot-endorsements";
+import { ENDORSEMENT_OPTIONS, endorsementLabel, isBasicTierKey } from "@/lib/pilot-endorsements";
 import { sendEmail } from "@/lib/email";
 import { getBaseUrl } from "@/lib/base-url";
 import { formatTrainingTypes } from "@/lib/exams";
@@ -105,11 +105,38 @@ export async function setEndorsementVerified(
 ) {
   const reviewer = await requireAdminOrCFI();
 
+  // 29 Sep 2026 fix (Riaan: "the Green 1. Basic ... got wrong start date"):
+  // verifying always used to stamp verifiedAt to *today*, which becomes the
+  // ladder's "held since" date (see computeLadder in lib/pilot-progress.ts)
+  // -- fine for a tier genuinely earned today, wrong for a pilot being set
+  // up in this app who's actually held their licence for months/years. For
+  // the three ladder Basic keys specifically, default to the pilot's own
+  // licenceFirstIssuedAt (added v35/"V23" item 63) when it's on file,
+  // since Basic effectively *is* the licence. Any tier's date can still be
+  // corrected afterwards by a CFI/Admin via setEndorsementHeldSince below.
+  let verifiedAt: Date | null = null;
+  if (verified) {
+    verifiedAt = new Date();
+    const [row] = await db
+      .select({ key: pilotEndorsements.key, pilotProfileId: pilotEndorsements.pilotProfileId })
+      .from(pilotEndorsements)
+      .where(eq(pilotEndorsements.id, endorsementId))
+      .limit(1);
+    if (row && isBasicTierKey(row.key)) {
+      const [profile] = await db
+        .select({ licenceFirstIssuedAt: pilotProfiles.licenceFirstIssuedAt })
+        .from(pilotProfiles)
+        .where(eq(pilotProfiles.id, row.pilotProfileId))
+        .limit(1);
+      if (profile?.licenceFirstIssuedAt) verifiedAt = profile.licenceFirstIssuedAt;
+    }
+  }
+
   await db
     .update(pilotEndorsements)
     .set({
       verified,
-      verifiedAt: verified ? new Date() : null,
+      verifiedAt,
       verifiedByUserId: verified ? reviewer.id : null,
       // Verifying always supersedes an earlier decline -- whichever action
       // ran most recently wins (see the schema's own comment).
@@ -121,6 +148,48 @@ export async function setEndorsementVerified(
 
   revalidatePath("/admin");
   revalidatePath("/pilot");
+}
+
+export type HeldSinceState = { error: string; success?: never } | { error?: never; success: true } | undefined;
+
+/**
+ * Lets a CFI/Admin directly correct a ladder tier's "held since" date (the
+ * endorsement's verifiedAt) after the fact -- 29 Sep 2026 fix, same report
+ * as above. Only meaningful for an already-verified endorsement; this never
+ * verifies one that isn't. The date drives every downstream CAR Part 106
+ * eligibility gate (computeLadder in lib/pilot-progress.ts), so getting it
+ * right matters well beyond just the display.
+ */
+export async function setEndorsementHeldSince(
+  endorsementId: string,
+  heldSince: string
+): Promise<HeldSinceState> {
+  await requireAdminOrCFI();
+
+  const parsed = new Date(heldSince);
+  if (!heldSince || Number.isNaN(parsed.getTime())) {
+    return { error: "Enter a valid date." };
+  }
+  if (parsed.getTime() > Date.now()) {
+    return { error: "Held-since date can't be in the future." };
+  }
+
+  const [row] = await db
+    .select({ verified: pilotEndorsements.verified })
+    .from(pilotEndorsements)
+    .where(eq(pilotEndorsements.id, endorsementId))
+    .limit(1);
+  if (!row) return { error: "Endorsement not found." };
+  if (!row.verified) return { error: "Verify this tier first, then set its held-since date." };
+
+  await db
+    .update(pilotEndorsements)
+    .set({ verifiedAt: parsed })
+    .where(eq(pilotEndorsements.id, endorsementId));
+
+  revalidatePath("/admin");
+  revalidatePath("/pilot");
+  return { success: true };
 }
 
 /**
