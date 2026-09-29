@@ -152,9 +152,6 @@ export default async function PilotsPage() {
                     <td className="px-4 py-3 text-slate-600">{p.callSign ?? "—"}</td>
                     <td className="px-4 py-3 text-slate-600">{p.apexNumber ?? "—"}</td>
                     <td className="px-4 py-3 text-slate-600">{p.verifiedCount}</td>
-                    <td className={`px-4 py-3 ${licenceStatus(p.caaLicenceExpiryDate, p.caaLicenceRenewalSubmittedAt).className}`}>
-                      {licenceStatus(p.caaLicenceExpiryDate, p.caaLicenceRenewalSubmittedAt).label}
-                    </td>
                     <td className="px-4 py-3">
                       {p.pendingCount > 0 ? (
                         <span className="rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700">
@@ -163,6 +160,9 @@ export default async function PilotsPage() {
                       ) : (
                         <span className="text-xs text-slate-300">—</span>
                       )}
+                    </td>
+                    <td className={`px-4 py-3 ${licenceStatus(p.caaLicenceExpiryDate, p.caaLicenceRenewalSubmittedAt).className}`}>
+                      {licenceStatus(p.caaLicenceExpiryDate, p.caaLicenceRenewalSubmittedAt).label}
                     </td>
                     <td className="px-4 py-3">
                       <Link
