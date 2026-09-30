@@ -239,6 +239,13 @@
       "when": 1790751484679,
       "tag": "0033_study_material_link",
       "breakpoints": true
+    },
+    {
+      "idx": 34,
+      "version": "6",
+      "when": 1790781793977,
+      "tag": "0034_whatsapp_invites",
+      "breakpoints": true
     }
   ]
 }

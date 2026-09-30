@@ -746,3 +746,32 @@ export const examAnswers = sqliteTable(
     ),
   ]
 );
+
+// ---------------------------------------------------------------------------
+// WhatsApp invites (30 Sep 2026, Riaan): CFI/Admin sends a WhatsApp invite
+// to join the Hub from the Pilots page, via Riaan's Green-API account (see
+// lib/whatsapp.ts). One row per invited number. An invite drops off the
+// Pilots page's "Invites" block once anyone signs up with the same cell
+// number (matched on the normalised number at read time -- nothing is
+// written at sign-up), or when a CFI/Admin clicks Remove (removedAt).
+// ---------------------------------------------------------------------------
+
+export const whatsappInvites = sqliteTable("whatsapp_invites", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  name: text("name").notNull(),
+  // Normalised to international digits only, no "+" -- e.g. "27821234567".
+  phone: text("phone").notNull(),
+  // The exact text sent last time -- Re-invite resends this.
+  message: text("message").notNull(),
+  invitedByUserId: text("invited_by_user_id").references(() => users.id),
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .notNull()
+    .default(sql`(unixepoch())`),
+  lastSentAt: integer("last_sent_at", { mode: "timestamp" }).notNull(),
+  sendCount: integer("send_count").notNull().default(1),
+  lastStatus: text("last_status", { enum: ["sent", "failed"] }).notNull(),
+  lastError: text("last_error"),
+  removedAt: integer("removed_at", { mode: "timestamp" }),
+});
