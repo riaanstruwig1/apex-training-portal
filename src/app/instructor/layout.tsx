@@ -25,6 +25,7 @@ export default async function InstructorLayout({
   ]);
   const cfiOnlyLinks = [
     { href: "/instructor/students/new", label: "Add student" },
+    { href: "/admin/students", label: "Student profiles" },
     { href: "/instructor/team", label: "Instructors" },
     { href: "/instructor/syllabus", label: "Manage syllabus" },
     { href: "/instructor/exams", label: "Exam content" },

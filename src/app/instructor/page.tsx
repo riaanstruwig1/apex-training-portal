@@ -16,6 +16,9 @@ import { getPendingApplicants } from "@/lib/verification";
 import Avatar from "@/components/avatar";
 import InviteLinkButton from "./invite-link-button";
 import StudentRowActions from "./student-row-actions";
+import { getPendingInvites } from "@/lib/invites";
+import { isWhatsAppConfigured } from "@/lib/whatsapp";
+import InvitesBlock from "@/app/admin/pilots/invites-block";
 
 const statusStyles: Record<string, string> = {
   invited: "bg-amber-100 text-amber-800",
@@ -342,12 +345,16 @@ export default async function InstructorDashboard() {
   const staff = await requireInstructor();
   const isCFI = staff.role === "cfi";
 
-  const [allStudents, pendingExamsByStudent, examStatusByStudent, pendingApplicants] =
+  const [allStudents, pendingExamsByStudent, examStatusByStudent, pendingApplicants, studentInvites] =
     await Promise.all([
       getAllStudentsWithSummary(),
       getPendingExamVerifications(),
       getExamCategoryStatusesForAllStudents(),
       getPendingApplicants(),
+      // Student WhatsApp invites (batch 48) also live here for the CFI --
+      // this roster is the CFI's own "Students" menu item, and Riaan looked
+      // for them here first (30 Sep 2026). Same list as Admin -> Students.
+      isCFI ? getPendingInvites("student") : Promise.resolve([]),
     ]);
   const activeStudents = allStudents.filter((s) => s.status !== "archived");
   const archivedStudents = allStudents.filter((s) => s.status === "archived");
@@ -412,6 +419,10 @@ export default async function InstructorDashboard() {
             />
           </div>
         </details>
+      )}
+
+      {isCFI && (
+        <InvitesBlock audience="student" invites={studentInvites} configured={isWhatsAppConfigured()} />
       )}
     </div>
   );

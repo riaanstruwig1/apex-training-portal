@@ -75,6 +75,7 @@ export async function sendWhatsAppInvite(
 
   revalidatePath("/admin/pilots");
   revalidatePath("/admin/students");
+  revalidatePath("/instructor");
   if (!result.ok) return { error: `Saved, but not delivered. ${result.error}` };
   return { success: `Invite sent to ${name} (${formatPhone(phone)}).` };
 }
@@ -107,6 +108,7 @@ export async function resendWhatsAppInvite(inviteId: string): Promise<InviteStat
 
   revalidatePath("/admin/pilots");
   revalidatePath("/admin/students");
+  revalidatePath("/instructor");
   if (!result.ok) return { error: result.error };
   return { success: `Re-invite sent to ${invite.name}.` };
 }
@@ -121,4 +123,5 @@ export async function removeWhatsAppInvite(inviteId: string): Promise<void> {
     .where(eq(whatsappInvites.id, inviteId));
   revalidatePath("/admin/pilots");
   revalidatePath("/admin/students");
+  revalidatePath("/instructor");
 }
