@@ -45,7 +45,7 @@ function licenceStatus(
 }
 
 export default async function PilotsPage() {
-  const [pilots, invites] = await Promise.all([getAllPilotsWithSummary(), getPendingInvites()]);
+  const [pilots, invites] = await Promise.all([getAllPilotsWithSummary(), getPendingInvites("pilot")]);
   const pendingTotal = pilots.reduce((sum, p) => sum + p.pendingCount, 0);
   const renewalPending = pilots.filter((p) => p.caaLicenceRenewalSubmittedAt).length;
 
@@ -183,7 +183,7 @@ export default async function PilotsPage() {
         </>
       )}
 
-      <InvitesBlock invites={invites} configured={isWhatsAppConfigured()} />
+      <InvitesBlock audience="pilot" invites={invites} configured={isWhatsAppConfigured()} />
     </div>
   );
 }

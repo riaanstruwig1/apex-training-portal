@@ -3,6 +3,9 @@ import { requireAdminOrCFI } from "@/lib/auth/dal";
 import { getAdminStudentList, type AdminStudentRow } from "@/lib/admin-students";
 import { parseTrainingTypes } from "@/lib/exams";
 import Avatar from "@/components/avatar";
+import { getPendingInvites } from "@/lib/invites";
+import { isWhatsAppConfigured } from "@/lib/whatsapp";
+import InvitesBlock from "../pilots/invites-block";
 
 function fmt(d: Date) {
   return d.toLocaleDateString("en-ZA", { year: "numeric", month: "short", day: "numeric" });
@@ -62,7 +65,10 @@ function Actions({ id }: { id: string }) {
  * (/admin/applicants/[id]), which has the edit form, or its print view. */
 export default async function AdminStudentsPage() {
   await requireAdminOrCFI();
-  const students = await getAdminStudentList();
+  const [students, invites] = await Promise.all([
+    getAdminStudentList(),
+    getPendingInvites("student"),
+  ]);
 
   return (
     <div>
@@ -177,6 +183,8 @@ export default async function AdminStudentsPage() {
           </p>
         </>
       )}
+
+      <InvitesBlock audience="student" invites={invites} configured={isWhatsAppConfigured()} />
     </div>
   );
 }

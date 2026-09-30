@@ -1,0 +1,1 @@
+ALTER TABLE `whatsapp_invites` ADD `audience` text DEFAULT 'pilot' NOT NULL;

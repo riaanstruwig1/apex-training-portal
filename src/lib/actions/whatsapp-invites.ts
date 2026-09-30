@@ -7,7 +7,7 @@ import { whatsappInvites } from "@/db/schema";
 import { requireAdminOrCFI } from "@/lib/auth/dal";
 import { sendWhatsAppText } from "@/lib/whatsapp";
 import { getMemberPhones } from "@/lib/invites";
-import { normalizePhone, formatPhone } from "@/lib/invite-message";
+import { normalizePhone, formatPhone, type InviteAudience } from "@/lib/invite-message";
 
 export type InviteState =
   | { error: string; success?: never }
@@ -21,6 +21,8 @@ export async function sendWhatsAppInvite(
 ): Promise<InviteState> {
   const staff = await requireAdminOrCFI();
 
+  const audienceRaw = String(formData.get("audience") ?? "pilot");
+  const audience: InviteAudience = audienceRaw === "student" ? "student" : "pilot";
   const name = String(formData.get("name") ?? "").trim();
   const phone = normalizePhone(String(formData.get("phone") ?? ""));
   const message = String(formData.get("message") ?? "").trim();
@@ -42,8 +44,12 @@ export async function sendWhatsAppInvite(
     .where(and(eq(whatsappInvites.phone, phone), isNull(whatsappInvites.removedAt)))
     .limit(1);
   if (pending) {
+    const where =
+      pending.audience === audience
+        ? "use Re-invite in the list below"
+        : `they're on the ${pending.audience === "student" ? "Students" : "Pilots"} page's Invites list`;
     return {
-      error: `${pending.name} was already invited on ${pending.createdAt.toLocaleDateString("en-ZA")} -- use Re-invite in the list below.`,
+      error: `${pending.name} was already invited on ${pending.createdAt.toLocaleDateString("en-ZA")} -- ${where}.`,
     };
   }
 
@@ -56,6 +62,7 @@ export async function sendWhatsAppInvite(
   }
 
   await db.insert(whatsappInvites).values({
+    audience,
     name,
     phone,
     message,
@@ -67,6 +74,7 @@ export async function sendWhatsAppInvite(
   });
 
   revalidatePath("/admin/pilots");
+  revalidatePath("/admin/students");
   if (!result.ok) return { error: `Saved, but not delivered. ${result.error}` };
   return { success: `Invite sent to ${name} (${formatPhone(phone)}).` };
 }
@@ -98,6 +106,7 @@ export async function resendWhatsAppInvite(inviteId: string): Promise<InviteStat
     .where(eq(whatsappInvites.id, inviteId));
 
   revalidatePath("/admin/pilots");
+  revalidatePath("/admin/students");
   if (!result.ok) return { error: result.error };
   return { success: `Re-invite sent to ${invite.name}.` };
 }
@@ -111,4 +120,5 @@ export async function removeWhatsAppInvite(inviteId: string): Promise<void> {
     .set({ removedAt: new Date() })
     .where(eq(whatsappInvites.id, inviteId));
   revalidatePath("/admin/pilots");
+  revalidatePath("/admin/students");
 }

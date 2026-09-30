@@ -10,6 +10,12 @@ import { ENDORSEMENT_OPTIONS, endorsementLabel, isBasicTierKey } from "@/lib/pil
 import { sendEmail } from "@/lib/email";
 import { getBaseUrl } from "@/lib/base-url";
 import { formatTrainingTypes } from "@/lib/exams";
+import { sendWhatsAppText } from "@/lib/whatsapp";
+import { APPROVAL_TEMPLATES, fillInviteTemplate, normalizePhone } from "@/lib/invite-message";
+
+/** Outcome of the "you're approved, you can log in" WhatsApp sent on
+ * approval (30 Sep 2026) -- surfaced as a banner on the verification queue. */
+export type ApprovalWhatsApp = "sent" | "failed" | "no_phone" | "not_configured";
 
 /**
  * Approves a pending Student or Pilot application. For a pilot, only the
@@ -21,7 +27,7 @@ import { formatTrainingTypes } from "@/lib/exams";
 export async function approveApplicant(
   userId: string,
   verifiedEndorsementKeys: string[] = []
-) {
+): Promise<{ whatsapp: ApprovalWhatsApp } | undefined> {
   const reviewer = await requireAdminOrCFI();
 
   const [applicant] = await db.select().from(users).where(eq(users.id, userId)).limit(1);
@@ -65,6 +71,29 @@ export async function approveApplicant(
   }
 
   revalidatePath("/admin");
+
+  // Tell them by WhatsApp that they can now log in (Riaan, 30 Sep 2026 --
+  // the student invite message promises it). Best-effort: the approval
+  // above has already happened; a failed send only shows in the banner.
+  let phone = normalizePhone(applicant.phone);
+  if (!phone && applicant.role === "student") {
+    const [sp] = await db
+      .select({ phone: studentProfiles.phone })
+      .from(studentProfiles)
+      .where(eq(studentProfiles.userId, userId))
+      .limit(1);
+    phone = normalizePhone(sp?.phone);
+  }
+  if (!phone) return { whatsapp: "no_phone" };
+  const audience = applicant.role === "student" ? "student" : "pilot";
+  const result = await sendWhatsAppText(
+    phone,
+    fillInviteTemplate(applicant.name, APPROVAL_TEMPLATES[audience])
+  );
+  if (result.ok) return { whatsapp: "sent" };
+  if (result.error.startsWith("WhatsApp isn't set up")) return { whatsapp: "not_configured" };
+  console.error("[approval WhatsApp]", result.error);
+  return { whatsapp: "failed" };
 }
 
 export async function rejectApplicant(userId: string, reason: string) {

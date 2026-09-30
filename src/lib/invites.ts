@@ -1,9 +1,9 @@
 import "server-only";
 
-import { desc, isNull } from "drizzle-orm";
+import { and, desc, eq, isNull } from "drizzle-orm";
 import { db } from "@/db";
 import { users, studentProfiles, whatsappInvites } from "@/db/schema";
-import { normalizePhone } from "@/lib/invite-message";
+import { normalizePhone, type InviteAudience } from "@/lib/invite-message";
 
 /** Every normalised cell number already belonging to someone in the Hub
  * (users.phone from public sign-up, plus studentProfiles.phone). */
@@ -38,14 +38,14 @@ export type PendingInvite = {
   lastError: string | null;
 };
 
-/** Invites still waiting on a sign-up: not removed, and no Hub account
- * with the same cell number yet. Newest first. */
-export async function getPendingInvites(): Promise<PendingInvite[]> {
+/** Invites on one list (pilot or student) still waiting on a sign-up: not
+ * removed, and no Hub account with the same cell number yet. Newest first. */
+export async function getPendingInvites(audience: InviteAudience): Promise<PendingInvite[]> {
   const [rows, memberPhones] = await Promise.all([
     db
       .select()
       .from(whatsappInvites)
-      .where(isNull(whatsappInvites.removedAt))
+      .where(and(eq(whatsappInvites.audience, audience), isNull(whatsappInvites.removedAt)))
       .orderBy(desc(whatsappInvites.lastSentAt)),
     getMemberPhones(),
   ]);

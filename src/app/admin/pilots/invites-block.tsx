@@ -7,17 +7,23 @@ import {
   removeWhatsAppInvite,
   type InviteState,
 } from "@/lib/actions/whatsapp-invites";
-import { DEFAULT_INVITE_TEMPLATE, fillInviteTemplate, formatPhone } from "@/lib/invite-message";
+import {
+  INVITE_TEMPLATES,
+  fillInviteTemplate,
+  formatPhone,
+  type InviteAudience,
+} from "@/lib/invite-message";
 import type { PendingInvite } from "@/lib/invites";
 
 function fmtDate(d: Date) {
   return d.toLocaleDateString("en-ZA", { year: "numeric", month: "short", day: "numeric" });
 }
 
-function InviteForm({ onClose }: { onClose: () => void }) {
+function InviteForm({ audience, onClose }: { audience: InviteAudience; onClose: () => void }) {
+  const template = INVITE_TEMPLATES[audience];
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
-  const [message, setMessage] = useState(fillInviteTemplate("", DEFAULT_INVITE_TEMPLATE));
+  const [message, setMessage] = useState(fillInviteTemplate("", template));
   // Until the CFI edits the message by hand, it follows the name typed above.
   const [messageEdited, setMessageEdited] = useState(false);
 
@@ -28,7 +34,7 @@ function InviteForm({ onClose }: { onClose: () => void }) {
       if (result?.success) {
         setName("");
         setPhone("");
-        setMessage(fillInviteTemplate("", DEFAULT_INVITE_TEMPLATE));
+        setMessage(fillInviteTemplate("", template));
         setMessageEdited(false);
       }
       return result;
@@ -38,6 +44,7 @@ function InviteForm({ onClose }: { onClose: () => void }) {
 
   return (
     <form action={formAction} className="space-y-3 rounded-xl border border-slate-200 bg-white p-4">
+      <input type="hidden" name="audience" value={audience} />
       <div className="grid gap-3 sm:grid-cols-2">
         <div>
           <label htmlFor="invite-name" className="mb-1 block text-xs font-medium text-slate-500">
@@ -49,7 +56,7 @@ function InviteForm({ onClose }: { onClose: () => void }) {
             value={name}
             onChange={(e) => {
               setName(e.target.value);
-              if (!messageEdited) setMessage(fillInviteTemplate(e.target.value));
+              if (!messageEdited) setMessage(fillInviteTemplate(e.target.value, template));
             }}
             placeholder="e.g. John Smith"
             required
@@ -164,9 +171,13 @@ function InviteRow({ invite }: { invite: PendingInvite }) {
 export default function InvitesBlock({
   invites,
   configured,
+  audience = "pilot",
 }: {
   invites: PendingInvite[];
   configured: boolean;
+  /** Which list this is -- picks the default message and where new invites
+   * are filed. Pilots page = "pilot", Students page = "student". */
+  audience?: InviteAudience;
 }) {
   const [open, setOpen] = useState(false);
 
@@ -174,10 +185,12 @@ export default function InvitesBlock({
     <section className="mt-10">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h2 className="text-lg font-semibold text-slate-900">Invites</h2>
+          <h2 className="text-lg font-semibold text-slate-900">
+            {audience === "student" ? "Student invites" : "Invites"}
+          </h2>
           <p className="text-sm text-slate-500">
-            People invited to join the Hub by WhatsApp. A name drops off this list automatically once
-            they sign up with the same cell number.
+            {audience === "student" ? "Students" : "People"} invited to join the Hub by WhatsApp. A
+            name drops off this list automatically once they sign up with the same cell number.
           </p>
         </div>
         {!open && (
@@ -186,7 +199,7 @@ export default function InvitesBlock({
             onClick={() => setOpen(true)}
             className="rounded-md bg-green-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-green-700"
           >
-            + Invite via WhatsApp
+            {audience === "student" ? "+ Invite student via WhatsApp" : "+ Invite via WhatsApp"}
           </button>
         )}
       </div>
@@ -201,7 +214,7 @@ export default function InvitesBlock({
 
       {open && (
         <div className="mb-4">
-          <InviteForm onClose={() => setOpen(false)} />
+          <InviteForm audience={audience} onClose={() => setOpen(false)} />
         </div>
       )}
 

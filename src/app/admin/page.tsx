@@ -7,11 +7,43 @@ const roleLabel: Record<string, string> = {
   pilot: "Pilot",
 };
 
-export default async function AdminVerificationQueue() {
-  const applicants = await getPendingApplicants();
+const APPROVAL_BANNERS: Record<string, { text: string; className: string }> = {
+  sent: {
+    text: "Application approved. A WhatsApp was sent to let them know they can now log in.",
+    className: "bg-green-50 text-green-800",
+  },
+  failed: {
+    text: "Application approved, but the WhatsApp didn't go through -- let them know yourself that they can now log in.",
+    className: "bg-amber-50 text-amber-800",
+  },
+  no_phone: {
+    text: "Application approved. No valid cell number on file, so no WhatsApp was sent -- let them know yourself.",
+    className: "bg-amber-50 text-amber-800",
+  },
+  not_configured: {
+    text: "Application approved. WhatsApp isn't connected yet (Green-API variables in Railway), so no message was sent.",
+    className: "bg-amber-50 text-amber-800",
+  },
+};
+
+export default async function AdminVerificationQueue({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const [applicants, sp] = await Promise.all([getPendingApplicants(), searchParams]);
+  // Set by ApplicantReviewActions after an approval (30 Sep 2026) -- shows
+  // whether the "you can now log in" WhatsApp went out.
+  const banner =
+    sp.approved === "1" && typeof sp.wa === "string" ? APPROVAL_BANNERS[sp.wa] : undefined;
 
   return (
     <div>
+      {banner && (
+        <div className={`mb-4 rounded-md px-3 py-2 text-sm font-medium ${banner.className}`}>
+          {banner.text}
+        </div>
+      )}
       <div className="mb-6">
         <h1 className="text-xl font-semibold text-slate-900">Verification queue</h1>
         {applicants.length > 0 ? (

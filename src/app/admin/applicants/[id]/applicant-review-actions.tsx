@@ -22,6 +22,9 @@ export default function ApplicantReviewActions({
     return (
       <div className="space-y-3 rounded-lg border border-green-200 bg-green-50 p-4">
         <p className="text-sm font-medium text-green-900">Approve this application?</p>
+        <p className="text-xs text-green-800">
+          They&apos;ll get a WhatsApp saying they&apos;ve been approved and can now log in.
+        </p>
         {endorsementKeys.length > 0 && (
           <div>
             <p className="text-xs text-green-800">
@@ -67,8 +70,8 @@ export default function ApplicantReviewActions({
             disabled={isPending}
             onClick={() =>
               startTransition(async () => {
-                await approveApplicant(userId, Array.from(checked));
-                router.push("/admin");
+                const result = await approveApplicant(userId, Array.from(checked));
+                router.push(`/admin?approved=1${result ? `&wa=${result.whatsapp}` : ""}`);
               })
             }
             className="rounded-md bg-green-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-green-700 disabled:opacity-60"

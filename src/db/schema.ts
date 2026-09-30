@@ -761,6 +761,10 @@ export const whatsappInvites = sqliteTable("whatsapp_invites", {
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
   name: text("name").notNull(),
+  // Which list/message this invite belongs to (30 Sep 2026: students got
+  // their own Invites block + message on Admin -> Students). Existing rows
+  // from batch 46 were all pilot invites.
+  audience: text("audience", { enum: ["pilot", "student"] }).notNull().default("pilot"),
   // Normalised to international digits only, no "+" -- e.g. "27821234567".
   phone: text("phone").notNull(),
   // The exact text sent last time -- Re-invite resends this.
