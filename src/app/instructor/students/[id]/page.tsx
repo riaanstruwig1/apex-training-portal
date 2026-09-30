@@ -106,6 +106,26 @@ export default async function StudentFolioPage(
           Signed up {(profile?.signUpDate ?? student.createdAt).toLocaleDateString()}
           {!profile?.signUpDate && " (account creation date -- not yet confirmed)"}
         </p>
+        {/* 30 Sep 2026 (Riaan: CFI/Admin couldn't view, edit or print a
+            student's full profile from here) -- the full profile page lives
+            under /admin (CFI + Admin only), so regular instructors don't get
+            these links. */}
+        {isCFI && (
+          <div className="mt-2 flex flex-wrap gap-2">
+            <Link
+              href={`/admin/applicants/${id}`}
+              className="rounded-md border border-slate-300 bg-white px-3 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+            >
+              Full profile (view / edit)
+            </Link>
+            <Link
+              href={`/admin/applicants/${id}/print`}
+              className="rounded-md border border-slate-300 bg-white px-3 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+            >
+              Print profile
+            </Link>
+          </div>
+        )}
         {isCFI ? (
           <CallSignEditor
             studentUserId={id}

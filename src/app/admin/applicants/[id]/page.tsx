@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getApplicantDetail } from "@/lib/verification";
 import { groupEndorsementItems, isLadderTierKey, isInstructorRatingKey, ENDORSEMENT_OPTIONS } from "@/lib/pilot-endorsements";
@@ -78,6 +79,7 @@ export default async function ApplicantReviewPage({
 
   return (
     <div className="space-y-6">
+      <div className="flex flex-wrap items-start justify-between gap-3">
       <div className="flex items-center gap-3">
         <Avatar
           userId={applicant.id}
@@ -105,6 +107,13 @@ export default async function ApplicantReviewPage({
             />
           )}
         </div>
+      </div>
+        <Link
+          href={`/admin/applicants/${applicant.id}/print`}
+          className="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+        >
+          Print profile
+        </Link>
       </div>
 
       {applicant.accountStatus !== "pending_verification" && (
@@ -224,6 +233,16 @@ export default async function ApplicantReviewPage({
                   }
                 : null
             }
+            student={
+              applicant.role === "student" && student
+                ? {
+                    callSign: student.profile.callSign,
+                    sacaaNumber: student.profile.sacaaNumber,
+                    sahpaNumber: student.profile.sahpaNumber,
+                    sahpaExpiryDate: student.profile.sahpaExpiryDate,
+                  }
+                : null
+            }
           />
         </div>
       </div>
@@ -273,6 +292,29 @@ export default async function ApplicantReviewPage({
       {applicant.role === "student" && (
         <div className="rounded-xl border border-slate-200 bg-white p-5">
           <h2 className="mb-2 text-sm font-semibold text-slate-900">Student details</h2>
+          <dl className="mb-4 divide-y divide-slate-100">
+            <Row label="Call sign" value={student?.profile.callSign} />
+            <Row label="SACAA No." value={student?.profile.sacaaNumber} />
+            <Row label="SAHPA No." value={student?.profile.sahpaNumber} />
+            <Row
+              label="SAHPA expiry"
+              value={
+                student?.profile.sahpaExpiryDate ? (
+                  <span
+                    className={
+                      student.profile.sahpaExpiryDate < new Date()
+                        ? "font-medium text-red-600"
+                        : undefined
+                    }
+                  >
+                    {student.profile.sahpaExpiryDate < new Date() ? "Expired " : ""}
+                    {student.profile.sahpaExpiryDate.toLocaleDateString()}
+                  </span>
+                ) : null
+              }
+            />
+            <Row label="Training start date" value={student?.profile.startDate?.toLocaleDateString()} />
+          </dl>
           <p className="mb-2 text-xs text-slate-500">
             What this student signed up to train toward -- gates which exams they see once
             approved. Adjust it here if it needs correcting before (or after) approval.

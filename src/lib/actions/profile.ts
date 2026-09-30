@@ -386,6 +386,25 @@ export async function adminUpdateProfile(
       .where(eq(pilotProfiles.userId, targetUserId));
   }
 
+  // Student-side registration numbers (30 Sep 2026, Riaan: Admin must be
+  // able to check and edit student profiles, not just the CFI from the
+  // folio). Same four studentProfiles fields the CFI's call-sign editor on
+  // /instructor/students/[id] writes -- only touched when the form actually
+  // sent them (the Student details block renders for students only).
+  if (target.role === "student" && formData.has("sahpaNumber")) {
+    await db
+      .update(studentProfiles)
+      .set({
+        callSign: parsed.data.callSign || null,
+        sacaaNumber: parsed.data.sacaaNumber || null,
+        sahpaNumber: parsed.data.sahpaNumber || null,
+        sahpaExpiryDate: parsed.data.sahpaExpiryDate
+          ? new Date(parsed.data.sahpaExpiryDate)
+          : null,
+      })
+      .where(eq(studentProfiles.userId, targetUserId));
+  }
+
   if (uploadErrors.length > 0) {
     return { error: uploadErrors.join(" ") };
   }
@@ -393,6 +412,7 @@ export async function adminUpdateProfile(
   revalidatePath(`/admin/applicants/${targetUserId}`);
   revalidatePath(`/instructor/students/${targetUserId}`);
   revalidatePath("/admin/pilots");
+  revalidatePath("/admin/students");
   return { success: true };
 }
 

@@ -81,6 +81,7 @@ export default function AdminProfileEditor({
   bloodGroup,
   allergies,
   pilot,
+  student,
 }: {
   userId: string;
   isPilot: boolean;
@@ -106,6 +107,13 @@ export default function AdminProfileEditor({
     licenceFirstIssuedAt: Date | null;
     startingFlightCount: number | null;
     startingFlightHours: number | null;
+  } | null;
+  /** Student accounts only -- shows the Student details block. */
+  student?: {
+    callSign: string | null;
+    sacaaNumber: string | null;
+    sahpaNumber: string | null;
+    sahpaExpiryDate: Date | null;
   } | null;
 }) {
   const [open, setOpen] = useState(false);
@@ -240,6 +248,49 @@ export default function AdminProfileEditor({
             </Field>
           </div>
         </div>
+
+        {student && (
+          <div className="border-t border-slate-200 pt-4">
+            <h4 className="mb-3 text-sm font-semibold text-slate-900">Student details</h4>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <Field id="callSign" label="Call sign">
+                <input
+                  id="callSign"
+                  name="callSign"
+                  defaultValue={student.callSign ?? ""}
+                  className={inputClass}
+                />
+              </Field>
+              <Field id="sacaaNumber" label="SACAA No.">
+                <input
+                  id="sacaaNumber"
+                  name="sacaaNumber"
+                  defaultValue={student.sacaaNumber ?? ""}
+                  className={inputClass}
+                />
+              </Field>
+              <Field id="sahpaNumber" label="SAHPA No.">
+                <input
+                  id="sahpaNumber"
+                  name="sahpaNumber"
+                  defaultValue={student.sahpaNumber ?? ""}
+                  className={inputClass}
+                />
+              </Field>
+              <Field id="sahpaExpiryDate" label="SAHPA expiry date">
+                <input
+                  id="sahpaExpiryDate"
+                  name="sahpaExpiryDate"
+                  type="date"
+                  defaultValue={
+                    student.sahpaExpiryDate ? student.sahpaExpiryDate.toISOString().slice(0, 10) : ""
+                  }
+                  className={inputClass}
+                />
+              </Field>
+            </div>
+          </div>
+        )}
 
         {isPilot && (
           <div className="border-t border-slate-200 pt-4">
