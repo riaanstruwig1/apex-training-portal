@@ -6,7 +6,7 @@ import * as z from "zod";
 import { revalidatePath } from "next/cache";
 import { db } from "@/db";
 import { users, studentProfiles, studentExerciseProgress } from "@/db/schema";
-import { requireInstructor, requireCFI } from "@/lib/auth/dal";
+import { requireInstructor, requireCFI, requireAdminOrCFI } from "@/lib/auth/dal";
 import { getBaseUrl } from "@/lib/base-url";
 import { formatTrainingTypes } from "@/lib/exams";
 
@@ -220,6 +220,11 @@ export async function updateStudentDetails(
     sacaaNumber: string;
     sahpaNumber: string;
     sahpaExpiryDate: string;
+    /** When this student actually joined/signed up -- distinct from their
+     * app account's createdAt, and CFI/Admin-editable since many students
+     * signed up well before their account was created. Empty string clears
+     * it back to "not set". */
+    signUpDate: string;
     /** Selected training types, e.g. ["pg", "ppg"] -- a student can be
      * enrolled in more than one course at once. undefined leaves the
      * existing value alone; [] clears it back to "not set". */
@@ -238,6 +243,7 @@ export async function updateStudentDetails(
       sahpaExpiryDate: details.sahpaExpiryDate
         ? new Date(details.sahpaExpiryDate)
         : null,
+      signUpDate: details.signUpDate ? new Date(details.signUpDate) : null,
       ...(details.trainingType !== undefined
         ? { trainingType: formatTrainingTypes(details.trainingType) }
         : {}),
@@ -245,5 +251,44 @@ export async function updateStudentDetails(
     .where(eq(studentProfiles.userId, studentUserId));
 
   revalidatePath(`/instructor/students/${studentUserId}`);
+  revalidatePath(`/admin/applicants/${studentUserId}`);
   revalidatePath("/student");
+}
+
+export type SignUpDateState =
+  | { error: string; success?: never }
+  | { error?: never; success: true }
+  | undefined;
+
+/** Standalone sign-up-date setter for the admin/CFI applicant-review page
+ * (/admin/applicants/[id]), reachable by Admin too -- unlike the fuller
+ * CallSignEditor on the CFI-only student folio, which also writes this same
+ * field via updateStudentDetails above. 29 Sep 2026, Riaan: "add vir CFI or
+ * Admin a button, date, for initial student sign up." */
+export async function setStudentSignUpDate(
+  studentUserId: string,
+  signUpDate: string
+): Promise<SignUpDateState> {
+  await requireAdminOrCFI();
+
+  if (!signUpDate) {
+    return { error: "Enter a valid date." };
+  }
+  const parsed = new Date(signUpDate);
+  if (Number.isNaN(parsed.getTime())) {
+    return { error: "Enter a valid date." };
+  }
+  if (parsed.getTime() > Date.now()) {
+    return { error: "Sign-up date can't be in the future." };
+  }
+
+  await db
+    .update(studentProfiles)
+    .set({ signUpDate: parsed })
+    .where(eq(studentProfiles.userId, studentUserId));
+
+  revalidatePath(`/admin/applicants/${studentUserId}`);
+  revalidatePath(`/instructor/students/${studentUserId}`);
+  revalidatePath("/student");
+  return { success: true };
 }

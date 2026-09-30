@@ -41,7 +41,7 @@ export default async function StudentDashboard() {
     db.select().from(studentProfiles).where(eq(studentProfiles.userId, user.id)).limit(1),
     getStudyMaterials(),
   ]);
-  const studyMaterialItems = studyMaterialSlots.filter((s) => s.filename);
+  const studyMaterialItems = studyMaterialSlots.filter((s) => s.filename || s.linkUrl);
   const examSummaries = await getExamsForStudent(user.id, profile?.trainingType);
   // A category the student's training type puts in scope but that has no
   // exam content loaded yet (e.g. PPT, as of v15) -- shown as a "coming
@@ -254,14 +254,20 @@ export default async function StudentDashboard() {
                 {studyMaterialItems.map((item) => (
                   <a
                     key={item.id}
-                    href={`/api/study-material/${item.filename}`}
+                    href={item.filename ? `/api/study-material/${item.filename}` : item.linkUrl!}
+                    target={item.filename ? undefined : "_blank"}
+                    rel={item.filename ? undefined : "noreferrer"}
                     className="flex items-center justify-between rounded-xl border border-slate-200 bg-white p-4 hover:border-red-300"
                   >
                     <div>
                       <div className="text-sm font-medium text-slate-900">{item.title}</div>
-                      <div className="text-xs text-slate-500">{formatBytes(item.fileSize)}</div>
+                      {item.filename && (
+                        <div className="text-xs text-slate-500">{formatBytes(item.fileSize)}</div>
+                      )}
                     </div>
-                    <span className="text-sm font-medium text-red-600">Download</span>
+                    <span className="text-sm font-medium text-red-600">
+                      {item.filename ? "Download" : "Open link"}
+                    </span>
                   </a>
                 ))}
               </div>

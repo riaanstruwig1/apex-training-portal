@@ -10,6 +10,7 @@ import PilotEndorsementToggle from "./pilot-endorsement-toggle";
 import HeldSinceEditor from "./held-since-editor";
 import AdminProfileEditor from "./admin-profile-editor";
 import AdminGrantEndorsement from "./admin-grant-endorsement";
+import SignUpDateEditor from "./signup-date-editor";
 import InstructorRatingsGrid from "./instructor-ratings-grid";
 import ConsentBadge from "@/components/consent-badge";
 import MedicalDeclarationStatus from "@/components/medical-declaration-status";
@@ -97,6 +98,12 @@ export default async function ApplicantReviewPage({
             )}
             {" "}&middot; submitted {applicant.createdAt.toLocaleDateString()}
           </p>
+          {applicant.role === "student" && (
+            <SignUpDateEditor
+              studentUserId={applicant.id}
+              currentDate={student?.profile.signUpDate ?? null}
+            />
+          )}
         </div>
       </div>
 

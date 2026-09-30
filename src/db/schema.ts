@@ -185,6 +185,15 @@ export const studentProfiles = sqliteTable("student_profiles", {
   callSign: text("call_sign"), // radio call sign, e.g. "PPG-DYB"
   licenseNumber: text("license_number"),
   startDate: integer("start_date", { mode: "timestamp" }), // date the student started training
+  // The date the student actually joined/enrolled, as CFI/Admin knows it --
+  // distinct from `createdAt` below (when the app *account* was created,
+  // which for many students is much later than when they really signed up,
+  // e.g. accounts created in bulk when this portal launched). Null means
+  // nobody has set it yet; every screen that shows a "signed up" date should
+  // prefer this over createdAt once set. 29 Sep 2026, Riaan: "some studnets
+  // have signed up a year ago" but the app only showed the account's
+  // creation date.
+  signUpDate: integer("sign_up_date", { mode: "timestamp" }),
   // Two distinct regulator numbers -- added 20 Sep 2026. Before this there
   // was only `sahpaNumber`, but every screen labelled it "SACAA No.", which
   // was simply wrong: SACAA and SAHPA are two different bodies with two
@@ -673,6 +682,13 @@ export const studyMaterials = sqliteTable(
     fileSize: integer("file_size"),
     uploadedAt: integer("uploaded_at", { mode: "timestamp" }),
     uploadedByUserId: text("uploaded_by_user_id").references(() => users.id),
+    // Link-instead-of-upload option, 30 Sep 2026 -- added after a CFI's
+    // slide deck turned out to be ~330MB (embedded video/full-res images),
+    // far past what's sane to host and have every student re-download from
+    // here. Mutually exclusive with filename/originalName/fileSize above,
+    // same pattern as siteSettings.noticeLinkUrl -- whichever was set most
+    // recently wins; see saveStudyMaterialSlot in lib/actions/study-materials.ts.
+    linkUrl: text("link_url"),
   },
   (table) => [uniqueIndex("study_materials_slot_unique").on(table.slot)]
 );

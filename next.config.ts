@@ -3,10 +3,16 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   experimental: {
     // Default is 1MB, too small once sign-up carries an ID copy, a CAA
-    // licence PDF and a profile picture in one submit. 25MB covers three
-    // uploads comfortably under the 10MB-per-file cap in lib/uploads.ts.
+    // licence PDF and a profile picture in one submit. Also has to clear
+    // the single-file study-material upload, which the app itself allows
+    // up to 50MB (lib/study-material-uploads.ts) -- 25MB used to sit below
+    // that, so any slide deck over ~25MB was silently rejected by this
+    // framework-level limit before the upload's own 50MB check ever ran,
+    // which is exactly what happened 29 Sep 2026 (CFI's PPTX uploads stuck
+    // on "Saving..." forever, never actually saved). 60MB clears the
+    // documented 50MB cap with headroom for multipart overhead.
     serverActions: {
-      bodySizeLimit: "25mb",
+      bodySizeLimit: "60mb",
     },
   },
 };

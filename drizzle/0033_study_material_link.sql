@@ -1,0 +1,1 @@
+ALTER TABLE `study_materials` ADD `link_url` text;

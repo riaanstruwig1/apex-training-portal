@@ -1,0 +1,1 @@
+ALTER TABLE `student_profiles` ADD `sign_up_date` integer;

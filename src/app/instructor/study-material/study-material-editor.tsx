@@ -14,12 +14,22 @@ function formatBytes(bytes: number | null): string {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
+// Mirrors lib/study-material-uploads.ts's MAX_BYTES -- checked client-side
+// too so an over-size file is rejected immediately with a clear message
+// instead of the form silently hanging on "Saving..." while the upload
+// gets cut off in transit (which is what happened before next.config.ts's
+// serverActions.bodySizeLimit was raised to actually cover this, 29 Sep
+// 2026). Two checks of the same number, kept side by side on purpose.
+const MAX_STUDY_MATERIAL_BYTES = 50 * 1024 * 1024;
+
 function SlotForm({ slot, onDone }: { slot: StudyMaterialSlot; onDone: () => void }) {
   const [state, formAction, isPending] = useActionState<SaveSlotState, FormData>(
     saveStudyMaterialSlot,
     undefined
   );
   const [title, setTitle] = useState(slot.title ?? "");
+  const [linkUrl, setLinkUrl] = useState(slot.linkUrl ?? "");
+  const [clientError, setClientError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // A successful save closes the form back to the read-only view.
@@ -27,8 +37,27 @@ function SlotForm({ slot, onDone }: { slot: StudyMaterialSlot; onDone: () => voi
     onDone();
   }
 
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (file && file.size > MAX_STUDY_MATERIAL_BYTES) {
+      setClientError(
+        `"${file.name}" is ${formatBytes(file.size)} -- max is 50MB. Choose a smaller file, or paste a link below instead.`
+      );
+      e.target.value = "";
+    } else {
+      setClientError(null);
+      if (file) setLinkUrl("");
+    }
+  }
+
   return (
-    <form action={formAction} className="space-y-3 rounded-xl border border-slate-200 bg-white p-4">
+    <form
+      action={formAction}
+      onSubmit={(e) => {
+        if (clientError) e.preventDefault();
+      }}
+      className="space-y-3 rounded-xl border border-slate-200 bg-white p-4"
+    >
       <input type="hidden" name="slot" value={slot.slot} />
       <div>
         <label className="mb-1 block text-xs font-medium text-slate-500">Title</label>
@@ -42,13 +71,14 @@ function SlotForm({ slot, onDone }: { slot: StudyMaterialSlot; onDone: () => voi
       </div>
       <div>
         <label className="mb-1 block text-xs font-medium text-slate-500">
-          {slot.filename ? "Replace file (leave blank to keep the current one)" : "File"}
+          {slot.filename ? "Replace file (leave blank to keep the current one)" : "File (max 50MB)"}
         </label>
         <input
           ref={fileInputRef}
           type="file"
           name="file"
           accept=".zip,.ppt,.pptx,.doc,.docx,.pdf"
+          onChange={handleFileChange}
           className="w-full rounded-md border border-slate-300 px-3 py-1.5 text-sm"
         />
         {slot.filename && (
@@ -58,9 +88,36 @@ function SlotForm({ slot, onDone }: { slot: StudyMaterialSlot; onDone: () => voi
         )}
       </div>
       <div className="flex items-center gap-3">
+        <div className="h-px flex-1 bg-slate-200" />
+        <span className="text-xs text-slate-400">or</span>
+        <div className="h-px flex-1 bg-slate-200" />
+      </div>
+      <div>
+        <label className="mb-1 block text-xs font-medium text-slate-500">
+          Link instead (Google Drive, OneDrive, YouTube...) -- better for anything too big to
+          upload, like a slide deck with video
+        </label>
+        <input
+          name="linkUrl"
+          value={linkUrl}
+          onChange={(e) => {
+            setLinkUrl(e.target.value);
+            if (e.target.value && fileInputRef.current) {
+              fileInputRef.current.value = "";
+              setClientError(null);
+            }
+          }}
+          placeholder="https://drive.google.com/..."
+          className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+        />
+        {slot.linkUrl && !linkUrl && (
+          <p className="mt-1 text-xs text-slate-400">Currently linked to: {slot.linkUrl}</p>
+        )}
+      </div>
+      <div className="flex items-center gap-3">
         <button
           type="submit"
-          disabled={isPending}
+          disabled={isPending || !!clientError}
           className="rounded-md bg-red-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-red-700 disabled:opacity-60"
         >
           {isPending ? "Saving..." : "Save"}
@@ -72,7 +129,10 @@ function SlotForm({ slot, onDone }: { slot: StudyMaterialSlot; onDone: () => voi
         >
           Cancel
         </button>
-        {state && "error" in state && <span className="text-sm text-red-600">{state.error}</span>}
+        {clientError && <span className="text-sm text-red-600">{clientError}</span>}
+        {!clientError && state && "error" in state && (
+          <span className="text-sm text-red-600">{state.error}</span>
+        )}
       </div>
     </form>
   );
@@ -93,7 +153,7 @@ function SlotRow({ slot }: { slot: StudyMaterialSlot }) {
     return <SlotForm slot={slot} onDone={() => setEditing(false)} />;
   }
 
-  if (!slot.filename) {
+  if (!slot.filename && !slot.linkUrl) {
     return (
       <button
         type="button"
@@ -111,16 +171,20 @@ function SlotRow({ slot }: { slot: StudyMaterialSlot }) {
       <div>
         <div className="text-sm font-medium text-slate-900">{slot.title}</div>
         <div className="text-xs text-slate-500">
-          {slot.originalName} ({formatBytes(slot.fileSize)})
-          {slot.uploadedAt && ` · uploaded ${slot.uploadedAt.toLocaleDateString()}`}
+          {slot.filename
+            ? `${slot.originalName} (${formatBytes(slot.fileSize)})`
+            : `Link: ${slot.linkUrl}`}
+          {slot.uploadedAt && ` · ${slot.filename ? "uploaded" : "set"} ${slot.uploadedAt.toLocaleDateString()}`}
         </div>
       </div>
       <div className="flex items-center gap-3">
         <a
-          href={`/api/study-material/${slot.filename}`}
+          href={slot.filename ? `/api/study-material/${slot.filename}` : slot.linkUrl!}
+          target={slot.filename ? undefined : "_blank"}
+          rel={slot.filename ? undefined : "noreferrer"}
           className="text-sm text-slate-500 hover:text-slate-700"
         >
-          Download
+          {slot.filename ? "Download" : "Open link"}
         </a>
         <button
           type="button"

@@ -19,6 +19,12 @@ export type StudyMaterialSlot = {
   originalName: string | null;
   fileSize: number | null;
   uploadedAt: Date | null;
+  /** Link-instead-of-upload option, added 30 Sep 2026 after a CFI's slide
+   * deck turned out to be ~330MB -- far past the 50MB upload cap, and not
+   * something worth hosting/re-downloading per student anyway. Mutually
+   * exclusive with filename/originalName/fileSize -- whichever the CFI set
+   * most recently wins. */
+  linkUrl: string | null;
 };
 
 /** All 8 slots (1-8), in order -- synthesizes an empty placeholder for any
@@ -39,15 +45,26 @@ export async function getStudyMaterials(): Promise<StudyMaterialSlot[]> {
       originalName: row?.originalName ?? null,
       fileSize: row?.fileSize ?? null,
       uploadedAt: row?.uploadedAt ?? null,
+      linkUrl: row?.linkUrl ?? null,
     };
   });
 }
 
 export type SaveSlotState = { error: string } | { success: true } | undefined;
 
-/** CFI-only: sets or replaces one slot's title and (optionally) its file.
- * A title-only edit -- no new file chosen -- keeps whatever file is
- * already in that slot. The first upload for a slot needs both. */
+function normalizeUrl(raw: string): string {
+  return /^https?:\/\//i.test(raw) ? raw : `https://${raw}`;
+}
+
+/** CFI-only: sets or replaces one slot's title and (optionally) its file or
+ * link. A title-only edit -- no new file chosen and no link typed -- keeps
+ * whatever file/link is already in that slot. The first save for a slot
+ * needs one of: a file, or a link. File and link are mutually exclusive --
+ * whichever was set most recently wins, same pattern as the student-notice
+ * bar's noticeFile/noticeLinkUrl (lib/actions/settings.ts). A link is the
+ * better choice for anything too big to sanely host here (e.g. a slide
+ * deck with embedded video) -- point it at Google Drive/OneDrive/YouTube
+ * instead. */
 export async function saveStudyMaterialSlot(
   _prevState: SaveSlotState,
   formData: FormData
@@ -62,6 +79,7 @@ export async function saveStudyMaterialSlot(
   if (!title) return { error: "Give this item a title." };
 
   const fileInput = formData.get("file");
+  const linkInput = String(formData.get("linkUrl") ?? "").trim();
 
   try {
     const [existing] = await db
@@ -70,38 +88,55 @@ export async function saveStudyMaterialSlot(
       .where(eq(studyMaterials.slot, slot))
       .limit(1);
 
-    let fileFields: {
-      filename: string;
-      originalName: string;
-      fileSize: number;
-      uploadedAt: Date;
-      uploadedByUserId: string;
+    let attachmentFields: {
+      filename: string | null;
+      originalName: string | null;
+      fileSize: number | null;
+      uploadedAt: Date | null;
+      uploadedByUserId: string | null;
+      linkUrl: string | null;
     } | null = null;
 
     if (fileInput instanceof File && fileInput.size > 0) {
       const saved = await saveStudyMaterialFile(fileInput);
-      fileFields = { ...saved, uploadedAt: new Date(), uploadedByUserId: cfi.id };
+      attachmentFields = {
+        ...saved,
+        uploadedAt: new Date(),
+        uploadedByUserId: cfi.id,
+        linkUrl: null,
+      };
       // Replace, don't accumulate -- remove the old file from disk only
       // once the new one is safely written.
       if (existing?.filename) await deleteStudyMaterialFile(existing.filename);
-    } else if (!existing?.filename) {
-      return { error: "Choose a file to upload." };
+    } else if (linkInput) {
+      if (existing?.filename) await deleteStudyMaterialFile(existing.filename);
+      attachmentFields = {
+        filename: null,
+        originalName: null,
+        fileSize: null,
+        uploadedAt: new Date(),
+        uploadedByUserId: cfi.id,
+        linkUrl: normalizeUrl(linkInput),
+      };
+    } else if (!existing?.filename && !existing?.linkUrl) {
+      return { error: "Choose a file to upload, or paste a link." };
     }
 
     if (existing) {
       await db
         .update(studyMaterials)
-        .set({ title, ...(fileFields ?? {}) })
+        .set({ title, ...(attachmentFields ?? {}) })
         .where(eq(studyMaterials.id, existing.id));
     } else {
       await db.insert(studyMaterials).values({
         slot,
         title,
-        filename: fileFields!.filename,
-        originalName: fileFields!.originalName,
-        fileSize: fileFields!.fileSize,
-        uploadedAt: fileFields!.uploadedAt,
-        uploadedByUserId: fileFields!.uploadedByUserId,
+        filename: attachmentFields!.filename,
+        originalName: attachmentFields!.originalName,
+        fileSize: attachmentFields!.fileSize,
+        uploadedAt: attachmentFields!.uploadedAt,
+        uploadedByUserId: attachmentFields!.uploadedByUserId,
+        linkUrl: attachmentFields!.linkUrl,
       });
     }
   } catch (err) {
