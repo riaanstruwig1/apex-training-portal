@@ -1,10 +1,11 @@
 "use server";
 
-import { eq, asc, and } from "drizzle-orm";
+import { eq, asc, and, inArray } from "drizzle-orm";
 import * as z from "zod";
 import { revalidatePath } from "next/cache";
 import { db } from "@/db";
-import { sections, exercises } from "@/db/schema";
+import { sections, exercises, contentItems } from "@/db/schema";
+import { deleteContentItemFile } from "@/lib/content-item-uploads";
 import { requireCFI } from "@/lib/auth/dal";
 import { isSectionPhase, isSectionTrainingType } from "@/lib/syllabus-tags";
 
@@ -173,14 +174,29 @@ export async function updateExercise(
   return { success: true };
 }
 
+/** Line 70: an exercise's sub-sections (and their files) go with it. */
+async function deleteContentFor(exerciseIds: string[]) {
+  if (exerciseIds.length === 0) return;
+  const items = await db
+    .select({ id: contentItems.id, filename: contentItems.filename })
+    .from(contentItems)
+    .where(and(eq(contentItems.ownerType, "exercise"), inArray(contentItems.ownerId, exerciseIds)));
+  for (const it of items) if (it.filename) await deleteContentItemFile(it.filename);
+  if (items.length)
+    await db.delete(contentItems).where(inArray(contentItems.id, items.map((i) => i.id)));
+}
+
 export async function deleteExercise(exerciseId: string) {
   await assertInstructor();
+  await deleteContentFor([exerciseId]);
   await db.delete(exercises).where(eq(exercises.id, exerciseId));
   revalidatePath("/instructor/syllabus");
 }
 
 export async function deleteSection(sectionId: string) {
   await assertInstructor();
+  const ex = await db.select({ id: exercises.id }).from(exercises).where(eq(exercises.sectionId, sectionId));
+  await deleteContentFor(ex.map((e) => e.id));
   await db.delete(sections).where(eq(sections.id, sectionId));
   revalidatePath("/instructor/syllabus");
 }

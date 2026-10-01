@@ -4,6 +4,7 @@ import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { setExerciseStatus } from "@/lib/actions/students";
 import type { SectionWithProgress } from "@/lib/progress";
+import ExerciseInfoButton from "@/components/exercise-info-button";
 import {
   SECTION_GROUP_LABELS,
   SECTION_PHASE_SHORT,
@@ -26,7 +27,11 @@ function ExerciseRow({
   onChange,
   onSaveOne,
   isSavingOne,
+  infoCount,
+  canEditInfo,
 }: {
+  infoCount: number;
+  canEditInfo: boolean;
   exercise: SectionWithProgress["exercises"][number];
   value: ExerciseValue;
   dirty: boolean;
@@ -41,12 +46,22 @@ function ExerciseRow({
       }`}
     >
       <div className="sm:w-56 shrink-0">
-        <div className="text-sm font-medium text-slate-900">
+        <div className="flex items-start gap-2 text-sm font-medium text-slate-900">
+          <span>
           {exerciseLabel(exercise.code, exercise.title)}
           {dirty && (
             <span
               className="ml-1.5 inline-block h-1.5 w-1.5 rounded-full bg-amber-500 align-middle"
               title="Unsaved change"
+            />
+          )}
+          </span>
+          {(infoCount > 0 || canEditInfo) && (
+            <ExerciseInfoButton
+              exerciseId={exercise.id}
+              label={exerciseLabel(exercise.code, exercise.title)}
+              count={infoCount}
+              canEdit={canEditInfo}
             />
           )}
         </div>
@@ -85,9 +100,15 @@ function ExerciseRow({
 export default function ExerciseChecklist({
   studentId,
   sections,
+  infoCounts = {},
+  canEditInfo = false,
 }: {
   studentId: string;
   sections: SectionWithProgress[];
+  /** Line 70: number of sub-sections per exercise id. */
+  infoCounts?: Record<string, number>;
+  /** Line 70: CFI gets Add+ in the info overlay. */
+  canEditInfo?: boolean;
 }) {
   const router = useRouter();
 
@@ -225,6 +246,8 @@ export default function ExerciseChecklist({
                 onChange={(next) => setValue(exercise.id, next)}
                 onSaveOne={() => saveOne(exercise.id)}
                 isSavingOne={savingOneId === exercise.id}
+                infoCount={infoCounts[exercise.id] ?? 0}
+                canEditInfo={canEditInfo}
               />
             ))}
           </div>

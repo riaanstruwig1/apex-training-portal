@@ -3,6 +3,7 @@ import { db } from "@/db";
 import { sections, exercises } from "@/db/schema";
 import { requireCFI } from "@/lib/auth/dal";
 import SyllabusEditor from "./syllabus-editor";
+import { getExerciseContentCounts } from "@/lib/content-counts";
 import { compareSections, suggestExerciseCode } from "@/lib/syllabus-tags";
 
 export default async function SyllabusPage() {
@@ -10,6 +11,7 @@ export default async function SyllabusPage() {
 
   const allSections = await db.select().from(sections).orderBy(asc(sections.order));
   const allExercises = await db.select().from(exercises).orderBy(asc(exercises.order));
+  const infoCounts = await getExerciseContentCounts();
 
   const allCodes = allExercises.map((e) => e.code);
   // V24 item 75: shown grouped by training type, then phase, then the CFI's
@@ -32,7 +34,7 @@ export default async function SyllabusPage() {
         a default code like <span className="font-mono">PPG-P1-Ex8</span> &mdash;
         change it if you need to.
       </p>
-      <SyllabusEditor sections={sectionsWithExercises} />
+      <SyllabusEditor sections={sectionsWithExercises} infoCounts={infoCounts} />
     </div>
   );
 }

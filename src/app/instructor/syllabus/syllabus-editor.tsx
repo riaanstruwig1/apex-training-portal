@@ -22,6 +22,7 @@ import {
   exerciseLabel,
 } from "@/lib/syllabus-tags";
 import type { InferSelectModel } from "drizzle-orm";
+import ExerciseInfoButton from "@/components/exercise-info-button";
 import type { sections, exercises } from "@/db/schema";
 
 type Section = InferSelectModel<typeof sections> & {
@@ -91,7 +92,7 @@ function useServerAction() {
   return { isPending, run };
 }
 
-function ExerciseRow({ exercise }: { exercise: Exercise }) {
+function ExerciseRow({ exercise, infoCount }: { exercise: Exercise; infoCount: number }) {
   const [editing, setEditing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { isPending, run } = useServerAction();
@@ -168,6 +169,12 @@ function ExerciseRow({ exercise }: { exercise: Exercise }) {
         <span className="font-medium">{exerciseLabel(exercise.code, exercise.title)}</span>
       </div>
       <div className="flex items-center gap-3">
+        <ExerciseInfoButton
+          exerciseId={exercise.id}
+          label={exerciseLabel(exercise.code, exercise.title)}
+          count={infoCount}
+          canEdit
+        />
         <button
           disabled={isPending}
           onClick={() => setEditing(true)}
@@ -191,7 +198,9 @@ function SectionCard({
   section,
   index,
   total,
+  infoCounts,
 }: {
+  infoCounts: Record<string, number>;
   section: Section;
   /** Position among sections with the same training type + phase. */
   index: number;
@@ -259,7 +268,7 @@ function SectionCard({
 
       <div className="divide-y divide-slate-100">
         {section.exercises.map((ex) => (
-          <ExerciseRow key={ex.id} exercise={ex} />
+          <ExerciseRow key={ex.id} exercise={ex} infoCount={infoCounts[ex.id] ?? 0} />
         ))}
       </div>
 
@@ -341,7 +350,14 @@ function SectionCard({
   );
 }
 
-export default function SyllabusEditor({ sections }: { sections: Section[] }) {
+export default function SyllabusEditor({
+  sections,
+  infoCounts,
+}: {
+  sections: Section[];
+  /** Line 70: sub-section count per exercise id. */
+  infoCounts: Record<string, number>;
+}) {
   const { isPending, run } = useServerAction();
   const [showAddSection, setShowAddSection] = useState(false);
 
@@ -359,7 +375,12 @@ export default function SyllabusEditor({ sections }: { sections: Section[] }) {
                 {SECTION_GROUP_LABELS[s.trainingType as SectionTrainingType]}
               </h2>
             )}
-            <SectionCard section={s} index={peers.indexOf(s)} total={peers.length} />
+            <SectionCard
+              section={s}
+              index={peers.indexOf(s)}
+              total={peers.length}
+              infoCounts={infoCounts}
+            />
           </div>
         );
       })}

@@ -1,5 +1,7 @@
 import { requireStudent } from "@/lib/auth/dal";
 import { getStudentProgress } from "@/lib/progress";
+import { getExerciseContentCounts } from "@/lib/content-counts";
+import ExerciseInfoButton from "@/components/exercise-info-button";
 import {
   SECTION_GROUP_LABELS,
   SECTION_PHASE_SHORT,
@@ -21,7 +23,10 @@ const statusStyles: Record<string, string> = {
 
 export default async function StudentExercisesPage() {
   const { user } = await requireStudent();
-  const sections = await getStudentProgress(user.id);
+  const [sections, infoCounts] = await Promise.all([
+    getStudentProgress(user.id),
+    getExerciseContentCounts(),
+  ]);
 
   return (
     <div>
@@ -79,8 +84,16 @@ export default async function StudentExercisesPage() {
                   className="flex items-center justify-between gap-4 px-4 py-3"
                 >
                   <div>
-                    <div className="text-sm font-medium text-slate-900">
-                      {exerciseLabel(exercise.code, exercise.title)}
+                    <div className="flex items-start gap-2 text-sm font-medium text-slate-900">
+                      <span>{exerciseLabel(exercise.code, exercise.title)}</span>
+                      {(infoCounts[exercise.id] ?? 0) > 0 && (
+                        <ExerciseInfoButton
+                          exerciseId={exercise.id}
+                          label={exerciseLabel(exercise.code, exercise.title)}
+                          count={infoCounts[exercise.id]}
+                          canEdit={false}
+                        />
+                      )}
                     </div>
                     {exercise.description && (
                       <div className="text-xs text-slate-500">

@@ -791,3 +791,34 @@ export const whatsappInvites = sqliteTable("whatsapp_invites", {
   lastError: text("last_error"),
   removedAt: integer("removed_at", { mode: "timestamp" }),
 });
+
+// ---------------------------------------------------------------------------
+// Content items (line 70, 1 Oct 2026): sub-sections the CFI adds to an
+// exercise with an "Add+" button -- a title plus any of a note, a picture,
+// a document or a link. Shown in the exercise's info overlay on the
+// student folio, the CFI student folio and Manage Syllabus.
+// Deliberately generic (ownerType + ownerId) so the same table can later
+// hold ratings-ladder content for line 62 without another table.
+// ---------------------------------------------------------------------------
+
+export const contentItems = sqliteTable("content_items", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  ownerType: text("owner_type", { enum: ["exercise", "rating"] }).notNull(),
+  // exercises.id for ownerType "exercise" (no FK -- the owner can be either
+  // kind; deleteExercise removes an exercise's items itself).
+  ownerId: text("owner_id").notNull(),
+  title: text("title").notNull(),
+  body: text("body"), // the note / sub-section text
+  filename: text("filename"), // stored under data/uploads/content-items/
+  originalName: text("original_name"),
+  mimeType: text("mime_type"),
+  fileSize: integer("file_size"),
+  linkUrl: text("link_url"),
+  order: integer("order").notNull().default(0),
+  createdByUserId: text("created_by_user_id").references(() => users.id),
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .notNull()
+    .default(sql`(unixepoch())`),
+});

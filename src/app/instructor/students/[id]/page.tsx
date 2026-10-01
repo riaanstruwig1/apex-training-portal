@@ -20,6 +20,7 @@ import {
 import { requireInstructor } from "@/lib/auth/dal";
 import Avatar from "@/components/avatar";
 import ExerciseChecklist from "./exercise-checklist";
+import { getExerciseContentCounts } from "@/lib/content-counts";
 import LogbookTable from "./logbook-table";
 import CallSignEditor from "./call-sign-editor";
 import StudentEndorsementToggle from "./student-endorsement-toggle";
@@ -35,6 +36,7 @@ export default async function StudentFolioPage(
 ) {
   const staff = await requireInstructor();
   const isCFI = staff.role === "cfi";
+  const infoCounts = await getExerciseContentCounts();
   const { id } = await props.params;
 
   const [student] = await db
@@ -231,7 +233,12 @@ export default async function StudentFolioPage(
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500">
           Training folio
         </h2>
-        <ExerciseChecklist studentId={id} sections={sections} />
+        <ExerciseChecklist
+          studentId={id}
+          sections={sections}
+          infoCounts={infoCounts}
+          canEditInfo={isCFI}
+        />
       </section>
 
       <section id="endorsements">
