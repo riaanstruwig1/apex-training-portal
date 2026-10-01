@@ -29,8 +29,8 @@ export default async function SyllabusPage() {
         Each section has a training type (PG / PPG / PPT, or applicable to all) and
         a phase. Students only see the sections for the training they signed up
         for, in order: Phase 1, Phase 2, Phase 3, then Conversion and Practical
-        Theory. Within each training type, a student can&apos;t start a section
-        until every exercise in the previous one is signed off. New exercises get
+        Theory. A student can&apos;t start a section until every exercise in the
+        one before it is signed off. New exercises get
         a default code like <span className="font-mono">PPG-P1-Ex8</span> &mdash;
         change it if you need to.
       </p>

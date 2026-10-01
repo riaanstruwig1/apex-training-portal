@@ -6,8 +6,8 @@ import { setExerciseStatus } from "@/lib/actions/students";
 import type { SectionWithProgress } from "@/lib/progress";
 import ExerciseInfoButton from "@/components/exercise-info-button";
 import {
-  SECTION_GROUP_LABELS,
-  SECTION_PHASE_SHORT,
+  SECTION_PHASE_LABELS,
+  SECTION_TYPE_SHORT,
   exerciseLabel,
   type SectionTrainingType,
 } from "@/lib/syllabus-tags";
@@ -204,12 +204,12 @@ export default function ExerciseChecklist({
         </div>
       )}
       {/* V24 item 76 (1 Oct 2026): only this student's training type(s),
-          grouped by training type, Phase 1 -> 2 -> 3 -> Conversion -> PT. */}
+          in phase order: Phase 1 -> 2 -> 3 -> Conversion -> PT. */}
       {sections.map((section, i) => (
         <div key={section.id} className="space-y-3">
-        {(i === 0 || sections[i - 1].trainingType !== section.trainingType) && (
+        {(i === 0 || sections[i - 1].phase !== section.phase) && (
           <h3 className="pt-2 text-xs font-semibold uppercase tracking-wide text-slate-400">
-            {SECTION_GROUP_LABELS[section.trainingType as SectionTrainingType]}
+            {SECTION_PHASE_LABELS[section.phase]}
           </h3>
         )}
         <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
@@ -217,7 +217,7 @@ export default function ExerciseChecklist({
             <div>
               <h3 className="text-sm font-semibold text-slate-900">
                 <span className="mr-2 rounded bg-slate-200 px-1.5 py-0.5 text-[11px] font-medium text-slate-600">
-                  {SECTION_PHASE_SHORT[section.phase]}
+                  {SECTION_TYPE_SHORT[section.trainingType as SectionTrainingType]}
                 </span>
                 {section.name}
               </h3>

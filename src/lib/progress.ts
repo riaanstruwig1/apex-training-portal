@@ -50,12 +50,11 @@ export type SectionWithProgress = {
  *
  * V24 items 76-77 (1 Oct 2026): only sections for the student's own training
  * type(s) are included (plus "Applicable to all" ones; a student with no
- * training type declared still sees everything), ordered by training-type
- * group, then Phase 1 -> 2 -> 3 -> Conversion -> Practical Theory, then the
- * CFI's own order (lib/syllabus-tags.ts compareSections). Gating runs
- * separately inside each training-type group: a section unlocks once the
- * previous section *in the same group* is fully signed off, so finishing
- * PG never blocks or unlocks PPG.
+ * training type declared still sees everything), ordered by
+ * compareSections in lib/syllabus-tags.ts: PHASE FIRST
+ * (Phase 1 -> 2 -> 3 -> Conversion -> Practical Theory), then training
+ * type, then the CFI's own order. Unlocking follows that same order: a
+ * section unlocks once the one before it is fully signed off.
  */
 export async function getStudentProgress(
   studentId: string
@@ -83,7 +82,7 @@ export async function getStudentProgress(
   );
 
   const result: SectionWithProgress[] = [];
-  const previousCompleteByGroup = new Map<string, boolean>();
+  let previousComplete = true; // first section is always unlocked
 
   for (const section of applicable) {
     const sectionExercises = allExercises
@@ -112,8 +111,6 @@ export async function getStudentProgress(
       (e) => e.status === "signed_off"
     ).length;
     const isComplete = totalCount > 0 && signedOffCount === totalCount;
-    // first section of each group is always unlocked
-    const previousComplete = previousCompleteByGroup.get(section.trainingType) ?? true;
 
     result.push({
       id: section.id,
@@ -129,7 +126,7 @@ export async function getStudentProgress(
       isUnlocked: previousComplete,
     });
 
-    previousCompleteByGroup.set(section.trainingType, isComplete);
+    previousComplete = isComplete;
   }
 
   return result;

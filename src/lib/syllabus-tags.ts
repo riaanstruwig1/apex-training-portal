@@ -8,9 +8,10 @@
 //
 // A student only sees sections for the training type(s) they signed up for
 // (plus "all" sections). Display order everywhere -- CFI folio, student
-// dashboard, student folio -- is: grouped by training type (General first,
-// then PG, PPG, PPT), and within each group Phase 1 -> 2 -> 3 -> Conversion
-// -> Practical Theory, then the CFI's own section order.
+// dashboard, student folio, Manage Syllabus -- is PHASE FIRST (Riaan, 1 Oct
+// 2026: "Phase 1 first, then phase 2, then phase 3, then the rest"):
+// Phase 1 -> 2 -> 3 -> Conversion -> Practical Theory; within a phase,
+// "Applicable to all" sections, then PG, PPG, PPT; then the CFI's own order.
 
 import { parseTrainingTypes, type TrainingType } from "@/lib/training-types";
 
@@ -43,6 +44,14 @@ export const SECTION_PHASE_LABELS: Record<SectionPhase, string> = {
   pt: "Practical Theory (PT)",
 };
 
+/** Small badge on each section showing which training it belongs to. */
+export const SECTION_TYPE_SHORT: Record<SectionTrainingType, string> = {
+  all: "All types",
+  pg: "PG",
+  ppg: "PPG",
+  ppt: "PPT",
+};
+
 export const SECTION_PHASE_SHORT: Record<SectionPhase, string> = {
   p1: "Phase 1",
   p2: "Phase 2",
@@ -60,18 +69,18 @@ export function isSectionPhase(v: unknown): v is SectionPhase {
   return typeof v === "string" && (SECTION_PHASES as string[]).includes(v);
 }
 
-/** Sort key: training-type group, then phase, then the CFI's own order. */
+/** Sort key: phase first, then training type, then the CFI's own order. */
 export function compareSections(
   a: { trainingType: string; phase: string; order: number },
   b: { trainingType: string; phase: string; order: number }
 ): number {
+  const p =
+    SECTION_PHASES.indexOf(a.phase as SectionPhase) - SECTION_PHASES.indexOf(b.phase as SectionPhase);
+  if (p !== 0) return p;
   const g =
     GROUP_ORDER.indexOf(a.trainingType as SectionTrainingType) -
     GROUP_ORDER.indexOf(b.trainingType as SectionTrainingType);
   if (g !== 0) return g;
-  const p =
-    SECTION_PHASES.indexOf(a.phase as SectionPhase) - SECTION_PHASES.indexOf(b.phase as SectionPhase);
-  if (p !== 0) return p;
   return a.order - b.order;
 }
 

@@ -17,8 +17,7 @@ import {
   SECTION_TRAINING_TYPE_LABELS,
   SECTION_PHASES,
   SECTION_PHASE_LABELS,
-  SECTION_GROUP_LABELS,
-  type SectionTrainingType,
+  type SectionPhase,
   exerciseLabel,
 } from "@/lib/syllabus-tags";
 import type { InferSelectModel } from "drizzle-orm";
@@ -367,12 +366,12 @@ export default function SyllabusEditor({
         const peers = sections.filter(
           (x) => x.trainingType === s.trainingType && x.phase === s.phase
         );
-        const newGroup = i === 0 || sections[i - 1].trainingType !== s.trainingType;
+        const newGroup = i === 0 || sections[i - 1].phase !== s.phase;
         return (
           <div key={s.id} className="space-y-3">
             {newGroup && (
               <h2 className="pt-2 text-sm font-semibold uppercase tracking-wide text-slate-500">
-                {SECTION_GROUP_LABELS[s.trainingType as SectionTrainingType]}
+                {SECTION_PHASE_LABELS[s.phase as SectionPhase]}
               </h2>
             )}
             <SectionCard

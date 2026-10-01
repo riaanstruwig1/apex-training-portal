@@ -17,8 +17,8 @@ import { groupEndorsementItems } from "@/lib/pilot-endorsements";
 import { getStudyMaterials, type StudyMaterialSlot } from "@/lib/actions/study-materials";
 import { DASHBOARD_EXAM_ORDER, boxForCategory } from "@/lib/study-note-boxes";
 import {
-  SECTION_GROUP_LABELS,
-  SECTION_PHASE_SHORT,
+  SECTION_PHASE_LABELS,
+  SECTION_TYPE_SHORT,
   type SectionTrainingType,
 } from "@/lib/syllabus-tags";
 import type { ExamSummary, ExamCategory } from "@/lib/exams";
@@ -406,12 +406,12 @@ export default async function StudentDashboard() {
                 ? "text-red-700"
                 : "text-slate-500";
 
-            const newGroup = i === 0 || sections[i - 1].trainingType !== section.trainingType;
+            const newGroup = i === 0 || sections[i - 1].phase !== section.phase;
             return (
               <div key={section.id} className="space-y-3">
               {newGroup && (
                 <h3 className="pt-2 text-xs font-semibold uppercase tracking-wide text-slate-400">
-                  {SECTION_GROUP_LABELS[section.trainingType as SectionTrainingType]}
+                  {SECTION_PHASE_LABELS[section.phase]}
                 </h3>
               )}
               <div
@@ -424,7 +424,7 @@ export default async function StudentDashboard() {
                 <div className="mb-2 flex items-center justify-between">
                   <span className="text-sm font-medium text-slate-900">
                     <span className="mr-2 rounded bg-slate-100 px-1.5 py-0.5 text-[11px] font-medium text-slate-500">
-                      {SECTION_PHASE_SHORT[section.phase]}
+                      {SECTION_TYPE_SHORT[section.trainingType as SectionTrainingType]}
                     </span>
                     {section.name}
                     {!section.isUnlocked && (

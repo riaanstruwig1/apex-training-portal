@@ -3,8 +3,8 @@ import { getStudentProgress } from "@/lib/progress";
 import { getExerciseContentCounts } from "@/lib/content-counts";
 import ExerciseInfoButton from "@/components/exercise-info-button";
 import {
-  SECTION_GROUP_LABELS,
-  SECTION_PHASE_SHORT,
+  SECTION_PHASE_LABELS,
+  SECTION_TYPE_SHORT,
   exerciseLabel,
   type SectionTrainingType,
 } from "@/lib/syllabus-tags";
@@ -46,9 +46,9 @@ export default async function StudentExercisesPage() {
       <div className="space-y-6">
         {sections.map((section, i) => (
           <div key={section.id} className="space-y-3">
-          {(i === 0 || sections[i - 1].trainingType !== section.trainingType) && (
+          {(i === 0 || sections[i - 1].phase !== section.phase) && (
             <h2 className="pt-2 text-sm font-semibold uppercase tracking-wide text-slate-500">
-              {SECTION_GROUP_LABELS[section.trainingType as SectionTrainingType]}
+              {SECTION_PHASE_LABELS[section.phase]}
             </h2>
           )}
           <div
@@ -60,7 +60,7 @@ export default async function StudentExercisesPage() {
               <div>
                 <h3 className="text-sm font-semibold text-slate-900">
                   <span className="mr-2 rounded bg-slate-200 px-1.5 py-0.5 text-[11px] font-medium text-slate-600">
-                    {SECTION_PHASE_SHORT[section.phase]}
+                    {SECTION_TYPE_SHORT[section.trainingType as SectionTrainingType]}
                   </span>
                   {section.name}
                   {!section.isUnlocked && (
