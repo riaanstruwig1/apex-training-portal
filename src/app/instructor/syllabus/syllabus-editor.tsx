@@ -10,13 +10,72 @@ import {
   updateExercise,
   deleteExercise,
   deleteSection,
+  updateSectionTags,
 } from "@/lib/actions/syllabus";
+import {
+  SECTION_TRAINING_TYPES,
+  SECTION_TRAINING_TYPE_LABELS,
+  SECTION_PHASES,
+  SECTION_PHASE_LABELS,
+  SECTION_GROUP_LABELS,
+  type SectionTrainingType,
+  exerciseLabel,
+} from "@/lib/syllabus-tags";
 import type { InferSelectModel } from "drizzle-orm";
 import type { sections, exercises } from "@/db/schema";
 
 type Section = InferSelectModel<typeof sections> & {
   exercises: InferSelectModel<typeof exercises>[];
+  /** Next free default code for this section, e.g. "PPG-P1-Ex8". */
+  suggestedCode: string;
 };
+
+const selectClass = "rounded-md border border-slate-300 px-2 py-1 text-xs";
+
+function TagSelects({
+  trainingType,
+  phase,
+  onChange,
+  disabled,
+}: {
+  trainingType: string;
+  phase: string;
+  onChange?: (trainingType: string, phase: string) => void;
+  disabled?: boolean;
+}) {
+  return (
+    <div className="flex flex-wrap gap-2">
+      <select
+        name="trainingType"
+        aria-label="Training type"
+        defaultValue={trainingType}
+        disabled={disabled}
+        onChange={(e) => onChange?.(e.target.value, phase)}
+        className={selectClass}
+      >
+        {SECTION_TRAINING_TYPES.map((t) => (
+          <option key={t} value={t}>
+            {SECTION_TRAINING_TYPE_LABELS[t]}
+          </option>
+        ))}
+      </select>
+      <select
+        name="phase"
+        aria-label="Phase"
+        defaultValue={phase}
+        disabled={disabled}
+        onChange={(e) => onChange?.(trainingType, e.target.value)}
+        className={selectClass}
+      >
+        {SECTION_PHASES.map((p) => (
+          <option key={p} value={p}>
+            {SECTION_PHASE_LABELS[p]}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+}
 
 type Exercise = InferSelectModel<typeof exercises>;
 
@@ -59,7 +118,7 @@ function ExerciseRow({ exercise }: { exercise: Exercise }) {
             name="code"
             required
             defaultValue={exercise.code}
-            className="w-24 rounded-md border border-slate-300 px-2 py-1 text-sm"
+            className="w-36 rounded-md border border-slate-300 px-2 py-1 font-mono text-sm"
           />
         </div>
         <div className="flex-1 min-w-[10rem]">
@@ -106,7 +165,7 @@ function ExerciseRow({ exercise }: { exercise: Exercise }) {
   return (
     <div className="flex items-center justify-between px-4 py-2">
       <div className="text-sm">
-        <span className="font-medium">Ex {exercise.code}</span> &mdash; {exercise.title}
+        <span className="font-medium">{exerciseLabel(exercise.code, exercise.title)}</span>
       </div>
       <div className="flex items-center gap-3">
         <button
@@ -134,6 +193,7 @@ function SectionCard({
   total,
 }: {
   section: Section;
+  /** Position among sections with the same training type + phase. */
   index: number;
   total: number;
 }) {
@@ -159,6 +219,13 @@ function SectionCard({
             onBlur={() => run(() => updateSection(section.id, name, description))}
             placeholder="Description (optional)"
             className="w-full rounded-md border border-slate-300 px-2 py-1 text-xs text-slate-600"
+          />
+          <TagSelects
+            key={`${section.trainingType}-${section.phase}`}
+            trainingType={section.trainingType}
+            phase={section.phase}
+            disabled={isPending}
+            onChange={(t, p) => run(() => updateSectionTags(section.id, t, p))}
           />
         </div>
         <div className="flex shrink-0 items-center gap-1">
@@ -217,15 +284,17 @@ function SectionCard({
               <input
                 name="code"
                 required
-                placeholder="e.g. 19"
-                className="w-24 rounded-md border border-slate-300 px-2 py-1 text-sm"
+                key={section.suggestedCode}
+                defaultValue={section.suggestedCode}
+                className="w-36 rounded-md border border-slate-300 px-2 py-1 font-mono text-sm"
               />
             </div>
             <div className="flex-1 min-w-[10rem]">
-              <label className="block text-xs text-slate-500">Title</label>
+              <label className="block text-xs text-slate-500">Name</label>
               <input
                 name="title"
                 required
+                placeholder="e.g. Straight glide"
                 className="w-full rounded-md border border-slate-300 px-2 py-1 text-sm"
               />
             </div>
@@ -278,9 +347,22 @@ export default function SyllabusEditor({ sections }: { sections: Section[] }) {
 
   return (
     <div className="space-y-6">
-      {sections.map((s, i) => (
-        <SectionCard key={s.id} section={s} index={i} total={sections.length} />
-      ))}
+      {sections.map((s, i) => {
+        const peers = sections.filter(
+          (x) => x.trainingType === s.trainingType && x.phase === s.phase
+        );
+        const newGroup = i === 0 || sections[i - 1].trainingType !== s.trainingType;
+        return (
+          <div key={s.id} className="space-y-3">
+            {newGroup && (
+              <h2 className="pt-2 text-sm font-semibold uppercase tracking-wide text-slate-500">
+                {SECTION_GROUP_LABELS[s.trainingType as SectionTrainingType]}
+              </h2>
+            )}
+            <SectionCard section={s} index={peers.indexOf(s)} total={peers.length} />
+          </div>
+        );
+      })}
 
       {showAddSection ? (
         <form
@@ -308,6 +390,10 @@ export default function SyllabusEditor({ sections }: { sections: Section[] }) {
               name="description"
               className="w-full rounded-md border border-slate-300 px-2 py-1 text-sm"
             />
+          </div>
+          <div className="mb-3">
+            <label className="mb-1 block text-xs text-slate-500">Training type and phase</label>
+            <TagSelects trainingType="ppg" phase="p1" />
           </div>
           <button
             type="submit"

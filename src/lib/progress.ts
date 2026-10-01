@@ -9,6 +9,12 @@ import {
   studentProfiles,
   flightLogEntries,
 } from "@/db/schema";
+import {
+  compareSections,
+  sectionAppliesTo,
+  type SectionPhase,
+  type SectionTrainingType,
+} from "@/lib/syllabus-tags";
 
 export type ExerciseWithProgress = {
   id: string;
@@ -26,6 +32,9 @@ export type SectionWithProgress = {
   name: string;
   description: string | null;
   order: number;
+  /** V24 items 75-77: which training this section belongs to and its phase. */
+  trainingType: SectionTrainingType;
+  phase: SectionPhase;
   exercises: ExerciseWithProgress[];
   totalCount: number;
   signedOffCount: number;
@@ -36,36 +45,47 @@ export type SectionWithProgress = {
 
 /**
  * Builds the full section -> exercise -> progress tree for one student, and
- * computes section gating: a section is unlocked once every exercise in the
- * previous section is signed off. This is the single source of truth for
- * gating -- both instructor and student views read it, so they can't drift.
+ * computes section gating. This is the single source of truth -- the CFI
+ * folio, student dashboard, student folio and both print views all read it.
+ *
+ * V24 items 76-77 (1 Oct 2026): only sections for the student's own training
+ * type(s) are included (plus "Applicable to all" ones; a student with no
+ * training type declared still sees everything), ordered by training-type
+ * group, then Phase 1 -> 2 -> 3 -> Conversion -> Practical Theory, then the
+ * CFI's own order (lib/syllabus-tags.ts compareSections). Gating runs
+ * separately inside each training-type group: a section unlocks once the
+ * previous section *in the same group* is fully signed off, so finishing
+ * PG never blocks or unlocks PPG.
  */
 export async function getStudentProgress(
   studentId: string
 ): Promise<SectionWithProgress[]> {
-  const allSections = await db
-    .select()
-    .from(sections)
-    .orderBy(sections.order);
+  const [allSections, allExercises, progressRows, [profile]] = await Promise.all([
+    db.select().from(sections),
+    db.select().from(exercises).orderBy(exercises.order),
+    db
+      .select()
+      .from(studentExerciseProgress)
+      .where(eq(studentExerciseProgress.studentId, studentId)),
+    db
+      .select({ trainingType: studentProfiles.trainingType })
+      .from(studentProfiles)
+      .where(eq(studentProfiles.userId, studentId))
+      .limit(1),
+  ]);
 
-  const allExercises = await db
-    .select()
-    .from(exercises)
-    .orderBy(exercises.order);
-
-  const progressRows = await db
-    .select()
-    .from(studentExerciseProgress)
-    .where(eq(studentExerciseProgress.studentId, studentId));
+  const applicable = allSections
+    .filter((s) => sectionAppliesTo(s.trainingType, profile?.trainingType))
+    .sort(compareSections);
 
   const progressByExerciseId = new Map(
     progressRows.map((p) => [p.exerciseId, p])
   );
 
   const result: SectionWithProgress[] = [];
-  let previousComplete = true; // first section is always unlocked
+  const previousCompleteByGroup = new Map<string, boolean>();
 
-  for (const section of allSections) {
+  for (const section of applicable) {
     const sectionExercises = allExercises
       .filter((e) => e.sectionId === section.id)
       .map((e): ExerciseWithProgress => {
@@ -82,17 +102,26 @@ export async function getStudentProgress(
         };
       });
 
+    // A section with no exercises yet can never be "complete", so it would
+    // lock every section after it -- leave it out of the folio views until
+    // the CFI adds exercises (it still shows in Manage Syllabus).
+    if (sectionExercises.length === 0) continue;
+
     const totalCount = sectionExercises.length;
     const signedOffCount = sectionExercises.filter(
       (e) => e.status === "signed_off"
     ).length;
     const isComplete = totalCount > 0 && signedOffCount === totalCount;
+    // first section of each group is always unlocked
+    const previousComplete = previousCompleteByGroup.get(section.trainingType) ?? true;
 
     result.push({
       id: section.id,
       name: section.name,
       description: section.description,
       order: section.order,
+      trainingType: section.trainingType,
+      phase: section.phase,
       exercises: sectionExercises,
       totalCount,
       signedOffCount,
@@ -100,7 +129,7 @@ export async function getStudentProgress(
       isUnlocked: previousComplete,
     });
 
-    previousComplete = isComplete;
+    previousCompleteByGroup.set(section.trainingType, isComplete);
   }
 
   return result;
@@ -128,7 +157,14 @@ export type StudentSummary = {
 /** Roster view for the instructor dashboard: one row per student, with a
  * lightweight progress summary (no need for the full gating tree here). */
 export async function getAllStudentsWithSummary(): Promise<StudentSummary[]> {
-  const totalExercises = await db.$count(exercises);
+  // V24 item 76 (1 Oct 2026): each student's "x / y" only counts exercises
+  // in sections for their own training type(s) -- same rule as
+  // getStudentProgress above.
+  const [allSections, allExercises] = await Promise.all([
+    db.select({ id: sections.id, trainingType: sections.trainingType }).from(sections),
+    db.select({ id: exercises.id, sectionId: exercises.sectionId }).from(exercises),
+  ]);
+  const sectionType = new Map(allSections.map((sec) => [sec.id, sec.trainingType]));
 
   const students = await db
     .select({
@@ -155,18 +191,25 @@ export async function getAllStudentsWithSummary(): Promise<StudentSummary[]> {
     )
     .orderBy(users.name);
 
-  const signedOffCounts = await db
+  const signedOffRows = await db
     .select({
       studentId: studentExerciseProgress.studentId,
-      count: sql<number>`count(*)`.as("count"),
+      exerciseId: studentExerciseProgress.exerciseId,
     })
     .from(studentExerciseProgress)
-    .where(eq(studentExerciseProgress.status, "signed_off"))
-    .groupBy(studentExerciseProgress.studentId);
+    .where(eq(studentExerciseProgress.status, "signed_off"));
+  const signedOffByStudent = new Map<string, Set<string>>();
+  for (const r of signedOffRows) {
+    const set = signedOffByStudent.get(r.studentId) ?? new Set<string>();
+    set.add(r.exerciseId);
+    signedOffByStudent.set(r.studentId, set);
+  }
 
-  const countByStudent = new Map(
-    signedOffCounts.map((r) => [r.studentId, Number(r.count)])
-  );
+  function applicableExerciseIds(trainingTypeRaw: string | null): string[] {
+    return allExercises
+      .filter((e) => sectionAppliesTo(sectionType.get(e.sectionId) ?? "all", trainingTypeRaw))
+      .map((e) => e.id);
+  }
 
   const pendingLogbookCounts = await db
     .select({
@@ -181,12 +224,16 @@ export async function getAllStudentsWithSummary(): Promise<StudentSummary[]> {
     pendingLogbookCounts.map((r) => [r.studentId, Number(r.count)])
   );
 
-  return students.map((s) => ({
+  return students.map((s) => {
+    const ids = applicableExerciseIds(s.trainingType);
+    const done = signedOffByStudent.get(s.id);
+    return {
     ...s,
     status: s.status as "invited" | "active" | "suspended" | "archived",
-    signedOffCount: countByStudent.get(s.id) ?? 0,
-    totalCount: totalExercises,
+    signedOffCount: done ? ids.filter((id) => done.has(id)).length : 0,
+    totalCount: ids.length,
     currentSectionName: null,
     pendingLogbookCount: pendingByStudent.get(s.id) ?? 0,
-  }));
+    };
+  });
 }

@@ -4,6 +4,12 @@ import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { setExerciseStatus } from "@/lib/actions/students";
 import type { SectionWithProgress } from "@/lib/progress";
+import {
+  SECTION_GROUP_LABELS,
+  SECTION_PHASE_SHORT,
+  exerciseLabel,
+  type SectionTrainingType,
+} from "@/lib/syllabus-tags";
 
 const statusStyles: Record<string, string> = {
   not_started: "bg-slate-100 text-slate-600",
@@ -36,7 +42,7 @@ function ExerciseRow({
     >
       <div className="sm:w-56 shrink-0">
         <div className="text-sm font-medium text-slate-900">
-          Ex {exercise.code} &mdash; {exercise.title}
+          {exerciseLabel(exercise.code, exercise.title)}
           {dirty && (
             <span
               className="ml-1.5 inline-block h-1.5 w-1.5 rounded-full bg-amber-500 align-middle"
@@ -170,14 +176,28 @@ export default function ExerciseChecklist({
         </button>
       </div>
 
-      {sections.map((section) => (
-        <div
-          key={section.id}
-          className="overflow-hidden rounded-xl border border-slate-200 bg-white"
-        >
+      {sections.length === 0 && (
+        <div className="rounded-xl border border-dashed border-slate-300 bg-white p-6 text-center text-sm text-slate-500">
+          No syllabus sections match this student&apos;s training type yet. Check their training
+          type on the profile, or tag sections for it in Manage syllabus.
+        </div>
+      )}
+      {/* V24 item 76 (1 Oct 2026): only this student's training type(s),
+          grouped by training type, Phase 1 -> 2 -> 3 -> Conversion -> PT. */}
+      {sections.map((section, i) => (
+        <div key={section.id} className="space-y-3">
+        {(i === 0 || sections[i - 1].trainingType !== section.trainingType) && (
+          <h3 className="pt-2 text-xs font-semibold uppercase tracking-wide text-slate-400">
+            {SECTION_GROUP_LABELS[section.trainingType as SectionTrainingType]}
+          </h3>
+        )}
+        <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
           <div className="flex items-center justify-between bg-slate-50 px-4 py-3">
             <div>
               <h3 className="text-sm font-semibold text-slate-900">
+                <span className="mr-2 rounded bg-slate-200 px-1.5 py-0.5 text-[11px] font-medium text-slate-600">
+                  {SECTION_PHASE_SHORT[section.phase]}
+                </span>
                 {section.name}
               </h3>
               {section.description && (
@@ -208,6 +228,7 @@ export default function ExerciseChecklist({
               />
             ))}
           </div>
+        </div>
         </div>
       ))}
     </div>

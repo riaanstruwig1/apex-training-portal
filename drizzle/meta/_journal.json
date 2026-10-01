@@ -253,6 +253,13 @@
       "when": 1790784132995,
       "tag": "0035_whatsapp_invite_audience",
       "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "6",
+      "when": 1790842529632,
+      "tag": "0036_syllabus_tags_study_note_boxes",
+      "breakpoints": true
     }
   ]
 }

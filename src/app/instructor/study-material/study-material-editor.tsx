@@ -7,6 +7,7 @@ import {
   type StudyMaterialSlot,
   type SaveSlotState,
 } from "@/lib/actions/study-materials";
+import { STUDY_NOTE_BOXES, categoryForBox } from "@/lib/study-note-boxes";
 
 function formatBytes(bytes: number | null): string {
   if (!bytes) return "";
@@ -68,6 +69,28 @@ function SlotForm({ slot, onDone }: { slot: StudyMaterialSlot; onDone: () => voi
           placeholder="e.g. Airlaw Study Notes"
           className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
         />
+      </div>
+      <div>
+        <label htmlFor={`box-${slot.slot}`} className="mb-1 block text-xs font-medium text-slate-500">
+          Show on the student dashboard
+        </label>
+        <select
+          id={`box-${slot.slot}`}
+          name="dashboardBox"
+          defaultValue={slot.dashboardBox ?? ""}
+          className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+        >
+          <option value="">Not on dashboard (Study Notes page only)</option>
+          {STUDY_NOTE_BOXES.map((b) => (
+            <option key={b.box} value={b.box}>
+              Box {b.label}
+            </option>
+          ))}
+        </select>
+        <p className="mt-1 text-xs text-slate-400">
+          A box only shows for students who can see that exam. Every item is also on the
+          students&apos; Study Notes page.
+        </p>
       </div>
       <div>
         <label className="mb-1 block text-xs font-medium text-slate-500">
@@ -169,7 +192,14 @@ function SlotRow({ slot }: { slot: StudyMaterialSlot }) {
   return (
     <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-white p-4">
       <div>
-        <div className="text-sm font-medium text-slate-900">{slot.title}</div>
+        <div className="text-sm font-medium text-slate-900">
+          {slot.title}
+          {slot.dashboardBox && categoryForBox(slot.dashboardBox) && (
+            <span className="ml-2 rounded-full bg-red-50 px-2 py-0.5 text-xs font-medium text-red-700">
+              Dashboard box {slot.dashboardBox}
+            </span>
+          )}
+        </div>
         <div className="text-xs text-slate-500">
           {slot.filename
             ? `${slot.originalName} (${formatBytes(slot.fileSize)})`

@@ -72,7 +72,11 @@ export default function SignupForm() {
     undefined
   );
   const [accountType, setAccountType] = useState<"student" | "pilot">("student");
-  const [trainingType, setTrainingType] = useState<"pg" | "ppg" | "ppt" | "">("");
+  // V24 item 71 (1 Oct 2026): a student can sign up for one, two or all
+  // three training types at once.
+  const [trainingTypes, setTrainingTypes] = useState<Set<"pg" | "ppg" | "ppt">>(new Set());
+  // V24 item 72: only for students who started with Apex before the Hub.
+  const [initialSignUpDate, setInitialSignUpDate] = useState("");
   // Everything except the file inputs is controlled from here, so a failed
   // submission (e.g. "email already exists") never wipes what the applicant
   // already typed -- only the email/password need fixing, not the whole form.
@@ -132,22 +136,62 @@ export default function SignupForm() {
       {accountType === "student" && (
         <div className="space-y-4 border-t border-slate-200 pt-4">
           <h2 className="text-sm font-semibold text-slate-900">Training</h2>
-          <Field id="trainingType" label="What training are you signing up for?" required>
-            <select
-              id="trainingType"
-              name="trainingType"
-              value={trainingType}
-              onChange={(e) => setTrainingType(e.target.value as typeof trainingType)}
-              required={accountType === "student"}
+          <fieldset>
+            <legend className={labelClass}>
+              What type(s) of training are you signing up for?{" "}
+              <span className="text-red-600">*</span>
+            </legend>
+            <p className="mb-2 text-xs text-slate-500">Tick one, two or all three.</p>
+            <div className="grid gap-2 sm:grid-cols-3">
+              {(
+                [
+                  ["pg", "Paraglider (PG)"],
+                  ["ppg", "Powered Paraglider (PPG)"],
+                  ["ppt", "Powered Paratrike (PPT)"],
+                ] as const
+              ).map(([value, label]) => (
+                <label
+                  key={value}
+                  className={`flex cursor-pointer items-center gap-2 rounded-md border px-3 py-2.5 text-sm ${
+                    trainingTypes.has(value)
+                      ? "border-red-500 bg-red-50 text-red-700"
+                      : "border-slate-300 text-slate-700 hover:bg-slate-50"
+                  }`}
+                >
+                  <input
+                    type="checkbox"
+                    name="trainingType"
+                    value={value}
+                    checked={trainingTypes.has(value)}
+                    onChange={() =>
+                      setTrainingTypes((prev) => {
+                        const next = new Set(prev);
+                        if (next.has(value)) next.delete(value);
+                        else next.add(value);
+                        return next;
+                      })
+                    }
+                    className="rounded border-slate-300"
+                  />
+                  {label}
+                </label>
+              ))}
+            </div>
+          </fieldset>
+          <Field id="initialSignUpDate" label="Initial student sign-up date">
+            <input
+              id="initialSignUpDate"
+              name="initialSignUpDate"
+              type="date"
+              value={initialSignUpDate}
+              max={new Date().toISOString().slice(0, 10)}
+              onChange={(e) => setInitialSignUpDate(e.target.value)}
               className={inputClass}
-            >
-              <option value="" disabled>
-                Select...
-              </option>
-              <option value="pg">Paraglider (PG)</option>
-              <option value="ppg">Powered Paragliding (PPG)</option>
-              <option value="ppt">Powered Paratrike (PPT)</option>
-            </select>
+            />
+            <p className="mt-1 text-xs text-slate-500">
+              Only if you already started training with Apex before this system -- the date you
+              first signed up. Leave blank if you&apos;re new. Your CFI can correct it later.
+            </p>
           </Field>
         </div>
       )}

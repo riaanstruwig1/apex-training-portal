@@ -273,6 +273,13 @@ export const sections = sqliteTable("sections", {
   name: text("name").notNull(),
   description: text("description"),
   order: integer("order").notNull(),
+  // V24 item 75 (1 Oct 2026): which training this section belongs to and
+  // which phase -- drives what each student sees and the display order
+  // (see lib/syllabus-tags.ts). "all" = applies to every student.
+  trainingType: text("training_type", { enum: ["pg", "ppg", "ppt", "all"] })
+    .notNull()
+    .default("all"),
+  phase: text("phase", { enum: ["p1", "p2", "p3", "cv", "pt"] }).notNull().default("p1"),
 });
 
 export const exercises = sqliteTable(
@@ -689,6 +696,11 @@ export const studyMaterials = sqliteTable(
     // same pattern as siteSettings.noticeLinkUrl -- whichever was set most
     // recently wins; see saveStudyMaterialSlot in lib/actions/study-materials.ts.
     linkUrl: text("link_url"),
+    // V24 item 74 (1 Oct 2026): which dashboard box this note sits in, next
+    // to the matching exam -- 1 = Basic Licence (PG), 2 = PPG, 3 = DTO
+    // Radio, 4 = PPT (see STUDY_NOTE_BOXES in lib/study-note-boxes.ts).
+    // Null = Study Notes page only, not on the dashboard.
+    dashboardBox: integer("dashboard_box"),
   },
   (table) => [uniqueIndex("study_materials_slot_unique").on(table.slot)]
 );

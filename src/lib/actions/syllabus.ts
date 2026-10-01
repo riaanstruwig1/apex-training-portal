@@ -1,11 +1,12 @@
 "use server";
 
-import { eq, asc } from "drizzle-orm";
+import { eq, asc, and } from "drizzle-orm";
 import * as z from "zod";
 import { revalidatePath } from "next/cache";
 import { db } from "@/db";
 import { sections, exercises } from "@/db/schema";
 import { requireCFI } from "@/lib/auth/dal";
+import { isSectionPhase, isSectionTrainingType } from "@/lib/syllabus-tags";
 
 async function assertInstructor() {
   await requireCFI();
@@ -15,12 +16,30 @@ export async function addSection(formData: FormData) {
   await assertInstructor();
   const name = z.string().trim().min(1).parse(formData.get("name"));
   const description = (formData.get("description") as string) || null;
+  // V24 item 75: every section is tagged with a training type + phase.
+  const trainingTypeRaw = formData.get("trainingType");
+  const phaseRaw = formData.get("phase");
+  const trainingType = isSectionTrainingType(trainingTypeRaw) ? trainingTypeRaw : "all";
+  const phase = isSectionPhase(phaseRaw) ? phaseRaw : "p1";
 
-  const existing = await db.select().from(sections);
-  const nextOrder = existing.length + 1;
+  const existing = await db.select({ order: sections.order }).from(sections);
+  const nextOrder = existing.reduce((m, s) => Math.max(m, s.order), 0) + 1;
 
-  await db.insert(sections).values({ name, description, order: nextOrder });
+  await db.insert(sections).values({ name, description, order: nextOrder, trainingType, phase });
   revalidatePath("/instructor/syllabus");
+}
+
+/** V24 item 75: change a section's training type / phase from the two
+ * dropdowns on Manage Syllabus. Existing exercise codes are left alone --
+ * only the suggested code for NEW exercises follows the new tags. */
+export async function updateSectionTags(sectionId: string, trainingType: string, phase: string) {
+  await assertInstructor();
+  if (!isSectionTrainingType(trainingType) || !isSectionPhase(phase)) return;
+  await db.update(sections).set({ trainingType, phase }).where(eq(sections.id, sectionId));
+  revalidatePath("/instructor/syllabus");
+  revalidatePath("/instructor");
+  revalidatePath("/student");
+  revalidatePath("/student/exercises");
 }
 
 export async function updateSection(
@@ -36,9 +55,18 @@ export async function updateSection(
   revalidatePath("/instructor/syllabus");
 }
 
+/** Moves a section up/down among the sections with the same training type
+ * and phase -- that's the only order that's visible anywhere now (V24 item
+ * 75), since display is grouped by training type, then phase. */
 export async function moveSection(sectionId: string, direction: "up" | "down") {
   await assertInstructor();
-  const all = await db.select().from(sections).orderBy(asc(sections.order));
+  const [target] = await db.select().from(sections).where(eq(sections.id, sectionId)).limit(1);
+  if (!target) return;
+  const all = await db
+    .select()
+    .from(sections)
+    .where(and(eq(sections.trainingType, target.trainingType), eq(sections.phase, target.phase)))
+    .orderBy(asc(sections.order));
   const idx = all.findIndex((s) => s.id === sectionId);
   if (idx === -1) return;
   const swapIdx = direction === "up" ? idx - 1 : idx + 1;

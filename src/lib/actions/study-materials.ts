@@ -25,6 +25,9 @@ export type StudyMaterialSlot = {
    * exclusive with filename/originalName/fileSize -- whichever the CFI set
    * most recently wins. */
   linkUrl: string | null;
+  /** V24 item 74: dashboard box 1-4 (next to the matching exam), or null =
+   * Study Notes page only. See lib/study-note-boxes.ts. */
+  dashboardBox: number | null;
 };
 
 /** All 8 slots (1-8), in order -- synthesizes an empty placeholder for any
@@ -46,6 +49,7 @@ export async function getStudyMaterials(): Promise<StudyMaterialSlot[]> {
       fileSize: row?.fileSize ?? null,
       uploadedAt: row?.uploadedAt ?? null,
       linkUrl: row?.linkUrl ?? null,
+      dashboardBox: row?.dashboardBox ?? null,
     };
   });
 }
@@ -77,6 +81,9 @@ export async function saveStudyMaterialSlot(
     return { error: "Invalid slot." };
   }
   if (!title) return { error: "Give this item a title." };
+
+  const boxRaw = Number(formData.get("dashboardBox") ?? 0);
+  const dashboardBox = Number.isInteger(boxRaw) && boxRaw >= 1 && boxRaw <= 4 ? boxRaw : null;
 
   const fileInput = formData.get("file");
   const linkInput = String(formData.get("linkUrl") ?? "").trim();
@@ -125,12 +132,13 @@ export async function saveStudyMaterialSlot(
     if (existing) {
       await db
         .update(studyMaterials)
-        .set({ title, ...(attachmentFields ?? {}) })
+        .set({ title, dashboardBox, ...(attachmentFields ?? {}) })
         .where(eq(studyMaterials.id, existing.id));
     } else {
       await db.insert(studyMaterials).values({
         slot,
         title,
+        dashboardBox,
         filename: attachmentFields!.filename,
         originalName: attachmentFields!.originalName,
         fileSize: attachmentFields!.fileSize,
@@ -146,6 +154,7 @@ export async function saveStudyMaterialSlot(
 
   revalidatePath("/instructor/study-material");
   revalidatePath("/student");
+  revalidatePath("/student/study-notes");
   return { success: true };
 }
 

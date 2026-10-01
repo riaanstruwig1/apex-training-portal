@@ -1,5 +1,11 @@
 import { requireStudent } from "@/lib/auth/dal";
 import { getStudentProgress } from "@/lib/progress";
+import {
+  SECTION_GROUP_LABELS,
+  SECTION_PHASE_SHORT,
+  exerciseLabel,
+  type SectionTrainingType,
+} from "@/lib/syllabus-tags";
 
 const statusLabels: Record<string, string> = {
   not_started: "Not started",
@@ -23,13 +29,24 @@ export default async function StudentExercisesPage() {
       <p className="mb-6 text-sm text-slate-500">
         Your instructor signs off each exercise after you&apos;ve demonstrated
         it. You need every exercise in a section signed off before the next
-        section unlocks.
+        section unlocks. Only the training you signed up for is shown, in
+        order: Phase 1, Phase 2, Phase 3, then Conversion and Practical Theory.
       </p>
 
+      {sections.length === 0 && (
+        <div className="rounded-xl border border-dashed border-slate-300 bg-white p-8 text-center text-sm text-slate-500">
+          No training sections for your training type yet -- your instructor is setting them up.
+        </div>
+      )}
       <div className="space-y-6">
-        {sections.map((section) => (
+        {sections.map((section, i) => (
+          <div key={section.id} className="space-y-3">
+          {(i === 0 || sections[i - 1].trainingType !== section.trainingType) && (
+            <h2 className="pt-2 text-sm font-semibold uppercase tracking-wide text-slate-500">
+              {SECTION_GROUP_LABELS[section.trainingType as SectionTrainingType]}
+            </h2>
+          )}
           <div
-            key={section.id}
             className={`overflow-hidden rounded-xl border border-slate-200 bg-white ${
               !section.isUnlocked ? "opacity-60" : ""
             }`}
@@ -37,6 +54,9 @@ export default async function StudentExercisesPage() {
             <div className="flex items-center justify-between bg-slate-50 px-4 py-3">
               <div>
                 <h3 className="text-sm font-semibold text-slate-900">
+                  <span className="mr-2 rounded bg-slate-200 px-1.5 py-0.5 text-[11px] font-medium text-slate-600">
+                    {SECTION_PHASE_SHORT[section.phase]}
+                  </span>
                   {section.name}
                   {!section.isUnlocked && (
                     <span className="ml-2 text-xs font-normal text-slate-400">
@@ -60,7 +80,7 @@ export default async function StudentExercisesPage() {
                 >
                   <div>
                     <div className="text-sm font-medium text-slate-900">
-                      Ex {exercise.code} &mdash; {exercise.title}
+                      {exerciseLabel(exercise.code, exercise.title)}
                     </div>
                     {exercise.description && (
                       <div className="text-xs text-slate-500">
@@ -81,6 +101,7 @@ export default async function StudentExercisesPage() {
                 </div>
               ))}
             </div>
+          </div>
           </div>
         ))}
       </div>

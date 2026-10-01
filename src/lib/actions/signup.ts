@@ -9,6 +9,7 @@ import { users, studentProfiles, pilotProfiles, pilotEndorsements } from "@/db/s
 import { generateApexNumber } from "@/lib/apex-number";
 import { saveUpload, UploadError } from "@/lib/uploads";
 import { ENDORSEMENT_OPTIONS } from "@/lib/pilot-endorsements";
+import { formatTrainingTypes } from "@/lib/training-types";
 
 const SignupSchema = z
   .object({
@@ -34,7 +35,10 @@ const SignupSchema = z
     consentName: z.string().trim().min(1, { error: "Type your full name to sign the consent form." }),
     indemnityName: z.string().trim().min(1, { error: "Type your full name to sign the indemnity/release." }),
     // Student-only
-    trainingType: z.enum(["pg", "ppg", "ppt"]).optional(),
+    // V24 item 71: one or more of pg / ppg / ppt (stored comma-separated).
+    trainingTypes: z.array(z.enum(["pg", "ppg", "ppt"])).optional(),
+    // V24 item 72: optional, for students who started before the Hub.
+    initialSignUpDate: z.string().trim().optional(),
     // Pilot-only
     callSign: z.string().trim().optional(),
     sacaaNumber: z.string().trim().optional(),
@@ -53,10 +57,18 @@ const SignupSchema = z
     error: "Passwords do not match.",
     path: ["confirmPassword"],
   })
-  .refine((data) => data.accountType !== "student" || !!data.trainingType, {
-    error: "Select what training you're signing up for.",
+  .refine((data) => data.accountType !== "student" || (data.trainingTypes?.length ?? 0) > 0, {
+    error: "Tick at least one type of training you're signing up for.",
     path: ["trainingType"],
-  });
+  })
+  .refine(
+    (data) => {
+      if (!data.initialSignUpDate) return true;
+      const d = new Date(data.initialSignUpDate);
+      return !Number.isNaN(d.getTime()) && d.getTime() <= Date.now();
+    },
+    { error: "The initial sign-up date can't be in the future.", path: ["initialSignUpDate"] }
+  );
 
 export type SignupState = { error: string } | undefined;
 
@@ -84,7 +96,8 @@ export async function submitSignup(
     postalAddress: formData.get("postalAddress") || undefined,
     homeAddress: formData.get("homeAddress") || undefined,
     clubName: formData.get("clubName") || undefined,
-    trainingType: formData.get("trainingType") || undefined,
+    trainingTypes: formData.getAll("trainingType").map(String),
+    initialSignUpDate: formData.get("initialSignUpDate") || undefined,
     consentName: formData.get("consentName"),
     indemnityName: formData.get("indemnityName"),
     callSign: formData.get("callSign") || undefined,
@@ -191,7 +204,8 @@ export async function submitSignup(
       await db.insert(studentProfiles).values({
         userId: user.id,
         phone: data.phone,
-        trainingType: data.trainingType ?? null,
+        trainingType: formatTrainingTypes(data.trainingTypes ?? []),
+        signUpDate: data.initialSignUpDate ? new Date(data.initialSignUpDate) : null,
         status: "active", // gating is via users.accountStatus, not this
       });
     } else {
