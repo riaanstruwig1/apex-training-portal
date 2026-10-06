@@ -14,6 +14,13 @@ const nextConfig: NextConfig = {
     serverActions: {
       bodySizeLimit: "60mb",
     },
+    // 6 Oct 2026 (Riaan: saving a ~20MB study note crashed the page with
+    // "This page couldn't load"). proxy.ts runs on every page, including
+    // the POSTs that carry server-action uploads, and Next buffers those
+    // bodies for the proxy only up to 10MB by default -- anything bigger
+    // reached the upload action cut short ("Unexpected end of form") and
+    // the page crashed. Same headroom as bodySizeLimit above.
+    proxyClientMaxBodySize: "60mb",
   },
 };
 
