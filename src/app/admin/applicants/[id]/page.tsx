@@ -33,10 +33,13 @@ function DocLink({
   userId,
   filename,
   label,
+  personName,
 }: {
   userId: string;
   filename: string | null;
   label: string;
+  /** Used to name the downloaded file, e.g. "John Doe - ID Passport copy". */
+  personName: string;
 }) {
   if (!filename) {
     return (
@@ -45,15 +48,22 @@ function DocLink({
       </div>
     );
   }
+  const href = `/api/uploads/${userId}/${filename}`;
   return (
-    <a
-      href={`/api/uploads/${userId}/${filename}`}
-      target="_blank"
-      rel="noreferrer"
-      className="flex items-center justify-between rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50"
-    >
-      {label} <span className="text-red-600">View →</span>
-    </a>
+    <div className="flex items-center justify-between gap-3 rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-700">
+      <span>{label}</span>
+      <span className="flex shrink-0 items-center gap-3">
+        <a href={href} target="_blank" rel="noreferrer" className="text-red-600 hover:underline">
+          View →
+        </a>
+        <a
+          href={`${href}?download=${encodeURIComponent(`${personName} - ${label}`)}`}
+          className="text-slate-600 hover:text-red-600 hover:underline"
+        >
+          Download
+        </a>
+      </span>
+    </div>
   );
 }
 
@@ -154,11 +164,12 @@ export default async function ApplicantReviewPage({
       <div className="rounded-xl border border-slate-200 bg-white p-5">
         <h2 className="mb-2 text-sm font-semibold text-slate-900">Documents</h2>
         <div className="space-y-2">
-          <DocLink userId={applicant.id} filename={applicant.idPassportFile} label="ID / Passport copy" />
-          <DocLink userId={applicant.id} filename={applicant.profilePictureFile} label="Profile picture" />
+          <DocLink personName={applicant.name} userId={applicant.id} filename={applicant.idPassportFile} label="ID / Passport copy" />
+          <DocLink personName={applicant.name} userId={applicant.id} filename={applicant.profilePictureFile} label="Profile picture" />
           {applicant.role === "pilot" && (
             <>
               <DocLink
+                personName={applicant.name}
                 userId={applicant.id}
                 filename={pilot?.profile.caaLicenceFile ?? null}
                 label="Current CAA licence"
@@ -175,12 +186,14 @@ export default async function ApplicantReviewPage({
           )}
           {applicant.role === "student" && (
             <DocLink
+              personName={applicant.name}
               userId={applicant.id}
               filename={student?.profile.popFile ?? null}
               label="Proof of payment"
             />
           )}
           <DocLink
+            personName={applicant.name}
             userId={applicant.id}
             filename={applicant.flightMedicalCertFile}
             label="Flight medical certificate"

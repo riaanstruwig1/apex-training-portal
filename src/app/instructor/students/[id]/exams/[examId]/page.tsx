@@ -121,14 +121,24 @@ export default async function ExamReviewPage(
         )}
         <div className="flex flex-wrap items-center gap-3">
           {attempt.proofFile ? (
-            <a
-              href={`/api/uploads/${id}/${attempt.proofFile}`}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-block rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
-            >
-              View what was submitted
-            </a>
+            <>
+              <a
+                href={`/api/uploads/${id}/${attempt.proofFile}`}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-block rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+              >
+                View what was submitted
+              </a>
+              <a
+                href={`/api/uploads/${id}/${attempt.proofFile}?download=${encodeURIComponent(
+                  `${student.name} - ${exam.title}`
+                )}`}
+                className="inline-block rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+              >
+                Download
+              </a>
+            </>
           ) : (
             <p className="text-sm text-slate-400">No file on record.</p>
           )}
