@@ -24,6 +24,7 @@ import { getExerciseContentCounts } from "@/lib/content-counts";
 import LogbookTable from "./logbook-table";
 import CallSignEditor from "./call-sign-editor";
 import StudentEndorsementToggle from "./student-endorsement-toggle";
+import StaffPaperUpload from "./staff-paper-upload";
 
 const TRAINING_TYPE_LABELS: Record<TrainingType, string> = {
   pg: "Paraglider (PG)",
@@ -336,11 +337,18 @@ export default async function StudentFolioPage(
                     ? "bg-amber-100 text-amber-800"
                     : "bg-slate-100 text-slate-600";
               const canReview = e.status === "submitted" || e.status === "verified";
+              // 9 Oct 2026: staff can upload a paper exam for the student when
+              // nothing is awaiting review yet (not started / opened but not
+              // answered / a verified fail). The action itself re-checks.
+              const canStaffUpload =
+                e.status === "not_started" ||
+                (e.status === "in_progress" && e.answeredCount === 0) ||
+                (e.status === "verified" && !e.passed);
 
               return (
                 <div
                   key={e.examId}
-                  className="flex items-center justify-between rounded-xl border border-slate-200 bg-white p-4"
+                  className="flex flex-wrap items-start justify-between gap-3 rounded-xl border border-slate-200 bg-white p-4"
                 >
                   <div>
                     <div className="text-sm font-medium text-slate-900">{e.title}</div>
@@ -348,14 +356,24 @@ export default async function StudentFolioPage(
                       {statusLabel}
                     </span>
                   </div>
-                  {canReview && (
-                    <Link
-                      href={`/instructor/students/${id}/exams/${e.examId}`}
-                      className="rounded-md border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
-                    >
-                      {e.status === "submitted" ? "Review & verify" : "Review"}
-                    </Link>
-                  )}
+                  <div className="flex flex-wrap items-start justify-end gap-2">
+                    {canReview && (
+                      <Link
+                        href={`/instructor/students/${id}/exams/${e.examId}`}
+                        className="rounded-md border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
+                      >
+                        {e.status === "submitted" ? "Review & verify" : "Review"}
+                      </Link>
+                    )}
+                    {canStaffUpload && (
+                      <StaffPaperUpload
+                        studentId={id}
+                        examId={e.examId}
+                        isRadio={e.category === "rt"}
+                        label={e.status === "verified" ? "Upload retake (paper)" : "Upload paper exam"}
+                      />
+                    )}
+                  </div>
                 </div>
               );
             })}

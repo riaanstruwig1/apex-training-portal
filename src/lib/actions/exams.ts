@@ -342,6 +342,103 @@ export async function submitPaperExam(
   return undefined;
 }
 
+export type StaffPaperUploadState = { error: string } | { success: true } | undefined;
+
+/**
+ * 9 Oct 2026 (Riaan: "I need to be able to upload an exam for a student as
+ * CFI, or delete the file and then verify pass or fail"): the staff side of
+ * submitPaperExam above -- a CFI/instructor uploads a paper exam (or, for
+ * the radio exam, the student's SACAA radio licence) straight from the
+ * student's folio, for a student who hasn't submitted anything themselves.
+ * Same storage as the student's own upload (the student's upload folder),
+ * so View / Download / New upload / Delete / Mark passed / Mark failed on
+ * the review page all work on it unchanged. The reviewer can also record
+ * the result in the same step ("result" = pending | passed | failed).
+ *
+ * Allowed when the exam is not started, after a verified fail (a retake;
+ * staff aren't held to the retry wait), or over an online attempt the
+ * student opened but never answered. Blocked if the student has answered
+ * questions online or already has a submission awaiting review / passed.
+ */
+export async function staffSubmitPaperExam(
+  studentId: string,
+  examId: string,
+  _prevState: StaffPaperUploadState,
+  formData: FormData
+): Promise<StaffPaperUploadState> {
+  const staff = await requireInstructor();
+
+  const [exam] = await db.select().from(exams).where(eq(exams.id, examId)).limit(1);
+  if (!exam) return { error: "Exam not found." };
+
+  const current = await latestAttempt(studentId, examId);
+  let replaceEmptyAttemptId: string | null = null;
+  if (current) {
+    if (current.status === "verified" && current.passed) {
+      return { error: "This exam is already passed." };
+    }
+    if (current.status === "submitted") {
+      return { error: "This exam already has a submission awaiting review -- open Review & verify." };
+    }
+    if (current.status === "in_progress") {
+      const [{ n }] = await db
+        .select({ n: sql<number>`count(*)` })
+        .from(examAnswers)
+        .where(eq(examAnswers.attemptId, current.id));
+      if (Number(n) > 0) {
+        return {
+          error: `The student has started this exam online (${n} answered). They need to finish or you can review it once submitted.`,
+        };
+      }
+      replaceEmptyAttemptId = current.id;
+    }
+  }
+
+  const file = formData.get("proofFile");
+  if (!(file instanceof File) || file.size === 0) {
+    return { error: "Choose the scanned exam (or licence) to upload." };
+  }
+  const licenseNumberRaw = formData.get("licenseNumber");
+  const licenseNumber = typeof licenseNumberRaw === "string" ? licenseNumberRaw.trim() : "";
+  const resultRaw = String(formData.get("result") ?? "pending");
+  const result = resultRaw === "passed" || resultRaw === "failed" ? resultRaw : "pending";
+
+  let proofFile: string | null;
+  try {
+    proofFile = await saveUpload(studentId, `paper-exam-${exam.slug}`, file);
+  } catch (err) {
+    return { error: err instanceof UploadError ? err.message : "Upload failed." };
+  }
+  if (!proofFile) return { error: "Choose the scanned exam (or licence) to upload." };
+
+  if (replaceEmptyAttemptId) {
+    await db.delete(examAttempts).where(eq(examAttempts.id, replaceEmptyAttemptId));
+  }
+  const attemptNumber =
+    replaceEmptyAttemptId && current ? current.attemptNumber : (current?.attemptNumber ?? 0) + 1;
+  const now = new Date();
+  await db.insert(examAttempts).values({
+    studentId,
+    examId,
+    attemptNumber,
+    status: result === "pending" ? "submitted" : "verified",
+    submittedAt: now,
+    source: "paper",
+    proofFile,
+    externalLicenseNumber: exam.category === "rt" && licenseNumber ? licenseNumber : null,
+    ...(result === "pending"
+      ? {}
+      : { passed: result === "passed", verifiedAt: now, verifiedByUserId: staff.id }),
+  });
+
+  revalidatePath(`/instructor/students/${studentId}`);
+  revalidatePath(`/instructor/students/${studentId}/exams/${examId}`);
+  revalidatePath("/instructor");
+  revalidatePath("/student");
+  revalidatePath(`/student/exams/${examId}`);
+  return { success: true };
+}
+
 /** CFI/Admin reviews a paper submission and decides pass/fail -- the
  * counterpart to verifyExamAttempt above, but for a "paper" attempt
  * `passed` isn't already computed, so the reviewer sets it explicitly
