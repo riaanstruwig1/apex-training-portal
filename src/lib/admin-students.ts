@@ -3,6 +3,7 @@ import "server-only";
 import { and, eq } from "drizzle-orm";
 import { db } from "@/db";
 import { users, studentProfiles } from "@/db/schema";
+import { compareByName } from "@/lib/sort-by-name";
 
 export type AdminStudentRow = {
   id: string; // user id
@@ -63,7 +64,7 @@ export async function getAdminStudentList(): Promise<AdminStudentRow[]> {
   ]);
   const profileByUser = new Map(profileRows.map((p) => [p.userId, p]));
 
-  return userRows.flatMap((u) => {
+  return [...userRows].sort(compareByName).flatMap((u) => {
     const p = profileByUser.get(u.id);
     if (!p) return []; // no student profile row -- not a real student account
     return [

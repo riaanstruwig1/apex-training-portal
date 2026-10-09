@@ -15,6 +15,7 @@ import {
   type SectionPhase,
   type SectionTrainingType,
 } from "@/lib/syllabus-tags";
+import { compareByName } from "@/lib/sort-by-name";
 
 export type ExerciseWithProgress = {
   id: string;
@@ -221,7 +222,7 @@ export async function getAllStudentsWithSummary(): Promise<StudentSummary[]> {
     pendingLogbookCounts.map((r) => [r.studentId, Number(r.count)])
   );
 
-  return students.map((s) => {
+  return [...students].sort(compareByName).map((s) => {
     const ids = applicableExerciseIds(s.trainingType);
     const done = signedOffByStudent.get(s.id);
     return {

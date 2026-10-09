@@ -2,6 +2,7 @@ import "server-only";
 import { eq, and, isNotNull } from "drizzle-orm";
 import { db } from "@/db";
 import { users, pilotProfiles, pilotEndorsements } from "@/db/schema";
+import { compareByName } from "@/lib/sort-by-name";
 
 export type PilotSummary = {
   id: string; // user id
@@ -72,7 +73,7 @@ export async function getAllPilotsWithSummary(): Promise<PilotSummary[]> {
       caaLicenceExpiryDate: r.caaLicenceExpiryDate,
       caaLicenceRenewalSubmittedAt: r.caaLicenceRenewalSubmittedAt,
     }))
-    .sort((a, b) => a.name.localeCompare(b.name));
+    .sort(compareByName);
 }
 
 /** A CFI/instructor is very often also a pilot (Notes4 item 24, flagged
