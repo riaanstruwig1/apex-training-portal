@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getApplicantDetail } from "@/lib/verification";
-import { groupEndorsementItems, isLadderTierKey, isInstructorRatingKey, ENDORSEMENT_OPTIONS } from "@/lib/pilot-endorsements";
+import { groupEndorsementItems, isLadderTierKey, isInstructorRatingKey, ENDORSEMENT_OPTIONS, endorsementLabel, endorsementGroup } from "@/lib/pilot-endorsements";
 import { computeLadder, EQUIPMENT_LABELS, INSTRUCTOR_RATING_REFERENCE_TEXT, type Equipment } from "@/lib/pilot-progress";
 import LadderTiers from "@/components/ladder-tiers";
 import Avatar from "@/components/avatar";
@@ -15,6 +15,12 @@ import SignUpDateEditor from "./signup-date-editor";
 import InstructorRatingsGrid from "./instructor-ratings-grid";
 import ConsentBadge from "@/components/consent-badge";
 import MedicalDeclarationStatus from "@/components/medical-declaration-status";
+import RatingInfoButton from "@/components/rating-info-button";
+import { getCurrentUser } from "@/lib/auth/dal";
+import { getRatingContentCounts, getRatingDocumentCounts } from "@/lib/content-counts";
+import { db } from "@/db";
+import { ratingApplicationDocuments } from "@/db/schema";
+import { asc, eq as sqlEq } from "drizzle-orm";
 
 const STAFF_ROLES = new Set(["cfi", "instructor"]);
 
@@ -77,6 +83,34 @@ export default async function ApplicantReviewPage({
     notFound();
   }
   const { applicant, pilot, student } = detail;
+  // Line 62 (13 Oct 2026): rating requirements overlay + the pilot's
+  // uploaded application documents.
+  const viewer = await getCurrentUser();
+  const viewerIsCFI = viewer?.role === "cfi";
+  const [ratingCounts, ratingDocCounts, applicationDocs] = pilot
+    ? await Promise.all([
+        getRatingContentCounts(),
+        getRatingDocumentCounts(applicant.id),
+        db
+          .select()
+          .from(ratingApplicationDocuments)
+          .where(sqlEq(ratingApplicationDocuments.userId, applicant.id))
+          .orderBy(asc(ratingApplicationDocuments.endorsementKey), asc(ratingApplicationDocuments.createdAt)),
+      ])
+    : [{} as Record<string, number>, {} as Record<string, number>, []];
+  const ratingInfo = (key: string, label: string) => (
+    <RatingInfoButton
+      ratingKey={key}
+      label={label}
+      count={ratingCounts[key] ?? 0}
+      docCount={ratingDocCounts[key] ?? 0}
+      mode="staff"
+      canEdit={viewerIsCFI}
+      canRemoveDocs={viewer?.role === "cfi" || viewer?.role === "admin"}
+      pilotUserId={applicant.id}
+      pilotName={applicant.name}
+    />
+  );
   const isPending = applicant.accountStatus === "pending_verification";
   const roleNoun =
     applicant.role === "pilot"
@@ -191,6 +225,24 @@ export default async function ApplicantReviewPage({
               filename={student?.profile.popFile ?? null}
               label="Proof of payment"
             />
+          )}
+          {applicationDocs.length > 0 && (
+            <div className="pt-2">
+              <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">
+                Rating application documents
+              </p>
+              <div className="space-y-2">
+                {applicationDocs.map((d) => (
+                  <DocLink
+                    key={d.id}
+                    personName={applicant.name}
+                    userId={applicant.id}
+                    filename={d.filename}
+                    label={`${endorsementGroup(d.endorsementKey)} ${endorsementLabel(d.endorsementKey)} -- ${d.label}`}
+                  />
+                ))}
+              </div>
+            </div>
           )}
           <DocLink
             personName={applicant.name}
@@ -388,7 +440,8 @@ export default async function ApplicantReviewPage({
                   tiers={computeLadder(eq, pilot.endorsements)}
                   actionFor={(t) => {
                     const row = pilot.endorsements.find((e) => e.key === t.key);
-                    if (!row) return null;
+                    const info = ratingInfo(t.key, `${EQUIPMENT_LABELS[eq]} ${t.label}`);
+                    if (!row) return info;
                     return (
                       <div className="space-y-1">
                         <PilotEndorsementToggle
@@ -399,6 +452,7 @@ export default async function ApplicantReviewPage({
                         {row.verified && (
                           <HeldSinceEditor endorsementId={row.id} currentDate={row.verifiedAt} />
                         )}
+                        {info}
                       </div>
                     );
                   }}
@@ -464,6 +518,7 @@ export default async function ApplicantReviewPage({
                           verified={e.verified}
                           declined={e.declined}
                         />
+                        {ratingInfo(e.key, e.label)}
                       </span>
                     ))}
                   </div>

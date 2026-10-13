@@ -5,6 +5,7 @@ import {
   integer,
   real,
   uniqueIndex,
+  index,
 } from "drizzle-orm/sqlite-core";
 
 // ---------------------------------------------------------------------------
@@ -849,3 +850,39 @@ export const contentItems = sqliteTable("content_items", {
     .notNull()
     .default(sql`(unixepoch())`),
 });
+
+// ---------------------------------------------------------------------------
+// Line 62 (13 Oct 2026): documents a pilot uploads for a rating / licence /
+// endorsement application, from that rating's requirements overlay. Keyed
+// on the endorsement key (ENDORSEMENT_OPTIONS), not a pilot_endorsements
+// row, so a pilot can upload before clicking Apply, while it's pending, or
+// for a re-application. Files live in the pilot's own upload folder
+// (saveUpload -> data/uploads/<userId>/), served by /api/uploads to the
+// pilot and to staff only. The requirements and forms-to-download the CFI
+// adds are content_items with ownerType "rating", ownerId = the key.
+// ---------------------------------------------------------------------------
+
+export const ratingApplicationDocuments = sqliteTable(
+  "rating_application_documents",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    pilotProfileId: text("pilot_profile_id")
+      .notNull()
+      .references(() => pilotProfiles.id, { onDelete: "cascade" }),
+    // The pilot's user id -- the folder the file is stored in.
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    endorsementKey: text("endorsement_key").notNull(),
+    label: text("label").notNull(), // what the pilot called it, e.g. "Logbook summary"
+    filename: text("filename").notNull(),
+    originalName: text("original_name"),
+    uploadedByUserId: text("uploaded_by_user_id").references(() => users.id),
+    createdAt: integer("created_at", { mode: "timestamp" })
+      .notNull()
+      .default(sql`(unixepoch())`),
+  },
+  (t) => [index("rating_app_docs_pilot_key").on(t.pilotProfileId, t.endorsementKey)]
+);

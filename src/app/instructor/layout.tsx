@@ -28,6 +28,7 @@ export default async function InstructorLayout({
     { href: "/admin/students", label: "Student profiles" },
     { href: "/instructor/team", label: "Instructors" },
     { href: "/instructor/syllabus", label: "Manage syllabus" },
+    { href: "/instructor/ratings", label: "Rating requirements" },
     { href: "/instructor/exams", label: "Exam content" },
     { href: "/instructor/study-material", label: "Study material" },
     { href: "/admin/forms-procedures", label: "Forms & procedures" },

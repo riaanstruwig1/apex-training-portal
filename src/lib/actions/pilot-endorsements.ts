@@ -30,7 +30,13 @@ export type ApplyEndorsementResult = { error?: string };
  * could jump the queue, e.g. applying for Tandem without holding Sport. Non-
  * tiered keys (add-ons, instructor/display ratings) are unaffected.
  */
-export async function applyForEndorsement(key: string): Promise<ApplyEndorsementResult> {
+export async function applyForEndorsement(
+  key: string,
+  /** Line 62: the requirements overlay applies from inside a pop-up and
+   * refreshes the page itself when the pop-up closes -- revalidating here
+   * would re-render the page underneath it and close it mid-flow. */
+  options?: { deferRefresh?: boolean }
+): Promise<ApplyEndorsementResult> {
   const { profile } = await requirePilot();
   if (!profile) return {};
 
@@ -70,6 +76,6 @@ export async function applyForEndorsement(key: string): Promise<ApplyEndorsement
       .where(eq(pilotEndorsements.id, existing.id));
   }
 
-  revalidatePath("/pilot");
+  if (!options?.deferRefresh) revalidatePath("/pilot");
   return {};
 }

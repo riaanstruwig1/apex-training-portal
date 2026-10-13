@@ -8,6 +8,8 @@ import ApplyButton from "./apply-button";
 import { db } from "@/db";
 import { pilotEndorsements } from "@/db/schema";
 import { eq } from "drizzle-orm";
+import RatingInfoButton, { type RatingStatus } from "@/components/rating-info-button";
+import { getRatingContentCounts, getRatingDocumentCounts } from "@/lib/content-counts";
 
 const ALL_EQUIPMENT: Equipment[] = ["pg", "ppg", "ppt"];
 
@@ -75,6 +77,87 @@ export default async function PilotDashboard() {
     (o) => o.tier === null && !declaredKeys.has(o.key)
   ).concat(notHeldLadderTiers);
   const groupedAvailable = groupEndorsementItems(notYetDeclared.map((o) => ({ key: o.key })));
+
+  // Line 62 (13 Oct 2026): every rating name opens its requirements
+  // overlay -- requirements + forms the CFI added, the pilot's own
+  // uploaded documents, and Apply when it's open to apply for.
+  const [contentCounts, docCounts] = await Promise.all([
+    getRatingContentCounts(),
+    getRatingDocumentCounts(user.id),
+  ]);
+  const ladders = Object.fromEntries(
+    ALL_EQUIPMENT.map((equip) => [equip, computeLadder(equip, endorsements)])
+  ) as Record<Equipment, ReturnType<typeof computeLadder>>;
+  function ratingState(key: string): {
+    status: RatingStatus;
+    applyLabel: string | null;
+    applyBlockedReason: string | null;
+  } {
+    const row = endorsements.find((e) => e.key === key);
+    if (row?.verified) {
+      return {
+        status: {
+          tone: "held",
+          text: `You hold this${row.verifiedAt ? ` -- verified, held since ${row.verifiedAt.toLocaleDateString()}` : ""}.`,
+        },
+        applyLabel: null,
+        applyBlockedReason: null,
+      };
+    }
+    if (row && !row.declined) {
+      return {
+        status: {
+          tone: "pending",
+          text: `Applied ${row.declaredAt.toLocaleDateString()} -- waiting for your CFI or Admin to review it. You can still add documents.`,
+        },
+        applyLabel: null,
+        applyBlockedReason: null,
+      };
+    }
+    const option = ENDORSEMENT_OPTIONS.find((o) => o.key === key);
+    const tier = option?.tier && option.equipment
+      ? ladders[option.equipment as Equipment]?.find((t) => t.key === key)
+      : undefined;
+    const declinedText = row?.declined
+      ? `Declined${row.declineReason ? ` -- ${row.declineReason}` : ""}. `
+      : "";
+    if (tier && !tier.eligible) {
+      const why = tier.eligibleFrom
+        ? `eligible from ${tier.eligibleFrom.toLocaleDateString()}${tier.reason ? ` (${tier.reason})` : ""}`
+        : (tier.reason ?? "the previous tier isn't held yet");
+      const whyText = why.replace(/\.+$/, "");
+      return {
+        status: { tone: row?.declined ? "declined" : "locked", text: `${declinedText}Not open yet -- ${whyText}.` },
+        applyLabel: null,
+        applyBlockedReason: whyText,
+      };
+    }
+    return {
+      status: {
+        tone: row?.declined ? "declined" : "eligible",
+        text: row?.declined ? `${declinedText}You can re-apply.` : "Open to apply for.",
+      },
+      applyLabel: row?.declined ? "Re-apply" : "Apply",
+      applyBlockedReason: null,
+    };
+  }
+  function Info({ k, label, variant }: { k: string; label: string; variant?: "pill" | "link" }) {
+    const st = ratingState(k);
+    return (
+      <RatingInfoButton
+        ratingKey={k}
+        label={label}
+        count={contentCounts[k] ?? 0}
+        docCount={docCounts[k] ?? 0}
+        mode="pilot"
+        canEdit={user.role === "cfi"}
+        status={st.status}
+        applyLabel={st.applyLabel}
+        applyBlockedReason={st.applyBlockedReason}
+        variant={variant}
+      />
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -163,15 +246,17 @@ export default async function PilotDashboard() {
                     key={equip}
                     equipmentLabel={EQUIPMENT_LABELS[equip]}
                     tiers={computeLadder(equip, endorsements)}
-                    actionFor={(t) => {
-                      if (t.held || t.pending) return null;
-                      if (!t.eligible) return null;
-                      return t.declined ? (
-                        <ApplyButton endorsementKey={t.key} label="Re-apply" pendingLabel="Re-applying..." />
-                      ) : (
-                        <ApplyButton endorsementKey={t.key} />
-                      );
-                    }}
+                    actionFor={(t) => (
+                      <div className="flex flex-wrap items-center gap-2">
+                        {!t.held && !t.pending && t.eligible &&
+                          (t.declined ? (
+                            <ApplyButton endorsementKey={t.key} label="Re-apply" pendingLabel="Re-applying..." />
+                          ) : (
+                            <ApplyButton endorsementKey={t.key} />
+                          ))}
+                        <Info k={t.key} label={`${EQUIPMENT_LABELS[equip]} ${t.label}`} />
+                      </div>
+                    )}
                   />
                 ))}
               </div>
@@ -227,10 +312,11 @@ export default async function PilotDashboard() {
                     items.map((e) => (
                       <span
                         key={e.id}
-                        className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800"
+                        className="inline-flex items-center gap-1.5 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800"
                         title={`Applied ${e.declaredAt.toLocaleDateString()}`}
                       >
                         {e.label}
+                        <Info k={e.key} label={e.label} />
                       </span>
                     ))
                   )}
@@ -253,6 +339,7 @@ export default async function PilotDashboard() {
                         <span className="font-medium">{e.label}</span>
                         {e.declineReason && <span className="text-red-700">— {e.declineReason}</span>}
                         <ApplyButton endorsementKey={e.key} label="Re-apply" pendingLabel="Re-applying..." />
+                        <Info k={e.key} label={e.label} />
                       </div>
                     ))
                   )}
@@ -267,8 +354,9 @@ export default async function PilotDashboard() {
                 Apply for something else
               </h2>
               <p className="mb-3 text-xs text-slate-500">
-                Hold a rating that isn&apos;t listed above? Apply here and your CFI or Admin
-                will review it.
+                Hold a rating that isn&apos;t listed above, or working towards one? Click its
+                name to see the requirements and the forms to download, and to upload your
+                documents -- then Apply and your CFI or Admin will review it.
               </p>
               <div className="space-y-3">
                 {groupedAvailable.map(({ group, items }) => (
@@ -280,10 +368,22 @@ export default async function PilotDashboard() {
                       {items.map((item) => (
                         <span
                           key={item.key}
-                          className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 px-2 py-0.5 text-xs text-slate-700"
+                          className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 px-2 py-0.5 text-xs text-slate-700 transition hover:border-red-300 hover:bg-red-50"
                         >
-                          {item.label}
-                          <ApplyButton endorsementKey={item.key} />
+                          <Info k={item.key} label={item.label} variant="link" />
+                          {(contentCounts[item.key] ?? 0) > 0 && (
+                            <span className="text-[10px] text-slate-400">{contentCounts[item.key]}</span>
+                          )}
+                          {(docCounts[item.key] ?? 0) > 0 && (
+                            <span className="text-[10px] text-slate-500" title="Your uploaded documents">
+                              📎{docCounts[item.key]}
+                            </span>
+                          )}
+                          {ratingState(item.key).applyLabel ? (
+                            <ApplyButton endorsementKey={item.key} />
+                          ) : (
+                            <span className="text-[10px] text-slate-400">not open yet</span>
+                          )}
                         </span>
                       ))}
                     </div>

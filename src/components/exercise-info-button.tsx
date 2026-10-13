@@ -6,77 +6,9 @@ import {
   addExerciseContent,
   deleteContentItem,
   getExerciseContent,
-  type AddContentState,
   type ContentItemView,
 } from "@/lib/actions/content-items";
-
-function formatBytes(bytes: number | null): string {
-  if (!bytes) return "";
-  if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-}
-
-function isImage(item: ContentItemView) {
-  return !!item.mimeType?.startsWith("image/");
-}
-
-function AddForm({ exerciseId, onAdded }: { exerciseId: string; onAdded: () => Promise<void> }) {
-  // Submitted by hand (not a form action) so the form is cleared exactly
-  // once, at the moment the new item appears -- React's automatic reset
-  // after a form action could otherwise land late and wipe what the CFI
-  // has started typing for the next sub-section.
-  const [state, setState] = useState<AddContentState>(undefined);
-  const [isPending, startTransition] = useTransition();
-
-  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const form = e.currentTarget;
-    const fd = new FormData(form);
-    startTransition(async () => {
-      const result = await addExerciseContent(undefined, fd);
-      if (result && "success" in result) {
-        await onAdded();
-        form.reset();
-      }
-      setState(result);
-    });
-  }
-  const inputClass = "w-full rounded-md border border-slate-300 px-3 py-2 text-sm";
-
-  return (
-    <form onSubmit={onSubmit} className="space-y-2 rounded-lg border border-dashed border-slate-300 p-3">
-      <input type="hidden" name="exerciseId" value={exerciseId} />
-      <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">Add+ sub-section</div>
-      <input name="title" placeholder="Title, e.g. Forward launch -- step by step" className={inputClass} />
-      <textarea name="body" rows={3} placeholder="Note (optional)" className={inputClass} />
-      <div className="grid gap-2 sm:grid-cols-2">
-        <label className="text-xs text-slate-500">
-          Picture or document (optional, max 25MB)
-          <input
-            type="file"
-            name="file"
-            accept="image/png,image/jpeg,image/webp,image/gif,.pdf,.doc,.docx,.ppt,.pptx,.zip"
-            className="mt-1 block w-full text-xs"
-          />
-        </label>
-        <label className="text-xs text-slate-500">
-          Or a link (video, Google Drive...)
-          <input name="linkUrl" placeholder="https://..." className={`${inputClass} mt-1`} />
-        </label>
-      </div>
-      <div className="flex items-center gap-3">
-        <button
-          type="submit"
-          disabled={isPending}
-          className="rounded-md bg-red-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-red-700 disabled:opacity-60"
-        >
-          {isPending ? "Adding..." : "Add"}
-        </button>
-        {state && "error" in state && <span className="text-sm text-red-600">{state.error}</span>}
-      </div>
-    </form>
-  );
-}
+import { ContentAddForm, ContentItemCards } from "@/components/content-items-panel";
 
 /** Line 70 (1 Oct 2026): the info button next to an exercise. Opens an
  * overlay with the exercise's sub-sections -- notes, pictures, documents,
@@ -170,64 +102,27 @@ export default function ExerciseInfoButton({
                     : "Nothing has been added for this exercise yet."}
                 </p>
               ) : (
-                items.map((item) => (
-                  <div key={item.id} className="rounded-lg border border-slate-200 p-3">
-                    <div className="flex items-start justify-between gap-3">
-                      <h3 className="text-sm font-semibold text-slate-900">{item.title}</h3>
-                      {canEdit && (
-                        <button
-                          type="button"
-                          disabled={isDeleting}
-                          onClick={() => {
-                            if (!confirm(`Remove "${item.title}"?`)) return;
-                            startDeleting(async () => {
-                              await deleteContentItem(item.id);
-                              load();
-                              router.refresh();
-                            });
-                          }}
-                          className="shrink-0 text-xs text-slate-400 hover:text-red-600"
-                        >
-                          Remove
-                        </button>
-                      )}
-                    </div>
-                    {item.body && (
-                      <p className="mt-1 whitespace-pre-wrap text-sm text-slate-700">{item.body}</p>
-                    )}
-                    {item.filename && isImage(item) && (
-                      // eslint-disable-next-line @next/next/no-img-element -- auth-gated upload, not a static asset
-                      <img
-                        src={`/api/content-items/${item.filename}`}
-                        alt={item.title}
-                        className="mt-2 max-h-96 w-auto rounded-md border border-slate-100"
-                      />
-                    )}
-                    {item.filename && !isImage(item) && (
-                      <a
-                        href={`/api/content-items/${item.filename}`}
-                        className="mt-2 inline-block text-sm font-medium text-red-600 hover:underline"
-                      >
-                        Download {item.originalName} ({formatBytes(item.fileSize)})
-                      </a>
-                    )}
-                    {item.linkUrl && (
-                      <a
-                        href={item.linkUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="mt-2 block text-sm font-medium text-red-600 hover:underline"
-                      >
-                        Open link →
-                      </a>
-                    )}
-                  </div>
-                ))
+                <ContentItemCards
+                  items={items}
+                  canEdit={canEdit}
+                  removing={isDeleting}
+                  onRemove={(item) => {
+                    if (!confirm(`Remove "${item.title}"?`)) return;
+                    startDeleting(async () => {
+                      await deleteContentItem(item.id);
+                      load();
+                      router.refresh();
+                    });
+                  }}
+                />
               )}
 
               {canEdit && (
-                <AddForm
-                  exerciseId={exerciseId}
+                <ContentAddForm
+                  hidden={{ exerciseId }}
+                  submit={(fd) => addExerciseContent(undefined, fd)}
+                  heading="Add+ sub-section"
+                  titlePlaceholder="Title, e.g. Forward launch -- step by step"
                   onAdded={async () => {
                     setItems(await getExerciseContent(exerciseId));
                     router.refresh();
