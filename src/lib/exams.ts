@@ -262,6 +262,9 @@ export type AttemptView = {
   externalLicenseNumber: string | null;
   /** How many questions the CFI corrected (answer, mark or note). */
   correctedCount: number;
+  /** CFI's own final result, overriding the calculated one (or null). */
+  resultOverride: "pass" | "fail" | null;
+  resultOverrideNote: string | null;
 };
 
 export type AttemptSummary = Pick<
@@ -445,6 +448,8 @@ export async function getExamDetail(
           source: attemptRow.source as "online" | "paper",
           proofFile: attemptRow.proofFile,
           externalLicenseNumber: attemptRow.externalLicenseNumber,
+          resultOverride: (attemptRow.resultOverride as "pass" | "fail" | null) ?? null,
+          resultOverrideNote: attemptRow.resultOverrideNote ?? null,
           correctedCount: answerRows.filter(
             (a) => a.answerChanged || a.awardedMarks !== null || !!a.staffNote
           ).length,

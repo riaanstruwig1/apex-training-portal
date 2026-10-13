@@ -667,6 +667,15 @@ export const examAttempts = sqliteTable("exam_attempts", {
   // field elsewhere) -- there's no dedicated radio-licence column on
   // studentProfiles, this is it.
   externalLicenseNumber: text("external_license_number"),
+  // 13 Oct 2026 (Riaan: "after correction, I need to pass the student. It
+  // is showing fail" -- 99.5% but one Airlaw mark short of the must-pass
+  // rule). CFI's own final result for an online attempt, overriding the
+  // calculated PASS/FAIL: "pass" | "fail" | null (= calculated). Kept
+  // through any later re-marking. The note is shown to the student.
+  resultOverride: text("result_override", { enum: ["pass", "fail"] }),
+  resultOverrideNote: text("result_override_note"),
+  resultOverrideByUserId: text("result_override_by_user_id").references(() => users.id),
+  resultOverrideAt: integer("result_override_at", { mode: "timestamp" }),
 });
 
 // ---------------------------------------------------------------------------

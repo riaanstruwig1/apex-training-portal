@@ -212,7 +212,15 @@ export async function buildExamDocx(
         bold: true,
         color: attempt.passed ? "1a7a3a" : "c0392b",
       }),
-      ...(useSahpaMasterCover && !attempt.mustPassSectionsOk
+      ...(attempt.resultOverride
+        ? [
+            new TextRun({
+              text: `  (final result set by the CFI${attempt.resultOverrideNote ? `: ${attempt.resultOverrideNote}` : ""})`,
+              italics: true,
+            }),
+          ]
+        : []),
+      ...(useSahpaMasterCover && !attempt.mustPassSectionsOk && !attempt.resultOverride
         ? [
             new TextRun({
               text: "  (not every Airlaw question was correct -- those must all be right to pass)",

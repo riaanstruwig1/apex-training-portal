@@ -268,10 +268,16 @@ export default function ExamForm({
           {formatMarks(attempt.scoreMarks ?? 0)} / {attempt.totalMarks} marks (
           {attempt.scorePercent?.toFixed(1)}%). Verified by {attempt.verifiedByName}
           {attempt.verifiedAt ? ` on ${attempt.verifiedAt.toLocaleDateString()}` : ""}.
-          {!attempt.mustPassSectionsOk && (
+          {!attempt.mustPassSectionsOk && attempt.resultOverride !== "pass" && (
             <span className="block font-medium">
               Note: not every Airlaw question was answered correctly — those must all be
               correct to pass, regardless of overall score.
+            </span>
+          )}
+          {attempt.resultOverride && (
+            <span className="block font-semibold">
+              Final result set by your instructor: {attempt.resultOverride === "pass" ? "PASS" : "FAIL"}
+              {attempt.resultOverrideNote ? ` — ${attempt.resultOverrideNote}` : ""}
             </span>
           )}
           {attempt.correctedCount > 0 && (

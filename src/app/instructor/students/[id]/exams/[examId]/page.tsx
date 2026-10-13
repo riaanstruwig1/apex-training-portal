@@ -6,6 +6,7 @@ import { requireInstructor } from "@/lib/auth/dal";
 import { getExamDetail, getAttemptHistory } from "@/lib/exams";
 import VerifyButton from "./verify-button";
 import AdjustMarkForm from "./adjust-mark-form";
+import ResultOverrideForm from "./result-override-form";
 import { effectiveMarks, formatMarks } from "@/lib/exam-marks";
 import VerifyPaperButton from "./verify-paper-button";
 import PaperAttemptAdminActions from "./paper-attempt-admin-actions";
@@ -55,6 +56,13 @@ export default async function ExamReviewPage(
   if (!detail || !detail.attempt || detail.attempt.status === "in_progress") notFound();
 
   const { exam, attempt } = detail;
+  // Questions in "must pass" sections (e.g. E = Airlaw) that aren't at full
+  // marks -- listed in the result box so the CFI can jump to them.
+  const mustPassCodes = (exam.mustPassSections ?? "").split(",").map((c) => c.trim()).filter(Boolean);
+  const mustPassMissing = exam.sections
+    .filter((sec) => mustPassCodes.includes(sec.code))
+    .flatMap((sec) => sec.questions)
+    .filter((q) => effectiveMarks(q) < q.marks);
 
   const historyTabs = history.length > 1 && (
     <div className="flex flex-wrap gap-2 text-xs">
@@ -162,7 +170,14 @@ export default async function ExamReviewPage(
             {student.name} — Attempt {attempt.attemptNumber}
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-start justify-end gap-3">
+          {isCFI && (
+            <ResultOverrideForm
+              attemptId={attempt.id}
+              current={attempt.resultOverride}
+              currentNote={attempt.resultOverrideNote}
+            />
+          )}
           <a
             href={`/instructor/students/${id}/exams/${examId}/download?attempt=${attempt.id}`}
             className="rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
@@ -190,9 +205,9 @@ export default async function ExamReviewPage(
             {formatMarks(attempt.scoreMarks ?? 0)} / {attempt.totalMarks} marks ({attempt.scorePercent?.toFixed(1)}%).
             Verified by {attempt.verifiedByName}
             {attempt.verifiedAt ? ` on ${attempt.verifiedAt.toLocaleDateString()}` : ""}.
-            {!attempt.mustPassSectionsOk && (
+            {!attempt.mustPassSectionsOk && attempt.resultOverride !== "pass" && (
               <span className="block font-medium">
-                Not every Airlaw question was answered correctly — those must all be
+                Not every must-pass (Airlaw) question has full marks — those must all be
                 correct to pass, regardless of overall score.
               </span>
             )}
@@ -204,6 +219,26 @@ export default async function ExamReviewPage(
             ({formatMarks(attempt.scoreMarks ?? 0)} / {attempt.totalMarks} marks, {attempt.scorePercent?.toFixed(1)}%).
             Not yet verified.
           </>
+        )}
+        {mustPassMissing.length > 0 && !attempt.resultOverride && (
+          <span className="mt-1 block text-xs">
+            Must-pass question{mustPassMissing.length > 1 ? "s" : ""} not at full marks:{" "}
+            {mustPassMissing.map((q, i) => (
+              <span key={q.id}>
+                {i > 0 && ", "}
+                <a href={`#q-${q.id}`} className="font-semibold underline">
+                  {q.code}
+                </a>
+              </span>
+            ))}
+            . Correct {mustPassMissing.length > 1 ? "them" : "it"} below, or set the final result yourself.
+          </span>
+        )}
+        {attempt.resultOverride && (
+          <span className="mt-1 block font-semibold">
+            Final result set by the CFI: {attempt.resultOverride === "pass" ? "PASS" : "FAIL"}
+            {attempt.resultOverrideNote ? ` — ${attempt.resultOverrideNote}` : ""}
+          </span>
         )}
         {attempt.correctedCount > 0 && (
           <span className="mt-1 block text-xs font-medium">
@@ -233,7 +268,7 @@ export default async function ExamReviewPage(
               const full = got >= q.marks;
               const none = got <= 0;
               return (
-                <div key={q.id} className="rounded-xl border border-slate-200 bg-white p-4">
+                <div key={q.id} id={`q-${q.id}`} className="scroll-mt-4 rounded-xl border border-slate-200 bg-white p-4">
                   <div className="mb-2 flex items-start justify-between gap-3">
                     <p className="text-sm font-medium text-slate-900">
                       {q.code}. {q.prompt}

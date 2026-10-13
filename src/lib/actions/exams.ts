@@ -396,7 +396,10 @@ async function rescoreExamAttempt(attemptId: string) {
     const scored = sectionScored.get(section.id);
     return scored ? scored.earned >= scored.total : true;
   });
-  const passed = scorePercent >= exam.passPercent && mustPassSectionsOk;
+  const calculatedPass = scorePercent >= exam.passPercent && mustPassSectionsOk;
+  // A CFI's own final result (setExamResultOverride) wins over the
+  // calculated one and survives any later re-marking.
+  const passed = attempt.resultOverride ? attempt.resultOverride === "pass" : calculatedPass;
 
   await db
     .update(examAttempts)
@@ -505,6 +508,71 @@ export async function adjustExamAnswer(
     await db.insert(examAnswers).values({ attemptId, questionId, ...fields });
   }
 
+  await rescoreExamAttempt(attemptId);
+
+  revalidatePath(`/instructor/students/${attempt.studentId}`);
+  revalidatePath(`/instructor/students/${attempt.studentId}/exams/${attempt.examId}`);
+  revalidatePath("/instructor");
+  revalidatePath("/student");
+  revalidatePath(`/student/exams/${attempt.examId}`);
+  return { success: true };
+}
+
+export type ResultOverrideState = { error: string } | { success: true } | undefined;
+
+/**
+ * 13 Oct 2026 (Riaan, screenshot: 194/195 = 99.5% but FAIL because one
+ * Airlaw mark was missing -- "after correction, I need to pass the
+ * student"). CFI-only: sets the final result of an online attempt to PASS
+ * or FAIL regardless of the calculated one, with a note the student sees.
+ * A submitted (not yet verified) attempt is verified at the same time.
+ * formData: result ("pass" | "fail"), note (required); clear=1 goes back
+ * to the calculated result.
+ */
+export async function setExamResultOverride(
+  attemptId: string,
+  _prev: ResultOverrideState,
+  formData: FormData
+): Promise<ResultOverrideState> {
+  const cfi = await requireCFI();
+  const [attempt] = await db
+    .select()
+    .from(examAttempts)
+    .where(eq(examAttempts.id, attemptId))
+    .limit(1);
+  if (!attempt || attempt.source !== "online") return { error: "Exam attempt not found." };
+  if (attempt.status === "in_progress") return { error: "The student hasn't submitted this exam yet." };
+
+  const result = String(formData.get("result") ?? "");
+  const note = String(formData.get("note") ?? "").trim();
+  const now = new Date();
+
+  // "Back to calculated result" posts clear=1 (its own field: the PASS/FAIL
+  // radios also post "result", and FormData.get returns the first one).
+  if (formData.get("clear") === "1" || result === "clear") {
+    await db
+      .update(examAttempts)
+      .set({ resultOverride: null, resultOverrideNote: null, resultOverrideByUserId: null, resultOverrideAt: null })
+      .where(eq(examAttempts.id, attemptId));
+  } else if (result === "pass" || result === "fail") {
+    if (!note) return { error: "Add a short note saying why (the student will see it)." };
+    await db
+      .update(examAttempts)
+      .set({
+        resultOverride: result,
+        resultOverrideNote: note,
+        resultOverrideByUserId: cfi.id,
+        resultOverrideAt: now,
+        ...(attempt.status === "submitted"
+          ? { status: "verified" as const, verifiedAt: now, verifiedByUserId: cfi.id }
+          : {}),
+      })
+      .where(eq(examAttempts.id, attemptId));
+  } else {
+    return { error: "Choose PASS or FAIL." };
+  }
+
+  // Re-mark so `passed` follows the override (or the calculation again).
   await rescoreExamAttempt(attemptId);
 
   revalidatePath(`/instructor/students/${attempt.studentId}`);
