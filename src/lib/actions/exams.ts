@@ -342,6 +342,145 @@ export async function submitPaperExam(
   return undefined;
 }
 
+/**
+ * Re-scores an online attempt from its answers, using the CFI's adjusted
+ * mark on any question that has one (13 Oct 2026) -- same rules as
+ * submitExam: percent of total marks, pass mark, and every "must pass"
+ * section needing full marks. Status is left as it is: a verified attempt
+ * stays verified with its new result.
+ */
+async function rescoreExamAttempt(attemptId: string) {
+  const [attempt] = await db
+    .select()
+    .from(examAttempts)
+    .where(eq(examAttempts.id, attemptId))
+    .limit(1);
+  if (!attempt || attempt.source !== "online") return;
+  const [exam] = await db.select().from(exams).where(eq(exams.id, attempt.examId)).limit(1);
+  if (!exam) return;
+
+  const sectionRows = await db.select().from(examSections).where(eq(examSections.examId, exam.id));
+  const sectionIds = sectionRows.map((x) => x.id);
+  const questionRows = sectionIds.length
+    ? await db.select().from(examQuestions).where(inArray(examQuestions.sectionId, sectionIds))
+    : [];
+  const answerRows = await db.select().from(examAnswers).where(eq(examAnswers.attemptId, attemptId));
+  const optionIds = answerRows.map((a) => a.selectedOptionId).filter((id): id is string => !!id);
+  const optionRows = optionIds.length
+    ? await db.select().from(examOptions).where(inArray(examOptions.id, optionIds))
+    : [];
+  const optionById = new Map(optionRows.map((o) => [o.id, o]));
+  const answerByQuestion = new Map(answerRows.map((a) => [a.questionId, a]));
+
+  const totalMarks = questionRows.reduce((sum, q) => sum + q.marks, 0);
+  let scoreMarks = 0;
+  const sectionScored = new Map<string, { earned: number; total: number }>();
+  for (const sec of sectionRows) sectionScored.set(sec.id, { earned: 0, total: 0 });
+  for (const q of questionRows) {
+    const a = answerByQuestion.get(q.id);
+    const auto = a?.selectedOptionId && optionById.get(a.selectedOptionId)?.isCorrect ? q.marks : 0;
+    const earned = a?.awardedMarks ?? auto;
+    const entry = sectionScored.get(q.sectionId)!;
+    entry.total += q.marks;
+    entry.earned += earned;
+    scoreMarks += earned;
+  }
+  const scorePercent = totalMarks > 0 ? (scoreMarks / totalMarks) * 100 : 0;
+  const mustPassCodes = (exam.mustPassSections ?? "")
+    .split(",")
+    .map((c) => c.trim())
+    .filter(Boolean);
+  const mustPassSectionsOk = mustPassCodes.every((code) => {
+    const section = sectionRows.find((x) => x.code === code);
+    if (!section) return true;
+    const scored = sectionScored.get(section.id);
+    return scored ? scored.earned >= scored.total : true;
+  });
+  const passed = scorePercent >= exam.passPercent && mustPassSectionsOk;
+
+  await db
+    .update(examAttempts)
+    .set({ scoreMarks, totalMarks, scorePercent, passed, mustPassSectionsOk })
+    .where(eq(examAttempts.id, attemptId));
+}
+
+export type AdjustAnswerState = { error: string } | { success: true } | undefined;
+
+/**
+ * 13 Oct 2026 (Riaan: "if CFI verifies or reviews the exam answers, I must
+ * be able to edit and change the mark, with note, discuss, and corrected
+ * with student. If corrected it will remark and correct"). CFI-only: sets
+ * (or clears) the mark for one question of a submitted or verified online
+ * attempt, plus an optional note the student sees with their results, then
+ * re-marks the whole attempt (score, must-pass sections, pass/fail).
+ * formData: marks ("" = back to automatic), note, reset ("1" = clear both).
+ */
+export async function adjustExamAnswer(
+  attemptId: string,
+  questionId: string,
+  _prev: AdjustAnswerState,
+  formData: FormData
+): Promise<AdjustAnswerState> {
+  const cfi = await requireCFI();
+
+  const [attempt] = await db
+    .select()
+    .from(examAttempts)
+    .where(eq(examAttempts.id, attemptId))
+    .limit(1);
+  if (!attempt || attempt.source !== "online") return { error: "Exam attempt not found." };
+  if (attempt.status === "in_progress") {
+    return { error: "The student hasn't submitted this exam yet." };
+  }
+  const [question] = await db
+    .select()
+    .from(examQuestions)
+    .where(eq(examQuestions.id, questionId))
+    .limit(1);
+  if (!question) return { error: "Question not found." };
+
+  const reset = formData.get("reset") === "1";
+  const marksRaw = String(formData.get("marks") ?? "").trim().replace(",", ".");
+  const note = reset ? "" : String(formData.get("note") ?? "").trim();
+  let awardedMarks: number | null = null;
+  if (!reset && marksRaw !== "") {
+    const n = Number(marksRaw);
+    if (!Number.isFinite(n) || n < 0 || n > question.marks) {
+      return { error: `Marks must be between 0 and ${question.marks}.` };
+    }
+    awardedMarks = n;
+  }
+
+  const now = new Date();
+  const fields = {
+    awardedMarks,
+    staffNote: note || null,
+    markedByUserId: awardedMarks === null && !note ? null : cfi.id,
+    markedAt: awardedMarks === null && !note ? null : now,
+    updatedAt: now,
+  };
+  const [existing] = await db
+    .select({ id: examAnswers.id })
+    .from(examAnswers)
+    .where(and(eq(examAnswers.attemptId, attemptId), eq(examAnswers.questionId, questionId)))
+    .limit(1);
+  if (existing) {
+    await db.update(examAnswers).set(fields).where(eq(examAnswers.id, existing.id));
+  } else if (awardedMarks !== null || note) {
+    // Unanswered question: keep the mark/note on a row with no selected option.
+    await db.insert(examAnswers).values({ attemptId, questionId, selectedOptionId: null, ...fields });
+  }
+
+  await rescoreExamAttempt(attemptId);
+
+  revalidatePath(`/instructor/students/${attempt.studentId}`);
+  revalidatePath(`/instructor/students/${attempt.studentId}/exams/${attempt.examId}`);
+  revalidatePath("/instructor");
+  revalidatePath("/student");
+  revalidatePath(`/student/exams/${attempt.examId}`);
+  return { success: true };
+}
+
 export type StaffPaperUploadState = { error: string } | { success: true } | undefined;
 
 /**

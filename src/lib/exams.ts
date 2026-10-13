@@ -210,6 +210,12 @@ export type ExamQuestionView = {
   stemImage: string | null;
   options: ExamOptionView[];
   selectedOptionId: string | null;
+  /** CFI's adjusted mark for this question (null = automatic). Only filled
+   * in when answers are revealed (staff review, or the student's own
+   * verified results). */
+  awardedMarks: number | null;
+  /** CFI's note to the student on this question (revealed views only). */
+  staffNote: string | null;
 };
 
 export type ExamSectionView = {
@@ -359,6 +365,7 @@ export async function getExamDetail(
     ? await db.select().from(examAnswers).where(eq(examAnswers.attemptId, attemptRow.id))
     : [];
   const answerByQuestion = new Map(answerRows.map((a) => [a.questionId, a.selectedOptionId]));
+  const answerRowByQuestion = new Map(answerRows.map((a) => [a.questionId, a]));
 
   const optionsByQuestion = new Map<string, typeof optionRows>();
   for (const o of optionRows) {
@@ -384,6 +391,8 @@ export async function getExamDetail(
           marks: q.marks,
           stemImage: q.stemImage,
           selectedOptionId: answerByQuestion.get(q.id) ?? null,
+          awardedMarks: reveal ? (answerRowByQuestion.get(q.id)?.awardedMarks ?? null) : null,
+          staffNote: reveal ? (answerRowByQuestion.get(q.id)?.staffNote ?? null) : null,
           options: opts.map((o) => ({
             id: o.id,
             label: o.label as "A" | "B" | "C" | "D",

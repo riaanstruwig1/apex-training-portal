@@ -747,6 +747,18 @@ export const examAnswers = sqliteTable(
     selectedOptionId: text("selected_option_id").references(
       () => examOptions.id
     ),
+    // 13 Oct 2026 (Riaan: "if CFI verifies or reviews the exam answers, I
+    // must be able to edit and change the mark, with note ... if corrected
+    // it will remark"). awardedMarks overrides the automatic mark for this
+    // question (null = automatic: full marks if the chosen option is
+    // correct, else 0). staffNote is the CFI's note to the student, shown
+    // on the student's results once the attempt is verified. A row can
+    // exist with no selectedOptionId when the CFI marks an unanswered
+    // question.
+    awardedMarks: real("awarded_marks"),
+    staffNote: text("staff_note"),
+    markedByUserId: text("marked_by_user_id").references(() => users.id),
+    markedAt: integer("marked_at", { mode: "timestamp" }),
     updatedAt: integer("updated_at", { mode: "timestamp" })
       .notNull()
       .default(sql`(unixepoch())`),

@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { saveExamAnswer, submitExam, startNewAttempt } from "@/lib/actions/exams";
 import type { ExamDetail, AttemptView, AttemptSummary } from "@/lib/exams";
+import { formatMarks } from "@/lib/exam-marks";
 
 function mediaUrl(slug: string, filename: string) {
   return `/exam-media/${slug}/${filename}`;
@@ -264,7 +265,7 @@ export default function ExamForm({
             {attempt.passed ? "PASS" : "FAIL"} (Attempt {attempt.attemptNumber})
           </span>
           {" — "}
-          {attempt.scoreMarks} / {attempt.totalMarks} marks (
+          {formatMarks(attempt.scoreMarks ?? 0)} / {attempt.totalMarks} marks (
           {attempt.scorePercent?.toFixed(1)}%). Verified by {attempt.verifiedByName}
           {attempt.verifiedAt ? ` on ${attempt.verifiedAt.toLocaleDateString()}` : ""}.
           {!attempt.mustPassSectionsOk && (
@@ -376,6 +377,16 @@ export default function ExamForm({
                   />
                 ))}
               </div>
+              {reveal && (q.awardedMarks !== null || q.staffNote) && (
+                <div className="mt-3 rounded-md border-l-4 border-amber-300 bg-amber-50 px-3 py-2 text-sm text-slate-700">
+                  {q.awardedMarks !== null && (
+                    <p className="font-medium">
+                      Mark corrected by your instructor: {formatMarks(q.awardedMarks)} / {q.marks}
+                    </p>
+                  )}
+                  {q.staffNote && <p className="whitespace-pre-wrap">{q.staffNote}</p>}
+                </div>
+              )}
             </div>
           ))}
         </section>

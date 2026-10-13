@@ -5,6 +5,8 @@ import { users } from "@/db/schema";
 import { requireInstructor } from "@/lib/auth/dal";
 import { getExamDetail, getAttemptHistory } from "@/lib/exams";
 import VerifyButton from "./verify-button";
+import AdjustMarkForm from "./adjust-mark-form";
+import { effectiveMarks, formatMarks } from "@/lib/exam-marks";
 import VerifyPaperButton from "./verify-paper-button";
 import PaperAttemptAdminActions from "./paper-attempt-admin-actions";
 
@@ -33,7 +35,8 @@ function attemptLabel(a: {
 export default async function ExamReviewPage(
   props: PageProps<"/instructor/students/[id]/exams/[examId]">
 ) {
-  await requireInstructor();
+  const staff = await requireInstructor();
+  const isCFI = staff.role === "cfi";
   const { id, examId } = await props.params;
   const sp = await props.searchParams;
   const requestedAttemptId = typeof sp.attempt === "string" ? sp.attempt : undefined;
@@ -184,7 +187,7 @@ export default async function ExamReviewPage(
         {attempt.status === "verified" ? (
           <>
             <span className="font-semibold">{attempt.passed ? "PASS" : "FAIL"}</span> —{" "}
-            {attempt.scoreMarks} / {attempt.totalMarks} marks ({attempt.scorePercent?.toFixed(1)}%).
+            {formatMarks(attempt.scoreMarks ?? 0)} / {attempt.totalMarks} marks ({attempt.scorePercent?.toFixed(1)}%).
             Verified by {attempt.verifiedByName}
             {attempt.verifiedAt ? ` on ${attempt.verifiedAt.toLocaleDateString()}` : ""}.
             {!attempt.mustPassSectionsOk && (
@@ -198,17 +201,14 @@ export default async function ExamReviewPage(
           <>
             Submitted{attempt.submittedAt ? ` on ${attempt.submittedAt.toLocaleDateString()}` : ""} —
             computed result: <span className="font-semibold">{attempt.passed ? "PASS" : "FAIL"}</span>{" "}
-            ({attempt.scoreMarks} / {attempt.totalMarks} marks, {attempt.scorePercent?.toFixed(1)}%).
+            ({formatMarks(attempt.scoreMarks ?? 0)} / {attempt.totalMarks} marks, {attempt.scorePercent?.toFixed(1)}%).
             Not yet verified.
           </>
         )}
       </div>
 
       {exam.sections.map((section) => {
-        const earned = section.questions.reduce((sum, q) => {
-          const selected = q.options.find((o) => o.id === q.selectedOptionId);
-          return sum + (selected?.isCorrect ? q.marks : 0);
-        }, 0);
+        const earned = section.questions.reduce((sum, q) => sum + effectiveMarks(q), 0);
         return (
           <section key={section.id} className="space-y-3">
             <h2 className="flex items-center justify-between text-sm font-semibold uppercase tracking-wide text-slate-500">
@@ -216,12 +216,16 @@ export default async function ExamReviewPage(
                 Section {section.code}: {section.name}
               </span>
               <span className="font-normal normal-case text-slate-400">
-                {earned} / {section.totalMarks} marks
+                {formatMarks(earned)} / {section.totalMarks} marks
               </span>
             </h2>
             {section.questions.map((q) => {
               const selected = q.options.find((o) => o.id === q.selectedOptionId);
-              const isCorrect = !!selected?.isCorrect;
+              const autoMarks = selected?.isCorrect ? q.marks : 0;
+              const got = effectiveMarks(q);
+              const isAdjusted = q.awardedMarks !== null;
+              const full = got >= q.marks;
+              const none = got <= 0;
               return (
                 <div key={q.id} className="rounded-xl border border-slate-200 bg-white p-4">
                   <div className="mb-2 flex items-start justify-between gap-3">
@@ -230,10 +234,15 @@ export default async function ExamReviewPage(
                     </p>
                     <span
                       className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${
-                        isCorrect ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+                        full
+                          ? "bg-green-100 text-green-800"
+                          : none
+                            ? "bg-red-100 text-red-800"
+                            : "bg-amber-100 text-amber-800"
                       }`}
                     >
-                      {isCorrect ? `✔ ${q.marks}/${q.marks}` : `✘ 0/${q.marks}`}
+                      {full ? "✔" : none ? "✘" : "½"} {formatMarks(got)}/{q.marks}
+                      {isAdjusted && " (adjusted)"}
                     </span>
                   </div>
                   <div className="text-sm">
@@ -255,6 +264,29 @@ export default async function ExamReviewPage(
                       <div className="text-slate-400">No answer</div>
                     )}
                   </div>
+                  {isAdjusted && (
+                    <p className="mt-2 text-xs text-slate-500">
+                      Automatic mark was {formatMarks(autoMarks)}/{q.marks}; changed by the CFI.
+                    </p>
+                  )}
+                  {q.staffNote && (
+                    <div className="mt-2 rounded-md border-l-4 border-amber-300 bg-amber-50 px-3 py-2 text-sm text-slate-700">
+                      <span className="text-xs font-semibold uppercase tracking-wide text-amber-700">
+                        Note to student
+                      </span>
+                      <p className="whitespace-pre-wrap">{q.staffNote}</p>
+                    </div>
+                  )}
+                  {isCFI && (
+                    <AdjustMarkForm
+                      attemptId={attempt.id}
+                      questionId={q.id}
+                      maxMarks={q.marks}
+                      autoMarks={autoMarks}
+                      awardedMarks={q.awardedMarks}
+                      staffNote={q.staffNote}
+                    />
+                  )}
                 </div>
               );
             })}

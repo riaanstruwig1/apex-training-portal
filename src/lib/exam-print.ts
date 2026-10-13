@@ -19,6 +19,7 @@ import {
   TableBorders,
 } from "docx";
 import type { ExamDetail, AttemptView } from "@/lib/exams";
+import { effectiveMarks } from "@/lib/exam-marks";
 
 const NO_BORDERS = TableBorders.NONE;
 
@@ -114,11 +115,9 @@ export async function buildExamDocx(
   // letters over a fraction of marks-obtained over marks-available, e.g.
   // "12 + 16.5 + ... = 61.5 = 31.5%" with the section totals (20 50 34 67
   // 9 15 195) as the denominators and "Pass Mark = 85%" alongside them.
+  // Uses the CFI's corrected mark where one was set (13 Oct 2026).
   const sectionEarned = exam.sections.map((s) =>
-    s.questions.reduce((sum, q) => {
-      const sel = q.options.find((o) => o.id === q.selectedOptionId);
-      return sum + (sel?.isCorrect ? q.marks : 0);
-    }, 0)
+    s.questions.reduce((sum, q) => sum + effectiveMarks(q), 0)
   );
   const grandEarned = sectionEarned.reduce((a, b) => a + b, 0);
   const grandTotal = exam.totalMarks;
@@ -385,7 +384,8 @@ export async function buildExamDocx(
       // the other options, so the paper reads as an open-answer exam
       // rather than a multiple-choice one.
       const selected = q.options.find((o) => o.id === q.selectedOptionId);
-      const isCorrect = !!selected?.isCorrect;
+      const got = effectiveMarks(q);
+      const isCorrect = got >= q.marks;
       const humanNumber = q.code.replace(/^[A-F]\./, "");
       const promptText = q.printPrompt ?? q.prompt;
 
@@ -458,6 +458,19 @@ export async function buildExamDocx(
         );
       }
       body.push(...answerRuns);
+      if (q.awardedMarks !== null || q.staffNote) {
+        body.push(
+          new Paragraph({
+            spacing: { before: 40 },
+            children: [
+              ...(q.awardedMarks !== null
+                ? [new TextRun({ text: `Mark corrected: ${fmtMark(got)} / ${q.marks}. `, bold: true, color: "8a5a00" })]
+                : []),
+              ...(q.staffNote ? [new TextRun({ text: `Instructor note: ${q.staffNote}`, italics: true })] : []),
+            ],
+          })
+        );
+      }
     }
 
     const sIdx = exam.sections.indexOf(section);
