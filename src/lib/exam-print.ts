@@ -458,11 +458,21 @@ export async function buildExamDocx(
         );
       }
       body.push(...answerRuns);
-      if (q.awardedMarks !== null || q.staffNote) {
+      if (q.awardedMarks !== null || q.staffNote || q.answerChanged) {
+        const orig = q.options.find((o) => o.id === q.originalOptionId);
         body.push(
           new Paragraph({
             spacing: { before: 40 },
             children: [
+              ...(q.answerChanged
+                ? [
+                    new TextRun({
+                      text: `Answer corrected by instructor (student's answer: ${orig ? orig.text ?? orig.label : "none"}). `,
+                      bold: true,
+                      color: "8a5a00",
+                    }),
+                  ]
+                : []),
               ...(q.awardedMarks !== null
                 ? [new TextRun({ text: `Mark corrected: ${fmtMark(got)} / ${q.marks}. `, bold: true, color: "8a5a00" })]
                 : []),

@@ -409,11 +409,19 @@ export type AdjustAnswerState = { error: string } | { success: true } | undefine
 /**
  * 13 Oct 2026 (Riaan: "if CFI verifies or reviews the exam answers, I must
  * be able to edit and change the mark, with note, discuss, and corrected
- * with student. If corrected it will remark and correct"). CFI-only: sets
- * (or clears) the mark for one question of a submitted or verified online
- * attempt, plus an optional note the student sees with their results, then
- * re-marks the whole attempt (score, must-pass sections, pass/fail).
- * formData: marks ("" = back to automatic), note, reset ("1" = clear both).
+ * with student. If corrected it will remark and correct" -- then: "I must
+ * be able to change the answer to the correct one, change the mark and
+ * also give the point ... if fail it must be changed to pass with the note
+ * correction"). CFI-only, for a submitted or verified online attempt:
+ *  - answer: change the student's chosen option (e.g. to the correct one);
+ *    the student's own first answer is kept (originalOptionId).
+ *  - marks: override the question's mark (blank = automatic, i.e. full
+ *    marks when the -- possibly corrected -- answer is right).
+ *  - note: shown to the student with their results.
+ *  - action "correct": one click -- set the answer to the correct option,
+ *    automatic (full) marks, note defaults to "Corrected after review."
+ *  - reset "1": back to the student's own answer, automatic mark, no note.
+ * Then the whole attempt is re-marked (total, %, must-pass, PASS/FAIL).
  */
 export async function adjustExamAnswer(
   attemptId: string,
@@ -438,37 +446,63 @@ export async function adjustExamAnswer(
     .where(eq(examQuestions.id, questionId))
     .limit(1);
   if (!question) return { error: "Question not found." };
+  const options = await db.select().from(examOptions).where(eq(examOptions.questionId, questionId));
 
-  const reset = formData.get("reset") === "1";
-  const marksRaw = String(formData.get("marks") ?? "").trim().replace(",", ".");
-  const note = reset ? "" : String(formData.get("note") ?? "").trim();
-  let awardedMarks: number | null = null;
-  if (!reset && marksRaw !== "") {
-    const n = Number(marksRaw);
-    if (!Number.isFinite(n) || n < 0 || n > question.marks) {
-      return { error: `Marks must be between 0 and ${question.marks}.` };
-    }
-    awardedMarks = n;
-  }
-
-  const now = new Date();
-  const fields = {
-    awardedMarks,
-    staffNote: note || null,
-    markedByUserId: awardedMarks === null && !note ? null : cfi.id,
-    markedAt: awardedMarks === null && !note ? null : now,
-    updatedAt: now,
-  };
   const [existing] = await db
-    .select({ id: examAnswers.id })
+    .select()
     .from(examAnswers)
     .where(and(eq(examAnswers.attemptId, attemptId), eq(examAnswers.questionId, questionId)))
     .limit(1);
+  // The student's own answer, whatever staff have done since.
+  const studentAnswer = existing?.answerChanged ? existing.originalOptionId : (existing?.selectedOptionId ?? null);
+
+  const reset = formData.get("reset") === "1";
+  const quickCorrect = formData.get("action") === "correct";
+  let answerId: string | null = existing?.selectedOptionId ?? null;
+  let awardedMarks: number | null = null;
+  let note = String(formData.get("note") ?? "").trim();
+
+  if (reset) {
+    answerId = studentAnswer;
+    note = "";
+  } else if (quickCorrect) {
+    const correct = options.find((o) => o.isCorrect);
+    if (!correct) return { error: "This question has no correct answer set in Exam content." };
+    answerId = correct.id;
+    if (!note) note = "Corrected after review.";
+  } else {
+    const answerRaw = String(formData.get("answer") ?? "").trim();
+    if (answerRaw) {
+      if (!options.some((o) => o.id === answerRaw)) return { error: "That answer isn't one of this question's options." };
+      answerId = answerRaw;
+    }
+    const marksRaw = String(formData.get("marks") ?? "").trim().replace(",", ".");
+    if (marksRaw !== "") {
+      const n = Number(marksRaw);
+      if (!Number.isFinite(n) || n < 0 || n > question.marks) {
+        return { error: `Marks must be between 0 and ${question.marks}.` };
+      }
+      awardedMarks = n;
+    }
+  }
+
+  const answerChanged = answerId !== studentAnswer;
+  const touched = answerChanged || awardedMarks !== null || !!note;
+  const now = new Date();
+  const fields = {
+    selectedOptionId: answerId,
+    originalOptionId: answerChanged ? studentAnswer : null,
+    answerChanged,
+    awardedMarks,
+    staffNote: note || null,
+    markedByUserId: touched ? cfi.id : null,
+    markedAt: touched ? now : null,
+    updatedAt: now,
+  };
   if (existing) {
     await db.update(examAnswers).set(fields).where(eq(examAnswers.id, existing.id));
-  } else if (awardedMarks !== null || note) {
-    // Unanswered question: keep the mark/note on a row with no selected option.
-    await db.insert(examAnswers).values({ attemptId, questionId, selectedOptionId: null, ...fields });
+  } else if (touched) {
+    await db.insert(examAnswers).values({ attemptId, questionId, ...fields });
   }
 
   await rescoreExamAttempt(attemptId);

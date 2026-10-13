@@ -755,6 +755,12 @@ export const examAnswers = sqliteTable(
     // on the student's results once the attempt is verified. A row can
     // exist with no selectedOptionId when the CFI marks an unanswered
     // question.
+    // 13 Oct 2026 (follow-up): when the CFI changes the student's answer
+    // (e.g. to the correct option after discussing it), the student's own
+    // first answer is kept here so the change stays visible. Null = the
+    // answer was never changed by staff.
+    originalOptionId: text("original_option_id").references(() => examOptions.id),
+    answerChanged: integer("answer_changed", { mode: "boolean" }).notNull().default(false),
     awardedMarks: real("awarded_marks"),
     staffNote: text("staff_note"),
     markedByUserId: text("marked_by_user_id").references(() => users.id),

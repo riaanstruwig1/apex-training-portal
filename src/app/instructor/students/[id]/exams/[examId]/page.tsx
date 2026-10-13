@@ -205,6 +205,12 @@ export default async function ExamReviewPage(
             Not yet verified.
           </>
         )}
+        {attempt.correctedCount > 0 && (
+          <span className="mt-1 block text-xs font-medium">
+            {attempt.correctedCount} question{attempt.correctedCount > 1 ? "s" : ""} corrected by the
+            CFI after review -- marks and result recalculated.
+          </span>
+        )}
       </div>
 
       {exam.sections.map((section) => {
@@ -242,7 +248,7 @@ export default async function ExamReviewPage(
                       }`}
                     >
                       {full ? "✔" : none ? "✘" : "½"} {formatMarks(got)}/{q.marks}
-                      {isAdjusted && " (adjusted)"}
+                      {(isAdjusted || q.answerChanged) && " (corrected)"}
                     </span>
                   </div>
                   <div className="text-sm">
@@ -264,9 +270,18 @@ export default async function ExamReviewPage(
                       <div className="text-slate-400">No answer</div>
                     )}
                   </div>
+                  {q.answerChanged && (
+                    <p className="mt-2 text-xs text-amber-700">
+                      Answer changed by the CFI. Student&apos;s own answer:{" "}
+                      {(() => {
+                        const orig = q.options.find((o) => o.id === q.originalOptionId);
+                        return orig ? `${orig.label}. ${orig.text ?? "(picture)"}` : "no answer";
+                      })()}
+                    </p>
+                  )}
                   {isAdjusted && (
                     <p className="mt-2 text-xs text-slate-500">
-                      Automatic mark was {formatMarks(autoMarks)}/{q.marks}; changed by the CFI.
+                      Mark set by the CFI (automatic would be {formatMarks(autoMarks)}/{q.marks}).
                     </p>
                   )}
                   {q.staffNote && (
@@ -285,6 +300,9 @@ export default async function ExamReviewPage(
                       autoMarks={autoMarks}
                       awardedMarks={q.awardedMarks}
                       staffNote={q.staffNote}
+                      options={q.options}
+                      selectedOptionId={q.selectedOptionId}
+                      isCorrected={q.answerChanged || isAdjusted || !!q.staffNote}
                     />
                   )}
                 </div>

@@ -274,6 +274,12 @@ export default function ExamForm({
               correct to pass, regardless of overall score.
             </span>
           )}
+          {attempt.correctedCount > 0 && (
+            <span className="block font-medium">
+              {attempt.correctedCount} question{attempt.correctedCount > 1 ? "s were" : " was"} corrected by
+              your instructor after review -- see the notes below. Your marks include the corrections.
+            </span>
+          )}
           {canRetry && !retryAvailableNow && nextRetryAt && (
             <div className="mt-3 font-medium">
               You can attempt this exam again from {nextRetryAt.toLocaleDateString()} (
@@ -377,8 +383,17 @@ export default function ExamForm({
                   />
                 ))}
               </div>
-              {reveal && (q.awardedMarks !== null || q.staffNote) && (
+              {reveal && (q.awardedMarks !== null || q.staffNote || q.answerChanged) && (
                 <div className="mt-3 rounded-md border-l-4 border-amber-300 bg-amber-50 px-3 py-2 text-sm text-slate-700">
+                  {q.answerChanged && (
+                    <p className="font-medium">
+                      Corrected by your instructor. Your answer was:{" "}
+                      {(() => {
+                        const orig = q.options.find((o) => o.id === q.originalOptionId);
+                        return orig ? `${orig.label}${orig.text ? `. ${orig.text}` : ""}` : "no answer";
+                      })()}
+                    </p>
+                  )}
                   {q.awardedMarks !== null && (
                     <p className="font-medium">
                       Mark corrected by your instructor: {formatMarks(q.awardedMarks)} / {q.marks}

@@ -216,6 +216,10 @@ export type ExamQuestionView = {
   awardedMarks: number | null;
   /** CFI's note to the student on this question (revealed views only). */
   staffNote: string | null;
+  /** True when staff changed the student's answer (revealed views only);
+   * originalOptionId is the student's own answer then (null = left blank). */
+  answerChanged: boolean;
+  originalOptionId: string | null;
 };
 
 export type ExamSectionView = {
@@ -256,6 +260,8 @@ export type AttemptView = {
   source: "online" | "paper";
   proofFile: string | null;
   externalLicenseNumber: string | null;
+  /** How many questions the CFI corrected (answer, mark or note). */
+  correctedCount: number;
 };
 
 export type AttemptSummary = Pick<
@@ -393,6 +399,8 @@ export async function getExamDetail(
           selectedOptionId: answerByQuestion.get(q.id) ?? null,
           awardedMarks: reveal ? (answerRowByQuestion.get(q.id)?.awardedMarks ?? null) : null,
           staffNote: reveal ? (answerRowByQuestion.get(q.id)?.staffNote ?? null) : null,
+          answerChanged: reveal ? !!answerRowByQuestion.get(q.id)?.answerChanged : false,
+          originalOptionId: reveal ? (answerRowByQuestion.get(q.id)?.originalOptionId ?? null) : null,
           options: opts.map((o) => ({
             id: o.id,
             label: o.label as "A" | "B" | "C" | "D",
@@ -437,6 +445,9 @@ export async function getExamDetail(
           source: attemptRow.source as "online" | "paper",
           proofFile: attemptRow.proofFile,
           externalLicenseNumber: attemptRow.externalLicenseNumber,
+          correctedCount: answerRows.filter(
+            (a) => a.answerChanged || a.awardedMarks !== null || !!a.staffNote
+          ).length,
         }
       : null,
   };
