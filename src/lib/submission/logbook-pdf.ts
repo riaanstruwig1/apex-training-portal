@@ -61,7 +61,7 @@ export async function buildLogbookPdf(d: PackData, photoJpeg: Buffer | null): Pr
   const entries = d.logbook;
 
   // Pre-compute pagination: first page has the big header, later pages a slim one.
-  const firstTop = 150;
+  const firstTop = 168;
   const nextTop = 58;
   const bottom = H - 36;
   const perFirst = Math.max(1, Math.floor((bottom - firstTop - ROW_H) / ROW_H));
@@ -202,7 +202,7 @@ export async function buildLogbookPdf(d: PackData, photoJpeg: Buffer | null): Pr
     if (pi === 0) {
       // Big header
       if (logo) {
-        const lw = 70;
+        const lw = 54;
         page.drawImage(logo, { x: M, y: H - 20 - (logo.height * lw) / logo.width, width: lw, height: (logo.height * lw) / logo.width });
       }
       page.drawText("STUDENT FLIGHT LOGBOOK - CERTIFIED COPY", { x: M + 90, y: H - 34, size: 15, font: fonts.bold, color: rgb(0, 0, 0) });
@@ -217,7 +217,7 @@ export async function buildLogbookPdf(d: PackData, photoJpeg: Buffer | null): Pr
         ["Call sign", s.callSign ?? ""],
         ["DTO", `${d.dtoName} (${d.dtoNumber})`],
       ];
-      let dy = 68;
+      let dy = 100;
       for (let k = 0; k < details.length; k++) {
         const col = k < 4 ? 0 : 1;
         const row = k % 4;

@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
-import { PDFDocument } from "pdf-lib";
+import { PDFDocument, rgb } from "pdf-lib";
 import {
   Cell,
   Fonts,
@@ -140,6 +140,22 @@ export async function fillMedicalForm(d: PackData): Promise<Uint8Array> {
   return doc.save();
 }
 
+/** Licence number on the forms: the SAHPA number (initial application), else any licence no. */
+function licenceNo(s: PackData["student"]): string {
+  return s.sahpaNumber || s.licenceNumber || "";
+}
+
+/** Flights/hours for the course type: last 12 months and since commencing. */
+function courseStats(d: PackData) {
+  const match = (t: string) => (d.trainingType === "pg" ? t === "pg" || t === "winching" : t === d.trainingType);
+  const from = new Date(d.signedOffAt);
+  from.setFullYear(from.getFullYear() - 1);
+  const all = d.logbook.filter((e) => match(e.flightType));
+  const yr = all.filter((e) => e.date >= from);
+  const hrs = (rows: typeof all) => (Math.round((rows.reduce((a, e) => a + e.durationMinutes, 0) / 60) * 10) / 10).toFixed(1);
+  return { yearFlights: yr.length, yearHours: hrs(yr), totalFlights: all.length, totalHours: hrs(all) };
+}
+
 // ---------------------------------------------------------------------------
 // 3. CA 62-16 Application for licence / renewal / upgrade
 // ---------------------------------------------------------------------------
@@ -167,7 +183,7 @@ export async function fillCA6216(d: PackData): Promise<Uint8Array> {
   cellText(p1, fonts, "", c(180, 324, 518, 533), sz); // home number: not captured separately
   cellText(p1, fonts, s.phone, c(415, 539, 518, 533), sz);
   // work number left blank (not captured)
-  cellText(p1, fonts, s.licenceNumber ?? "", c(415, 539, 533, 548), sz);
+  cellText(p1, fonts, licenceNo(s), c(415, 539, 533, 548), sz);
   cellText(p1, fonts, d.dtoName, c(180, 324, 548, 563), sz);
   cellText(p1, fonts, d.dtoNumber, c(415, 539, 548, 563), sz);
   cellText(p1, fonts, s.email, c(180, 539, 563, 579), sz);
@@ -181,10 +197,25 @@ export async function fillCA6216(d: PackData): Promise<Uint8Array> {
   cellParagraph(p1, fonts, post.line, c(180, 539, 609, 624), { size: 8, maxLines: 1 });
   cellText(p1, fonts, post.province, c(327, 414, 640, 655), sz);
   cellText(p1, fonts, post.postalCode, c(474, 539, 640, 655), sz);
-  // Section B (renewal checklist) is for renewals only: left blank.
+  // Section B (Riaan's notes, 14 Oct 2026): current licence = "Student", glider by course,
+  // flights/hours for the course type -- past 12 months and since commencing.
+  cellText(p1, fonts, "Student", c(201.2, 321.2, 681.2, 695.5), sz);
+  cellText(p1, fonts, d.trainingType === "pg" ? "PG" : d.trainingType === "ppg" ? "PPG" : "PPT", c(415.3, 538.6, 681.2, 695.5), sz);
+  const st = courseStats(d);
+  const rowsB = isPG
+    ? { page: p1, f: [726.8, 741.1], h: [742.1, 756.3] }
+    : d.trainingType === "ppg"
+      ? { page: p2, f: [229.0, 243.3], h: [244.2, 258.5] }
+      : { page: p2, f: [274.6, 288.9], h: [289.8, 304.1] };
+  const num = { size: 8.5, align: "center" as const };
+  cellText(rowsB.page, fonts, String(st.yearFlights), c(201.5, 282.3, rowsB.f[0], rowsB.f[1]), num);
+  cellText(rowsB.page, fonts, st.yearHours, c(201.5, 282.3, rowsB.h[0], rowsB.h[1]), num);
+  cellText(rowsB.page, fonts, String(st.totalFlights), c(449, 538.7, rowsB.f[0], rowsB.f[1]), num);
+  cellText(rowsB.page, fonts, st.totalHours, c(449, 538.7, rowsB.h[0], rowsB.h[1]), num);
 
   // ---- Page 2: C radio licence, D licence/rating ----
-  if (d.radioExamPassed) cellText(p2, fonts, "Passed - cert. attached", c(182, 301, 391, 406), { size: 7.5 });
+  cellText(p2, fonts, "SAHPA Cert", c(182.9, 300.8, 392.0, 406.1), { size: 8 });
+  cellText(p2, fonts, "Attach on Application", c(325.8, 538.7, 422.3, 436.6), { size: 8 });
   cellText(p2, fonts, d.radioExaminerName, c(189, 291, 448, 463), { size: 8 });
   cellText(p2, fonts, d.radioExaminerLicence, c(412, 544, 448, 463), sz);
   const [cs1, cs2, cs3] = d.callSignChoices;
@@ -213,6 +244,9 @@ export async function fillCA6216(d: PackData): Promise<Uint8Array> {
     await placeSignature(doc, p3, fonts, sig.studentPng, c(51, 210, 295, 335), digitalNote(s.fullName, d.signedOffAt));
     cellText(p3, fonts, fmtDate(d.signedOffAt), c(370, 544, 293, 336), { size: 9, align: "center" });
   }
+  // DTO / CFI stamp in the blank area on the right of section D (Riaan's note: "Watermark").
+  const stamp = ["Paramotor SA (Pty) Ltd", "DTO0012", "t/a Apex Adventures", `CFI: ${d.dtoCfi.name}`, d.dtoCfi.caaNo].filter(Boolean);
+  stamp.forEach((ln, i) => p3.drawText(safeText(ln), { x: 305, y: p3.getHeight() - (134 + i * 12), size: 9.5, font: fonts.bold, color: rgb(0.62, 0.62, 0.7) }));
   // Parent/legal guardian block (under 18): left for hand completion.
   return doc.save();
 }
@@ -240,7 +274,7 @@ export async function fillCA6215(d: PackData): Promise<Uint8Array> {
 
   cellText(p1, fonts, s.surname, c(150, 289, 474, 489), sz);
   cellText(p1, fonts, s.firstNames, c(370, 538, 474, 489), sz);
-  cellText(p1, fonts, s.licenceNumber ?? "", c(150, 289, 489, 504), sz);
+  cellText(p1, fonts, licenceNo(s), c(150, 289, 489, 504), sz);
   cellText(p1, fonts, s.phone, c(370, 538, 489, 504), sz);
   cellText(p1, fonts, d.dtoName, c(149, 289, 504, 518), sz);
   cellText(p1, fonts, d.dtoNumber, c(369, 538, 504, 518), sz);

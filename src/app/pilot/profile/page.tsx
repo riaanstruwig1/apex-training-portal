@@ -41,7 +41,7 @@ export default async function PilotProfilePage() {
         medicalDeclarationSignedName={fullUser?.medicalDeclarationSignedName ?? null}
         medicalDeclarationExpiresAt={fullUser?.medicalDeclarationExpiresAt ?? null}
         signatureFile={fullUser?.signatureFile ?? null}
-        signatureFormsConsent={!!fullUser?.signatureFormsConsentAt}
+        signatureFormsConsent={fullUser?.signatureFormsConsentAt ? "yes" : fullUser?.signatureFormsConsentDeclinedAt ? "no" : null}
         pilot={
           profile
             ? {

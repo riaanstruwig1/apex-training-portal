@@ -178,6 +178,11 @@ export default async function StudentDashboard() {
 
   return (
     <div className="space-y-8">
+      {!user.signatureFormsConsentAt && !user.signatureFormsConsentDeclinedAt && (
+        <a href="/student/profile" className="block rounded-lg border-2 border-red-400 bg-red-50 p-4 text-sm font-semibold text-red-800 hover:bg-red-100">
+          Action needed: answer the Yes / No question about using your saved signature on your SAHPA / CAA forms (Edit profile → Saved signature).
+        </a>
+      )}
       {/* V24 item 73 (1 Oct 2026): welcome line, then the training the
           student signed up for, then SACAA No / SAHPA No / SAHPA expiry /
           Apex No / Call Sign. The date on the right of the welcome line is

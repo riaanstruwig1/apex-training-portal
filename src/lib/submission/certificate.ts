@@ -28,28 +28,28 @@ export async function buildWingsCertificate(d: PackData): Promise<Uint8Array> {
     page.drawText(t, { x: (W - font.widthOfTextAtSize(t, sz)) / 2, y, size: sz, font, color });
   };
 
-  const logoBytes = await readFile(path.join(process.cwd(), "public", "apex-logo.png")).catch(() => null);
+  const logoBytes = await readFile(path.join(process.cwd(), "public", "apex-wings.png")).catch(() => null);
   if (logoBytes) {
-    const png = await sharp(logoBytes).resize({ width: 300, withoutEnlargement: true }).png().toBuffer();
+    const png = await sharp(logoBytes).resize({ width: 900, withoutEnlargement: true }).png().toBuffer();
     const img = await doc.embedPng(png);
-    const lw = 110;
+    const lw = 330;
     const lh = (img.height * lw) / img.width;
-    page.drawImage(img, { x: (W - lw) / 2, y: H - 60 - lh, width: lw, height: lh });
+    page.drawImage(img, { x: (W - lw) / 2, y: H - 46 - lh, width: lw, height: lh });
   }
 
-  centre("SOLO WINGS", H - 190, 44, serifBold, navy);
-  centre("CERTIFICATE OF ACHIEVEMENT", H - 214, 13, regular, gold);
-  centre("This is to certify that", H - 262, 15, italic, rgb(0.25, 0.25, 0.25));
-  centre(d.student.fullName.toUpperCase(), H - 302, 30, serifBold, rgb(0, 0, 0));
+  centre("SOLO WINGS", H - 214, 44, serifBold, navy);
+  centre("CERTIFICATE OF ACHIEVEMENT", H - 236, 13, regular, gold);
+  centre("This is to certify that", H - 282, 15, italic, rgb(0.25, 0.25, 0.25));
+  centre(d.student.fullName.toUpperCase(), H - 322, 30, serifBold, rgb(0, 0, 0));
   centre(
     `has successfully completed the ${TRAINING_LABEL[d.trainingType]} training programme`,
-    H - 336,
+    H - 356,
     15,
     serif,
     rgb(0.15, 0.15, 0.15)
   );
-  centre(`at ${d.dtoName} (DTO ${d.dtoNumber}) and is hereby awarded their`, H - 356, 15, serif, rgb(0.15, 0.15, 0.15));
-  centre("SOLO WINGS", H - 386, 20, serifBold, gold);
+  centre(`at ${d.dtoName} (DTO ${d.dtoNumber}) and is hereby awarded their`, H - 376, 15, serif, rgb(0.15, 0.15, 0.15));
+  centre("SOLO WINGS", H - 406, 20, serifBold, gold);
 
   // Date + instructor
   page.drawText(`Date: ${fmtDate(d.signedOffAt)}`, { x: 90, y: 86, size: 11, font: regular, color: rgb(0.2, 0.2, 0.2) });

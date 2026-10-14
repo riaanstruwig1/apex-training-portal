@@ -39,15 +39,17 @@ export function SignoffForm(props: {
   callSign: string;
   unverifiedCount: number;
   hasSignature: boolean;
-  signatureConsent: boolean;
+  signatureConsent: "yes" | "no" | null;
   hasPhoto: boolean;
   hasId: boolean;
+  instructorCaaNo: string;
+  examinerName: string;
 }) {
   const [state, action, pending] = useActionState(signOffStudent, undefined);
   const checks = [
     { ok: props.hasPhoto, text: "Profile picture (passport photo)" },
     { ok: props.hasId, text: "ID / passport copy" },
-    { ok: props.hasSignature && props.signatureConsent, text: "Student signature uploaded and consent ticked (otherwise signed by hand)" },
+    { ok: props.hasSignature && props.signatureConsent === "yes", text: !props.hasSignature ? "Student has no saved signature (sign by hand)" : props.signatureConsent === "yes" ? "Student signature saved and he agreed to its use on the forms" : props.signatureConsent === "no" ? "Student answered NO to using his signature (sign by hand)" : "Student has NOT answered the signature consent question - ask him to answer under Edit profile first" },
     { ok: props.unverifiedCount === 0, text: props.unverifiedCount ? `${props.unverifiedCount} logbook flight(s) not yet countersigned - they will be countersigned by you at sign-off` : "All logbook flights countersigned" },
   ];
   return (
@@ -68,12 +70,12 @@ export function SignoffForm(props: {
         </label>
         <label className="text-sm">Surname (as on ID)<input name="surname" defaultValue={props.surname} className={input} /></label>
         <label className="text-sm">First names<input name="firstNames" defaultValue={props.firstNames} className={input} /></label>
-        <label className="text-sm">Your instructor licence no.<input name="instructorLicenceNumber" required className={input} /></label>
+        <label className="text-sm">Your CAA No. (027...)<input name="instructorLicenceNumber" defaultValue={props.instructorCaaNo} placeholder="027..." required className={input} /></label>
         <label className="text-sm">Rating line on the DTO certificate
           <input name="instructorRatingLine" placeholder="e.g. CFI-Grade A PPG, PPT, PPC / Grade B PG" className={input} />
         </label>
-        <label className="text-sm">Radio examiner (CA 62-16 C)<input name="radioExaminerName" className={input} /></label>
-        <label className="text-sm">Examiner licence no.<input name="radioExaminerLicence" className={input} /></label>
+        <label className="text-sm">Radio examiner (CA 62-16 C)<input name="radioExaminerName" defaultValue={props.examinerName} className={input} /></label>
+        <label className="text-sm">Examiner licence no.<input name="radioExaminerLicence" defaultValue="RA-RTE013" className={input} /></label>
         {[1, 2, 3].map((n) => (
           <label key={n} className="text-sm">Call sign choice {n}
             <input name={`callSign${n}`} defaultValue={n === 1 ? props.callSign : ""} className={input} />

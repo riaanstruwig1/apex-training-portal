@@ -74,6 +74,7 @@ export default function ProfileView({
   indemnitySignedAt,
   indemnitySignedName,
   signatureFile,
+  signatureFormsConsent = null,
   pilot,
 }: {
   role: "student" | "pilot";
@@ -103,6 +104,7 @@ export default function ProfileView({
   indemnitySignedAt: Date | null;
   indemnitySignedName: string | null;
   signatureFile: string | null;
+  signatureFormsConsent?: "yes" | "no" | null;
   pilot?: {
     callSign: string | null;
     sacaaNumber: string | null;
@@ -257,6 +259,13 @@ export default function ProfileView({
         ) : (
           <p className="text-sm text-slate-400">Nothing saved.</p>
         )}
+        <p className={`mt-2 text-xs ${signatureFormsConsent === "yes" ? "text-green-700" : signatureFormsConsent === "no" ? "text-slate-600" : "font-semibold text-red-600"}`}>
+          {signatureFormsConsent === "yes"
+            ? "✓ Yes - this signature may be added to your SAHPA / CAA submission forms."
+            : signatureFormsConsent === "no"
+              ? "No - you will sign your submission forms by hand. Change this under Edit profile."
+              : "NOT ANSWERED - open Edit profile, answer the Yes / No question under Saved signature and Save."}
+        </p>
       </div>
     </div>
   );

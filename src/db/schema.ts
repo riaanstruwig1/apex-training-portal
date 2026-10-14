@@ -163,6 +163,9 @@ export const users = sqliteTable("users", {
   // signs me off". Null = no consent given, so the signature is never used
   // on a form pack. Clearing it withdraws the consent (future packs only).
   signatureFormsConsentAt: integer("signature_forms_consent_at", { mode: "timestamp" }),
+  // Set when the person answered NO. Both null = not answered yet (batch 65: the
+  // question is compulsory on the profile, so it can't be skipped).
+  signatureFormsConsentDeclinedAt: integer("signature_forms_consent_declined_at", { mode: "timestamp" }),
 
   createdAt: integer("created_at", { mode: "timestamp" })
     .notNull()

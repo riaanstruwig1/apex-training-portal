@@ -110,6 +110,13 @@ export async function updateOwnProfile(
   // owner-only read side.
   const signatureFile = await tryUpload("signature", formData.get("signatureFile"));
 
+  // Compulsory Yes/No (Riaan, 14 Oct 2026): the form always carries the question.
+  const consentRaw = formData.get("signatureFormsConsent");
+  const consentAnswer = consentRaw === "yes" || consentRaw === "no" ? consentRaw : null;
+  if (formData.get("signatureFormsConsentPresent") && !consentAnswer) {
+    return { error: "Please answer Yes or No: may your saved signature be added to your SAHPA / CAA submission forms?" };
+  }
+
   await db
     .update(users)
     .set({
@@ -130,8 +137,11 @@ export async function updateOwnProfile(
       // Standing consent to place the saved signature on the SAHPA/CAA
       // submission forms at sign-off (Riaan, 14 Oct 2026). Only touched when
       // the form actually carried the tick-box.
-      ...(formData.get("signatureFormsConsentPresent")
-        ? { signatureFormsConsentAt: formData.get("signatureFormsConsent") === "on" ? new Date() : null }
+      ...(consentAnswer
+        ? {
+            signatureFormsConsentAt: consentAnswer === "yes" ? new Date() : null,
+            signatureFormsConsentDeclinedAt: consentAnswer === "no" ? new Date() : null,
+          }
         : {}),
     })
     .where(eq(users.id, user.id));

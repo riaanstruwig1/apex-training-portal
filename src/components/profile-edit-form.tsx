@@ -78,7 +78,7 @@ export default function ProfileEditForm({
   medicalDeclarationSignedName,
   medicalDeclarationExpiresAt,
   signatureFile,
-  signatureFormsConsent = false,
+  signatureFormsConsent = null,
   pilot,
 }: {
   role: "student" | "pilot" | "cfi" | "instructor";
@@ -102,7 +102,7 @@ export default function ProfileEditForm({
   medicalDeclarationSignedName?: string | null;
   medicalDeclarationExpiresAt?: Date | null;
   signatureFile?: string | null;
-  signatureFormsConsent?: boolean;
+  signatureFormsConsent?: "yes" | "no" | null;
   pilot?: {
     callSign: string | null;
     sacaaNumber: string | null;
@@ -286,11 +286,22 @@ export default function ProfileEditForm({
             behalf. The only exception is the box below: if you tick it, your signature is placed
             on your own SAHPA/CAA submission forms when your instructor signs you off.
           </p>
-          <label className="mt-2 flex items-start gap-2 text-xs text-slate-700">
+          <fieldset className="mt-3 rounded-md border border-amber-300 bg-amber-50 p-3">
+            <legend className="px-1 text-xs font-semibold text-amber-900">Required - please answer</legend>
             <input type="hidden" name="signatureFormsConsentPresent" value="1" />
-            <input type="checkbox" name="signatureFormsConsent" defaultChecked={signatureFormsConsent} className="mt-0.5" />
-            <span>I agree that my saved signature may be added to my SAHPA / CAA submission forms (with a small &ldquo;digitally signed&rdquo; note) when I am signed off.</span>
-          </label>
+            <p className="text-xs text-slate-800">
+              May your saved signature be added to your SAHPA / CAA submission forms (with a small
+              &ldquo;digitally signed&rdquo; note) when your instructor signs you off?
+            </p>
+            <div className="mt-2 flex gap-6 text-sm text-slate-900">
+              <label className="flex items-center gap-2">
+                <input type="radio" name="signatureFormsConsent" value="yes" required defaultChecked={signatureFormsConsent === "yes"} /> Yes
+              </label>
+              <label className="flex items-center gap-2">
+                <input type="radio" name="signatureFormsConsent" value="no" required defaultChecked={signatureFormsConsent === "no"} /> No - I will sign by hand
+              </label>
+            </div>
+          </fieldset>
           <div className="mt-2 flex items-center gap-4">
             {signatureFile && (
               <img

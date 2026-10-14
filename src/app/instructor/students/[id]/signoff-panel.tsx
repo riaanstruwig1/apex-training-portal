@@ -1,6 +1,6 @@
 import { desc, eq } from "drizzle-orm";
 import { db } from "@/db";
-import { studentSignoffs, flightLogEntries, users } from "@/db/schema";
+import { studentSignoffs, flightLogEntries, users, pilotProfiles } from "@/db/schema";
 import { and } from "drizzle-orm";
 import { SignoffForm, RegenerateForm } from "./signoff-form";
 import { TRAINING_LABEL } from "@/lib/submission/types";
@@ -40,10 +40,20 @@ export default async function SignoffPanel({
   const tt = (profile?.trainingType ?? "pg").split(",")[0].trim();
   const trainingType = tt === "ppg" || tt === "ppt" ? tt : "pg";
   const parts = student.name.trim().split(/\s+/);
+  // The instructor's own CAA number (027...) lives on their linked pilot profile.
+  const [staffPilot] = await db.select({ sacaa: pilotProfiles.sacaaNumber }).from(pilotProfiles).where(eq(pilotProfiles.userId, staffId)).limit(1);
+  const [staffUser] = await db.select({ name: users.name }).from(users).where(eq(users.id, staffId)).limit(1);
   return (
-    <section className="rounded-lg border border-slate-300 bg-white p-4">
-      <h2 className="mb-3 text-base font-semibold text-slate-900">Sign off student</h2>
+    <details className="group rounded-lg border border-slate-300 bg-white">
+      <summary className="flex cursor-pointer list-none items-center justify-between rounded-lg bg-blue-700 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-800">
+        <span>Sign off student - award Solo wings</span>
+        <span className="text-xs font-normal opacity-80 group-open:hidden">Click to open</span>
+        <span className="hidden text-xs font-normal opacity-80 group-open:inline">Click to close</span>
+      </summary>
+      <div className="p-4">
       <SignoffForm
+        instructorCaaNo={staffPilot?.sacaa ?? ""}
+        examinerName={staffUser?.name ?? ""}
         studentId={student.id}
         trainingType={trainingType}
         surname={parts.length > 1 ? parts[parts.length - 1] : student.name}
@@ -51,10 +61,11 @@ export default async function SignoffPanel({
         callSign={profile?.callSign ?? ""}
         unverifiedCount={unverified}
         hasSignature={!!student.signatureFile}
-        signatureConsent={!!student.signatureFormsConsentAt}
+        signatureConsent={student.signatureFormsConsentAt ? "yes" : student.signatureFormsConsentDeclinedAt ? "no" : null}
         hasPhoto={!!student.profilePictureFile}
         hasId={!!student.idPassportFile}
       />
-    </section>
+      </div>
+    </details>
   );
 }

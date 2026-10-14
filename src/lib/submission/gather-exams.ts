@@ -118,12 +118,15 @@ export async function gatherRadioCert(studentId: string): Promise<RadioCertData 
   let issuerName = "Instructor";
   let issuerLine = "Flight Instructor";
   let issuerSignature: Buffer | null = null;
+  let issuerCaaNo: string | null = null;
   if (a.verifiedByUserId) {
     const [v] = await db.select({ name: users.name, role: users.role, sig: users.signatureFile }).from(users).where(eq(users.id, a.verifiedByUserId)).limit(1);
     if (v) {
       issuerName = v.name;
       issuerLine = v.role === "cfi" ? "Chief Flight Instructor (CFI)" : "Flight Instructor";
       issuerSignature = await readUpload(a.verifiedByUserId, v.sig);
+      const [ip] = await db.select({ s: pilotProfiles.sacaaNumber }).from(pilotProfiles).where(eq(pilotProfiles.userId, a.verifiedByUserId)).limit(1);
+      issuerCaaNo = ip?.s ?? null;
     }
   }
   return {
@@ -133,6 +136,7 @@ export async function gatherRadioCert(studentId: string): Promise<RadioCertData 
     ref: `DTO0012/${ymd(issuedAt)}${n}`,
     issuerName,
     issuerLine,
+    issuerCaaNo,
     issuerSignature,
     heldLicenceOnFile: a.source === "paper",
   };

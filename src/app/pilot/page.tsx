@@ -190,6 +190,11 @@ export default async function PilotDashboard() {
         </div>
       </div>
 
+      {!user.signatureFormsConsentAt && !user.signatureFormsConsentDeclinedAt && (
+        <a href="/pilot/profile" className="block rounded-lg border-2 border-red-400 bg-red-50 p-4 text-sm font-semibold text-red-800 hover:bg-red-100">
+          Action needed: answer the Yes / No question about using your saved signature on your SAHPA / CAA forms (Edit profile → Saved signature).
+        </a>
+      )}
       {signoff && (
         <div className="rounded-lg border border-amber-300 bg-amber-50 p-4">
           <p className="text-base font-semibold text-amber-900">

@@ -72,6 +72,7 @@ export type RadioCertData = {
   ref: string;
   issuerName: string;
   issuerLine: string;
+  issuerCaaNo: string | null;
   issuerSignature: Buffer | null;
   heldLicenceOnFile: boolean;
 };
@@ -134,6 +135,8 @@ export type PackData = {
   dtoCertRef: string;
   instructorRatingLine: string;
   examCopies: ExamCopyData[];
+  /** The DTO's CFI as printed in the CA 62-16 stamp, e.g. "DJ Struwig" + CAA no. */
+  dtoCfi: { name: string; caaNo: string };
   radioCert: RadioCertData | null;
 
   /** Things the instructor should know about before submitting. */

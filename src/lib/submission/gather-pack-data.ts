@@ -2,12 +2,14 @@ import "server-only";
 import { readFile } from "node:fs/promises";
 import { asc, eq } from "drizzle-orm";
 import { db } from "@/db";
-import { flightLogEntries, studentProfiles, users } from "@/db/schema";
+import { flightLogEntries, pilotProfiles, studentProfiles, users } from "@/db/schema";
 import { resolveUploadPath } from "@/lib/uploads";
 import { ageFromDob } from "@/lib/medical";
 import { PackData, SignoffTrainingType, SkillGrades } from "./types";
 import { gatherExamCopies, gatherRadioCert, ymd } from "./gather-exams";
 import { studentSignoffs } from "@/db/schema";
+
+const s_sahpa = (sp: { sahpaNumber: string | null } | undefined) => !!sp?.sahpaNumber;
 
 export const DTO_NAME = "Paramotor SA (Pty) Ltd";
 
@@ -95,7 +97,7 @@ export async function gatherPackData(studentUserId: string, input: SignoffInput)
   const consented = !!u.signatureFormsConsentAt;
   let studentSignature: Buffer | null = null;
   if (u.signatureFile && consented) studentSignature = await readUpload(u.id, u.signatureFile);
-  else if (u.signatureFile && !consented) warnings.push("The student has a signature on file but has not consented to its use on the forms - sign by hand.");
+  else if (u.signatureFile && !consented) warnings.push(u.signatureFormsConsentDeclinedAt ? "The student answered NO to using his signature on the forms - sign by hand." : "The student has not answered the signature consent question yet - sign by hand, or ask him to answer on his profile and regenerate the pack.");
   else warnings.push("The student has not uploaded a signature - sign the forms by hand.");
   const instructorSignature = await readUpload(ins.id, ins.signatureFile);
   if (!instructorSignature) warnings.push("Your signature is not uploaded - sign the instructor sections by hand.");
@@ -125,7 +127,17 @@ export async function gatherPackData(studentUserId: string, input: SignoffInput)
   const earlier = others.filter((o) => o.who !== studentUserId && ymd(o.at) === day && o.at.getTime() <= input.signedOffAt.getTime()).length;
   const dtoCertRef = `DTO012/${day}/${earlier + 1}`;
 
+  // CFI of the DTO for the CA 62-16 stamp: the signing user if a CFI, else the first CFI.
+  const cfis = await db.select({ id: users.id, name: users.name, initials: users.initials }).from(users).where(eq(users.role, "cfi"));
+  const cfi = cfis.find((c) => c.id === ins.id) ?? cfis[0] ?? { id: ins.id, name: ins.name, initials: ins.initials };
+  const [cfiPilot] = await db.select({ sacaa: pilotProfiles.sacaaNumber }).from(pilotProfiles).where(eq(pilotProfiles.userId, cfi.id)).limit(1);
+  const cfiParts = cfi.name.trim().split(/\s+/);
+  const cfiInitials = (cfi.initials ?? "").replace(/[^A-Za-z]/g, "").toUpperCase() || cfiParts.slice(0, -1).map((n) => n[0]?.toUpperCase() ?? "").join("");
+  const dtoCfi = { name: `${cfiInitials} ${cfiParts[cfiParts.length - 1]}`.trim(), caaNo: cfiPilot?.sacaa ?? (cfi.id === ins.id ? input.instructorLicenceNumber : "") };
+  if (!s_sahpa(sp)) warnings.push("No SAHPA number on the student's profile - the licence number fields on the forms are blank.");
+
   return {
+    dtoCfi,
     dtoCertRef,
     instructorRatingLine: input.instructorRatingLine ?? "",
     examCopies,

@@ -52,6 +52,8 @@ export const getCurrentUser = cache(async () => {
       consentSigned: users.consentSigned,
       indemnitySigned: users.indemnitySigned,
       signatureFile: users.signatureFile,
+      signatureFormsConsentAt: users.signatureFormsConsentAt,
+      signatureFormsConsentDeclinedAt: users.signatureFormsConsentDeclinedAt,
       // Needed to gate the online medical self-declaration (Notes4: over-60
       // pilots must use the download-sign-upload path instead) -- see
       // src/lib/actions/medical.ts.

@@ -23,17 +23,6 @@ function str(fd: FormData, k: string): string {
   return String(fd.get(k) ?? "").trim();
 }
 
-/** Student/pilot ticks (or un-ticks) permission to put their saved signature on the submission forms. */
-export async function setSignatureFormsConsent(_prev: SignoffState, formData: FormData): Promise<SignoffState> {
-  const user = await getCurrentUser();
-  if (!user) return { error: "Your session has expired -- please sign in again." };
-  const on = formData.get("consent") === "on";
-  await db.update(users).set({ signatureFormsConsentAt: on ? new Date() : null }).where(eq(users.id, user.id));
-  revalidatePath("/student/profile");
-  revalidatePath("/pilot/profile");
-  return { success: on ? "Saved - your signature may be placed on your submission forms." : "Saved - your signature will not be placed on forms." };
-}
-
 async function storePack(studentUserId: string, zip: Buffer): Promise<string> {
   const dir = path.join(process.cwd(), "data", "uploads", studentUserId);
   await mkdir(dir, { recursive: true });
@@ -105,6 +94,11 @@ export async function signOffStudent(_prev: SignoffState, formData: FormData): P
   if (!student || student.role !== "student") return { error: "This student is not in the student list (already signed off?)." };
   const existing = await db.select({ id: studentSignoffs.id }).from(studentSignoffs).where(and(eq(studentSignoffs.studentUserId, studentId), eq(studentSignoffs.trainingType, trainingType))).limit(1);
   if (existing.length) return { error: "This student has already been signed off." };
+
+  const [consentRow] = await db.select({ sig: users.signatureFile, yes: users.signatureFormsConsentAt, no: users.signatureFormsConsentDeclinedAt }).from(users).where(eq(users.id, studentId)).limit(1);
+  if (consentRow?.sig && !consentRow.yes && !consentRow.no) {
+    return { error: `${student.name} has a saved signature but has not answered the Yes / No consent question yet. Ask him to open Edit profile, answer it under Saved signature and Save - then sign him off.` };
+  }
 
   const input = parseInput(formData, staff.id, trainingType);
   if (typeof input === "string") return { error: input };

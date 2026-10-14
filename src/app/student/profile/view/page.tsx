@@ -45,6 +45,7 @@ export default async function StudentProfileViewPage() {
         indemnitySignedAt={fullUser?.indemnitySignedAt ?? null}
         indemnitySignedName={fullUser?.indemnitySignedName ?? null}
         signatureFile={fullUser?.signatureFile ?? null}
+        signatureFormsConsent={fullUser?.signatureFormsConsentAt ? "yes" : fullUser?.signatureFormsConsentDeclinedAt ? "no" : null}
       />
     </div>
   );

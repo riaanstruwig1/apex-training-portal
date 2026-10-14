@@ -126,7 +126,7 @@ export async function buildDtoCertificate(d: PackData): Promise<Uint8Array> {
   await signatureBlock(c, {
     sig: d.instructorSignature,
     name: d.instructor.fullName,
-    lines: [d.instructorRatingLine || "Flight Instructor", d.instructor.licenceNumber ? `Licence ${d.instructor.licenceNumber}` : ""].filter(Boolean),
+    lines: [d.instructorRatingLine || "Flight Instructor", d.instructor.licenceNumber ? `SACAA ${d.instructor.licenceNumber}` : ""].filter(Boolean),
     date: d.signedOffAt,
     signedBy: d.instructor.fullName,
   });
@@ -154,7 +154,7 @@ export async function buildRadioCertificate(r: RadioCertData, dtoName: string): 
   await signatureBlock(c, {
     sig: r.issuerSignature,
     name: r.issuerName,
-    lines: [r.issuerLine, "Theory - DTO0012"],
+    lines: [r.issuerLine, r.issuerCaaNo ? `SACAA ${r.issuerCaaNo}` : "", "Theory - DTO0012"].filter(Boolean),
     date: r.issuedAt,
     signedBy: r.issuerName,
   });

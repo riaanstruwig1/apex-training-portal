@@ -1,0 +1,1 @@
+ALTER TABLE `users` ADD `signature_forms_consent_declined_at` integer;
