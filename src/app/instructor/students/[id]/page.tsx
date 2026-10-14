@@ -374,6 +374,14 @@ export default async function StudentFolioPage(
                         {e.status === "submitted" ? "Review & verify" : "Review"}
                       </Link>
                     )}
+                    {e.category === "rt" && e.status === "verified" && e.passed && (
+                      <a
+                        href={`/api/radio-certificate/${id}`}
+                        className="rounded-md border border-green-300 px-3 py-1.5 text-sm font-medium text-green-800 hover:bg-green-50"
+                      >
+                        Radio certificate
+                      </a>
+                    )}
                     {canStaffUpload && (
                       <StaffPaperUpload
                         studentId={id}

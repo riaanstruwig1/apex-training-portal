@@ -32,6 +32,50 @@ export type PackLogEntry = {
   instructorComment: string | null;
 };
 
+export type ExamCopyQuestion = {
+  code: string;
+  prompt: string;
+  marks: number;
+  awarded: number;
+  selectedLabel: string | null;
+  correctLabel: string | null;
+  options: { label: string; text: string; isCorrect: boolean }[];
+  note: string | null;
+  changed: boolean;
+};
+
+/** A passed, verified exam (latest passing attempt) for the pack. */
+export type ExamCopyData = {
+  title: string;
+  category: "pg" | "ppg" | "ppt" | "rt" | null;
+  attemptNumber: number;
+  source: "online" | "paper";
+  verifiedAt: Date | null;
+  scoreMarks: number | null;
+  totalMarks: number | null;
+  scorePercent: number | null;
+  passPercent: number;
+  overrideNote: string | null;
+  externalLicenceNumber: string | null;
+  verifiedByName: string | null;
+  /** Only the signing instructor's own signature is ever placed here. */
+  verifierSignature: Buffer | null;
+  sections: { code: string; name: string; questions: ExamCopyQuestion[] }[];
+  /** Student's scan for a paper exam / held radio licence. */
+  proof: { bytes: Buffer; ext: string } | null;
+};
+
+export type RadioCertData = {
+  studentName: string;
+  sahpaNumber: string | null;
+  issuedAt: Date;
+  ref: string;
+  issuerName: string;
+  issuerLine: string;
+  issuerSignature: Buffer | null;
+  heldLicenceOnFile: boolean;
+};
+
 export type PackData = {
   trainingType: SignoffTrainingType;
   signedOffAt: Date;
@@ -84,6 +128,13 @@ export type PackData = {
   callSignChoices: [string, string, string];
 
   logbook: PackLogEntry[];
+
+  /** Course certificate reference (DTO012/yyyymmdd/n) and the instructor's
+   * rating line printed under the signature, e.g. "CFI-Grade A PPG, PPT, PPC". */
+  dtoCertRef: string;
+  instructorRatingLine: string;
+  examCopies: ExamCopyData[];
+  radioCert: RadioCertData | null;
 
   /** Things the instructor should know about before submitting. */
   warnings: string[];

@@ -1,0 +1,1 @@
+ALTER TABLE `student_signoffs` ADD `instructor_rating_line` text;

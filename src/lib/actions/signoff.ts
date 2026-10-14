@@ -9,7 +9,9 @@ import { flightLogEntries, pilotProfiles, studentProfiles, studentSignoffs, user
 import { getCurrentUser, requireInstructor } from "@/lib/auth/dal";
 import { gatherPackData, SignoffInput } from "@/lib/submission/gather-pack-data";
 import { buildSubmissionPack } from "@/lib/submission/pack";
-import { Grade, SignoffTrainingType, SkillGrades } from "@/lib/submission/types";
+import { sendWhatsAppText } from "@/lib/whatsapp";
+import { HUB_URL, normalizePhone } from "@/lib/invite-message";
+import { Grade, SignoffTrainingType, SkillGrades, TRAINING_LABEL } from "@/lib/submission/types";
 
 export type SignoffState = { error?: string; success?: string; warnings?: string[] } | undefined;
 
@@ -57,6 +59,7 @@ function parseInput(formData: FormData, instructorUserId: string, trainingType: 
     signedOffAt: new Date(),
     instructorUserId,
     instructorLicenceNumber: licence,
+    instructorRatingLine: str(formData, "instructorRatingLine"),
     surname: str(formData, "surname"),
     firstNames: str(formData, "firstNames"),
     skillGrades,
@@ -65,6 +68,30 @@ function parseInput(formData: FormData, instructorUserId: string, trainingType: 
     radioExaminerLicence: str(formData, "radioExaminerLicence"),
     callSignChoices: [str(formData, "callSign1"), str(formData, "callSign2"), str(formData, "callSign3")],
   };
+}
+
+/** WhatsApp to the student, the signing instructor and every CFI (Riaan, 14 Oct 2026).
+ * Best effort: the sign-off never fails because a message could not be sent. */
+async function notifySignoff(studentId: string, staffId: string, studentName: string, instructorName: string, programme: string): Promise<string> {
+  const people = await db.select({ id: users.id, role: users.role, phone: users.phone }).from(users);
+  const [sp] = await db.select({ phone: studentProfiles.phone }).from(studentProfiles).where(eq(studentProfiles.userId, studentId)).limit(1);
+  const targets = new Map<string, string>(); // phone -> message
+  const add = (raw: string | null | undefined, msg: string) => {
+    const n = normalizePhone(raw);
+    if (n && !targets.has(n)) targets.set(n, msg);
+  };
+  const first = studentName.split(" ")[0];
+  add(people.find((p) => p.id === studentId)?.phone ?? sp?.phone, `Hi ${first}, congratulations! ${instructorName} has signed you off and awarded your Solo wings (${programme}). Your SAHPA/CAA submission pack is being prepared. Your Apex Flight Hub status is now "Pending upload of licence from CAA" - upload your licence in the Hub once it arrives: ${HUB_URL}/login - Team Apex`);
+  const staffMsg = `Apex Flight Hub: ${instructorName} signed off ${studentName} (${programme}) and awarded Solo wings. The SAHPA/CAA submission pack is ready on the student's folio. Status: Pending upload of licence from CAA.`;
+  add(people.find((p) => p.id === staffId)?.phone, staffMsg);
+  for (const p of people) if (p.role === "cfi") add(p.phone, staffMsg);
+  let sent = 0;
+  for (const [phone, msg] of targets) {
+    const r = await sendWhatsAppText(phone, msg);
+    if (r.ok) sent++;
+    else console.error("[signoff WhatsApp]", r.error);
+  }
+  return targets.size === 0 ? "No WhatsApp sent (no cell numbers on file)." : `WhatsApp sent to ${sent} of ${targets.size} (student, instructor, CFI).`;
 }
 
 /** Signs a student off: wings, pack, and move to Pilot "pending CAA licence". */
@@ -112,6 +139,7 @@ export async function signOffStudent(_prev: SignoffState, formData: FormData): P
     skillGrades: JSON.stringify(input.skillGrades),
     remedialAction: input.remedialAction,
     instructorLicenceNumber: input.instructorLicenceNumber,
+    instructorRatingLine: input.instructorRatingLine ?? "",
     radioExaminerName: input.radioExaminerName,
     radioExaminerLicence: input.radioExaminerLicence,
     callSignChoices: input.callSignChoices.join("|"),
@@ -140,7 +168,8 @@ export async function signOffStudent(_prev: SignoffState, formData: FormData): P
   revalidatePath("/instructor");
   revalidatePath(`/instructor/students/${studentId}`);
   revalidatePath("/instructor/pilots");
-  return { success: `${student.name} is signed off, awarded Solo wings and moved to Pilots (pending licence from CAA).`, warnings };
+  const wa = await notifySignoff(studentId, staff.id, student.name, staff.name, TRAINING_LABEL[trainingType]).catch(() => "WhatsApp could not be sent.");
+  return { success: `${student.name} is signed off, awarded Solo wings and moved to Pilots (pending licence from CAA). ${wa}`, warnings };
 }
 
 /** Rebuilds the pack (e.g. after the student adds a signature or photo). Staff only. */
@@ -157,6 +186,7 @@ export async function regenerateSubmissionPack(_prev: SignoffState, formData: Fo
       signedOffAt: so.signedOffAt,
       instructorUserId: so.signedOffByUserId,
       instructorLicenceNumber: so.instructorLicenceNumber ?? "",
+      instructorRatingLine: so.instructorRatingLine ?? "",
       skillGrades: JSON.parse(so.skillGrades ?? "{}"),
       remedialAction: so.remedialAction ?? "",
       radioExaminerName: so.radioExaminerName ?? "",

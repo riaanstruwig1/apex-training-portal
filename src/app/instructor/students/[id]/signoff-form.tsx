@@ -69,6 +69,9 @@ export function SignoffForm(props: {
         <label className="text-sm">Surname (as on ID)<input name="surname" defaultValue={props.surname} className={input} /></label>
         <label className="text-sm">First names<input name="firstNames" defaultValue={props.firstNames} className={input} /></label>
         <label className="text-sm">Your instructor licence no.<input name="instructorLicenceNumber" required className={input} /></label>
+        <label className="text-sm">Rating line on the DTO certificate
+          <input name="instructorRatingLine" placeholder="e.g. CFI-Grade A PPG, PPT, PPC / Grade B PG" className={input} />
+        </label>
         <label className="text-sm">Radio examiner (CA 62-16 C)<input name="radioExaminerName" className={input} /></label>
         <label className="text-sm">Examiner licence no.<input name="radioExaminerLicence" className={input} /></label>
         {[1, 2, 3].map((n) => (

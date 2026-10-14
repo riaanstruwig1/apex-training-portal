@@ -6,6 +6,8 @@ import { flightLogEntries, studentProfiles, users } from "@/db/schema";
 import { resolveUploadPath } from "@/lib/uploads";
 import { ageFromDob } from "@/lib/medical";
 import { PackData, SignoffTrainingType, SkillGrades } from "./types";
+import { gatherExamCopies, gatherRadioCert, ymd } from "./gather-exams";
+import { studentSignoffs } from "@/db/schema";
 
 export const DTO_NAME = "Paramotor SA (Pty) Ltd";
 
@@ -21,6 +23,7 @@ export type SignoffInput = {
   radioExaminerName: string;
   radioExaminerLicence: string;
   callSignChoices: [string, string, string];
+  instructorRatingLine?: string;
 };
 
 async function readUpload(userId: string, file: string | null): Promise<Buffer | null> {
@@ -108,7 +111,25 @@ export async function gatherPackData(studentUserId: string, input: SignoffInput)
   if (!u.dob) warnings.push("Date of birth is missing.");
   if (!u.homeAddress) warnings.push("Home address is missing.");
 
+  // Exam copies + radio certificate (Riaan, 14 Oct 2026)
+  const examCopies = await gatherExamCopies(studentUserId, ins.id, instructorSignature);
+  const passedCats = new Set(examCopies.map((e) => e.category));
+  const wantMain = input.trainingType === "pg" ? "pg" : input.trainingType;
+  if (!passedCats.has(wantMain)) warnings.push(`No passed and verified ${wantMain.toUpperCase()} exam found for this student - the exam copy is missing from the pack.`);
+  const radioCert = await gatherRadioCert(studentUserId);
+  if (!radioCert) warnings.push("No passed radio exam (or verified held radio licence) - no radio certificate in the pack.");
+
+  // DTO certificate reference: DTO012/yyyymmdd/n, n = order among that day's sign-offs.
+  const day = ymd(input.signedOffAt);
+  const others = await db.select({ at: studentSignoffs.signedOffAt, who: studentSignoffs.studentUserId }).from(studentSignoffs);
+  const earlier = others.filter((o) => o.who !== studentUserId && ymd(o.at) === day && o.at.getTime() <= input.signedOffAt.getTime()).length;
+  const dtoCertRef = `DTO012/${day}/${earlier + 1}`;
+
   return {
+    dtoCertRef,
+    instructorRatingLine: input.instructorRatingLine ?? "",
+    examCopies,
+    radioCert,
     trainingType: input.trainingType,
     signedOffAt: input.signedOffAt,
     dtoName: DTO_NAME,

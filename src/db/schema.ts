@@ -935,6 +935,9 @@ export const studentSignoffs = sqliteTable(
     remedialAction: text("remedial_action"),
     // Entered at sign-off for CA 62-16 section D / C
     instructorLicenceNumber: text("instructor_licence_number"),
+    // Printed under the instructor's signature on the DTO certificate, e.g.
+    // "CFI-Grade A PPG, PPT, PPC" (added 14 Oct 2026, batch 62)
+    instructorRatingLine: text("instructor_rating_line"),
     radioExaminerName: text("radio_examiner_name"),
     radioExaminerLicence: text("radio_examiner_licence"),
     callSignChoices: text("call_sign_choices"), // "1st|2nd|3rd", pipe separated

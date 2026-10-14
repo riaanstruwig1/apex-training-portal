@@ -95,6 +95,14 @@ function ExamCard({ e }: { e: ExamSummary }) {
           </div>
         )}
       </Link>
+      {e.category === "rt" && e.status === "verified" && e.passed && (
+        <a
+          href="/api/radio-certificate/me"
+          className="block border-t border-slate-100 px-4 py-2 text-xs font-semibold text-green-700 hover:underline"
+        >
+          Download your radio certificate (PDF) →
+        </a>
+      )}
       {e.canSubmitPaper && (
         <Link
           href={`/student/exams/${e.examId}/paper`}
