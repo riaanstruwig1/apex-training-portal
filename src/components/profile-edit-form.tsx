@@ -78,6 +78,7 @@ export default function ProfileEditForm({
   medicalDeclarationSignedName,
   medicalDeclarationExpiresAt,
   signatureFile,
+  signatureFormsConsent = false,
   pilot,
 }: {
   role: "student" | "pilot" | "cfi" | "instructor";
@@ -101,6 +102,7 @@ export default function ProfileEditForm({
   medicalDeclarationSignedName?: string | null;
   medicalDeclarationExpiresAt?: Date | null;
   signatureFile?: string | null;
+  signatureFormsConsent?: boolean;
   pilot?: {
     callSign: string | null;
     sacaaNumber: string | null;
@@ -280,10 +282,15 @@ export default function ProfileEditForm({
           <p className="mt-1 text-xs text-slate-500">
             Upload an image of your signature once, and it&rsquo;s offered back to you automatically
             next time you need to sign a form under your own login -- no need to re-upload it every
-            time. This is yours only: no one else, including CFIs and Admin, can view it, download
-            it, or use it -- not even to sign on your behalf. It&rsquo;s kept in a protected vault
-            for your account alone.
+            time. No one else, including CFIs and Admin, can view or download it, or sign on your
+            behalf. The only exception is the box below: if you tick it, your signature is placed
+            on your own SAHPA/CAA submission forms when your instructor signs you off.
           </p>
+          <label className="mt-2 flex items-start gap-2 text-xs text-slate-700">
+            <input type="hidden" name="signatureFormsConsentPresent" value="1" />
+            <input type="checkbox" name="signatureFormsConsent" defaultChecked={signatureFormsConsent} className="mt-0.5" />
+            <span>I agree that my saved signature may be added to my SAHPA / CAA submission forms (with a small &ldquo;digitally signed&rdquo; note) when I am signed off.</span>
+          </label>
           <div className="mt-2 flex items-center gap-4">
             {signatureFile && (
               <img

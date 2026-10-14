@@ -25,6 +25,8 @@ import LogbookTable from "./logbook-table";
 import CallSignEditor from "./call-sign-editor";
 import StudentEndorsementToggle from "./student-endorsement-toggle";
 import StaffPaperUpload from "./staff-paper-upload";
+import SignoffPanel from "./signoff-panel";
+import { studentSignoffs } from "@/db/schema";
 
 const TRAINING_TYPE_LABELS: Record<TrainingType, string> = {
   pg: "Paraglider (PG)",
@@ -46,7 +48,13 @@ export default async function StudentFolioPage(
     .where(eq(users.id, id))
     .limit(1);
 
-  if (!student || student.role !== "student") notFound();
+  // A signed-off student is now role "pilot" but keeps this folio (and its
+  // submission-pack download) -- only a real signoff row lets a pilot in here.
+  if (!student) notFound();
+  if (student.role !== "student") {
+    const [so] = await db.select({ id: studentSignoffs.id }).from(studentSignoffs).where(eq(studentSignoffs.studentUserId, id)).limit(1);
+    if (!so) notFound();
+  }
 
   const [profile] = await db
     .select()
@@ -84,6 +92,7 @@ export default async function StudentFolioPage(
 
   return (
     <div className="space-y-8">
+      <SignoffPanel student={student} profile={profile} staffId={staff.id} isCFI={isCFI} />
       <div className="flex items-start gap-3">
         <Avatar userId={student.id} filename={student.profilePictureFile} name={student.name} size={48} />
         <div>

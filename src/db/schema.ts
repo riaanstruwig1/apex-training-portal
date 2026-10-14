@@ -155,6 +155,14 @@ export const users = sqliteTable("users", {
   // Kept out of every admin/CFI profile view and editor for the same
   // reason. Vault-like guarantee, not just "hidden in the UI."
   signatureFile: text("signature_file"),
+  // 14 Oct 2026 (student sign-off + SAHPA/CAA form pack, batch 61): the
+  // vault promise above is kept -- nobody can view, download or apply this
+  // signature on someone else's behalf. The ONE way it reaches a form is the
+  // owner's own standing consent, ticked under their own login: "place my
+  // saved signature on my SAHPA/CAA application forms when my instructor
+  // signs me off". Null = no consent given, so the signature is never used
+  // on a form pack. Clearing it withdraws the consent (future packs only).
+  signatureFormsConsentAt: integer("signature_forms_consent_at", { mode: "timestamp" }),
 
   createdAt: integer("created_at", { mode: "timestamp" })
     .notNull()
@@ -445,6 +453,13 @@ export const pilotProfiles = sqliteTable("pilot_profiles", {
   // adminUpdateProfile the moment a CFI/Admin saves a caaLicenceExpiryDate
   // for this pilot, since doing that is the review action itself.
   caaLicenceRenewalSubmittedAt: integer("caa_licence_renewal_submitted_at", { mode: "timestamp" }),
+  // 14 Oct 2026 (batch 61): set when a student is signed off and moved over
+  // to Pilot -- "Pending upload of licence from CAA". While set, the pilot
+  // portfolio shows the pending banner and the Pilots list shows "Awaiting
+  // CAA licence". Cleared the moment a CAA licence is uploaded (which also
+  // raises caaLicenceRenewalSubmittedAt so CFI/Admin review it and enter the
+  // expiry + first-issued dates, exactly like a renewal).
+  awaitingCaaLicenceSince: integer("awaiting_caa_licence_since", { mode: "timestamp" }),
   status: text("status", {
     enum: ["pending_verification", "active", "suspended"],
   })
@@ -885,4 +900,60 @@ export const ratingApplicationDocuments = sqliteTable(
       .default(sql`(unixepoch())`),
   },
   (t) => [index("rating_app_docs_pilot_key").on(t.pilotProfileId, t.endorsementKey)]
+);
+
+// ---------------------------------------------------------------------------
+// Batch 61 (14 Oct 2026): student sign-off. A CFI/instructor signs a student
+// off at the end of a training type (PG / PPG / PPT): Solo wings are awarded,
+// the student is moved over to Pilot ("pending upload of licence from CAA")
+// and the SAHPA/CAA submission pack (CA 183-540, Medical Fitness, CA 62-16,
+// CA 62-15, logbook copy, passport photo) is generated from the portfolio and
+// zipped. One row per (student, training type); the student's user id stays
+// the same after the move to Pilot, so all history stays attached.
+// ---------------------------------------------------------------------------
+
+export const studentSignoffs = sqliteTable(
+  "student_signoffs",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    studentUserId: text("student_user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    trainingType: text("training_type", { enum: ["pg", "ppg", "ppt"] }).notNull(),
+    signedOffByUserId: text("signed_off_by_user_id")
+      .notNull()
+      .references(() => users.id),
+    signedOffAt: integer("signed_off_at", { mode: "timestamp" })
+      .notNull()
+      .default(sql`(unixepoch())`),
+    wingsAwarded: integer("wings_awarded", { mode: "boolean" }).notNull().default(true),
+    // CA 62-15 skill test grades, JSON: { takeoff, landing, turns360, ridge,
+    // spot, engine, weather, airlaw, turbulence } -> excellent|good|average|need_practice
+    skillGrades: text("skill_grades"),
+    remedialAction: text("remedial_action"),
+    // Entered at sign-off for CA 62-16 section D / C
+    instructorLicenceNumber: text("instructor_licence_number"),
+    radioExaminerName: text("radio_examiner_name"),
+    radioExaminerLicence: text("radio_examiner_licence"),
+    callSignChoices: text("call_sign_choices"), // "1st|2nd|3rd", pipe separated
+    // Which signatures actually went onto the pack (for the record)
+    studentSignatureApplied: integer("student_signature_applied", { mode: "boolean" })
+      .notNull()
+      .default(false),
+    instructorSignatureApplied: integer("instructor_signature_applied", { mode: "boolean" })
+      .notNull()
+      .default(false),
+    medicalSignatureApplied: integer("medical_signature_applied", { mode: "boolean" })
+      .notNull()
+      .default(false),
+    // Pack zip: filename under data/uploads/<studentUserId>/
+    packFile: text("pack_file"),
+    packGeneratedAt: integer("pack_generated_at", { mode: "timestamp" }),
+    createdAt: integer("created_at", { mode: "timestamp" })
+      .notNull()
+      .default(sql`(unixepoch())`),
+  },
+  (t) => [uniqueIndex("student_signoff_unique").on(t.studentUserId, t.trainingType)]
 );

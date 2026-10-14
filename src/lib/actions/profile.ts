@@ -127,6 +127,12 @@ export async function updateOwnProfile(
       ...(profilePictureFile ? { profilePictureFile } : {}),
       ...(flightMedicalCertFile ? { flightMedicalCertFile } : {}),
       ...(signatureFile ? { signatureFile } : {}),
+      // Standing consent to place the saved signature on the SAHPA/CAA
+      // submission forms at sign-off (Riaan, 14 Oct 2026). Only touched when
+      // the form actually carried the tick-box.
+      ...(formData.get("signatureFormsConsentPresent")
+        ? { signatureFormsConsentAt: formData.get("signatureFormsConsent") === "on" ? new Date() : null }
+        : {}),
     })
     .where(eq(users.id, user.id));
 
@@ -177,7 +183,7 @@ export async function updateOwnProfile(
           startingFlightHours: pilotOnly.data.startingFlightHours
             ? parseFloat(pilotOnly.data.startingFlightHours) || 0
             : 0,
-          ...(caaLicenceFile ? { caaLicenceFile } : {}),
+          ...(caaLicenceFile ? { caaLicenceFile, awaitingCaaLicenceSince: null } : {}),
         })
         .where(eq(pilotProfiles.userId, user.id));
     }
@@ -381,7 +387,7 @@ export async function adminUpdateProfile(
         startingFlightHours: parsed.data.startingFlightHours
           ? parseFloat(parsed.data.startingFlightHours) || 0
           : 0,
-        ...(caaLicenceFile ? { caaLicenceFile } : {}),
+        ...(caaLicenceFile ? { caaLicenceFile, awaitingCaaLicenceSince: null } : {}),
       })
       .where(eq(pilotProfiles.userId, targetUserId));
   }

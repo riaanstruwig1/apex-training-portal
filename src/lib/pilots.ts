@@ -16,6 +16,7 @@ export type PilotSummary = {
   pendingCount: number;
   caaLicenceExpiryDate: Date | null;
   caaLicenceRenewalSubmittedAt: Date | null;
+  awaitingCaaLicenceSince: Date | null;
 };
 
 /** Every active pilot profile, whether it belongs to a plain "pilot"
@@ -42,6 +43,7 @@ export async function getAllPilotsWithSummary(): Promise<PilotSummary[]> {
       pilotProfileId: pilotProfiles.id,
       caaLicenceExpiryDate: pilotProfiles.caaLicenceExpiryDate,
       caaLicenceRenewalSubmittedAt: pilotProfiles.caaLicenceRenewalSubmittedAt,
+      awaitingCaaLicenceSince: pilotProfiles.awaitingCaaLicenceSince,
     })
     .from(pilotProfiles)
     .innerJoin(users, eq(pilotProfiles.userId, users.id))
@@ -72,6 +74,7 @@ export async function getAllPilotsWithSummary(): Promise<PilotSummary[]> {
       pendingCount: byProfile.get(r.pilotProfileId)?.pending ?? 0,
       caaLicenceExpiryDate: r.caaLicenceExpiryDate,
       caaLicenceRenewalSubmittedAt: r.caaLicenceRenewalSubmittedAt,
+      awaitingCaaLicenceSince: r.awaitingCaaLicenceSince,
     }))
     .sort(compareByName);
 }

@@ -42,6 +42,7 @@ export default async function StudentProfilePage() {
         medicalDeclarationSignedName={fullUser?.medicalDeclarationSignedName ?? null}
         medicalDeclarationExpiresAt={fullUser?.medicalDeclarationExpiresAt ?? null}
         signatureFile={fullUser?.signatureFile ?? null}
+        signatureFormsConsent={!!fullUser?.signatureFormsConsentAt}
       />
       <PopPaymentPanel
         popFile={profile?.popFile ?? null}

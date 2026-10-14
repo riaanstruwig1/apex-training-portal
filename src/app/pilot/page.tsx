@@ -6,8 +6,8 @@ import Avatar from "@/components/avatar";
 import Link from "next/link";
 import ApplyButton from "./apply-button";
 import { db } from "@/db";
-import { pilotEndorsements } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { pilotEndorsements, studentSignoffs } from "@/db/schema";
+import { desc, eq } from "drizzle-orm";
 import RatingInfoButton, { type RatingStatus } from "@/components/rating-info-button";
 import { getRatingContentCounts, getRatingDocumentCounts } from "@/lib/content-counts";
 
@@ -15,6 +15,8 @@ const ALL_EQUIPMENT: Equipment[] = ["pg", "ppg", "ppt"];
 
 export default async function PilotDashboard() {
   const { user, profile } = await requirePilot();
+
+  const [signoff] = await db.select().from(studentSignoffs).where(eq(studentSignoffs.studentUserId, user.id)).orderBy(desc(studentSignoffs.signedOffAt)).limit(1);
 
   const endorsements = profile
     ? await db.select().from(pilotEndorsements).where(eq(pilotEndorsements.pilotProfileId, profile.id))
@@ -187,6 +189,24 @@ export default async function PilotDashboard() {
           </Link>
         </div>
       </div>
+
+      {signoff && (
+        <div className="rounded-lg border border-amber-300 bg-amber-50 p-4">
+          <p className="text-base font-semibold text-amber-900">
+            🪽 Solo wings awarded {signoff.signedOffAt.toLocaleDateString()}
+          </p>
+          {profile?.awaitingCaaLicenceSince && (
+            <p className="mt-1 text-sm text-amber-900">
+              Status: <strong>Pending upload of licence from CAA</strong>. When your licence arrives, upload it under Edit profile.
+            </p>
+          )}
+          <div className="mt-2 flex flex-wrap gap-2">
+            <a href={`/api/signoff-certificate/${user.id}`} className="rounded-md border border-amber-400 bg-white px-3 py-1.5 text-xs font-semibold text-amber-900 hover:bg-amber-100">
+              Solo wings certificate (PDF)
+            </a>
+          </div>
+        </div>
+      )}
 
       {allDeclinedCount > 0 && (
         <a

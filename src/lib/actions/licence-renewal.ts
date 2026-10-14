@@ -57,7 +57,7 @@ export async function submitRenewedLicence(
 
   await db
     .update(pilotProfiles)
-    .set({ caaLicenceFile: filename, caaLicenceRenewalSubmittedAt: new Date() })
+    .set({ caaLicenceFile: filename, caaLicenceRenewalSubmittedAt: new Date(), awaitingCaaLicenceSince: null })
     .where(eq(pilotProfiles.userId, user.id));
 
   revalidatePath("/pilot");

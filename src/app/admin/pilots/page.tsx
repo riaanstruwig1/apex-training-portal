@@ -23,8 +23,13 @@ const roleLabel: Record<string, string> = {
  * page (or anywhere else) showed it needed review. */
 function licenceStatus(
   date: Date | null,
-  renewalSubmittedAt: Date | null
+  renewalSubmittedAt: Date | null,
+  awaitingSince: Date | null = null
 ): { label: string; className: string } {
+  // Signed off by an instructor; SAHPA/CAA pack submitted, licence not back yet.
+  if (awaitingSince && !date) {
+    return { label: "Pending upload of licence from CAA", className: "font-semibold text-amber-600" };
+  }
   if (renewalSubmittedAt) {
     const submittedFmt = renewalSubmittedAt.toLocaleDateString("en-ZA", {
       year: "numeric",
@@ -118,8 +123,8 @@ export default async function PilotsPage() {
                   </div>
                   <div className="col-span-3">
                     <dt className="text-xs text-slate-400">Licence</dt>
-                    <dd className={licenceStatus(p.caaLicenceExpiryDate, p.caaLicenceRenewalSubmittedAt).className}>
-                      {licenceStatus(p.caaLicenceExpiryDate, p.caaLicenceRenewalSubmittedAt).label}
+                    <dd className={licenceStatus(p.caaLicenceExpiryDate, p.caaLicenceRenewalSubmittedAt, p.awaitingCaaLicenceSince).className}>
+                      {licenceStatus(p.caaLicenceExpiryDate, p.caaLicenceRenewalSubmittedAt, p.awaitingCaaLicenceSince).label}
                     </dd>
                   </div>
                 </dl>
@@ -164,8 +169,8 @@ export default async function PilotsPage() {
                         <span className="text-xs text-slate-300">—</span>
                       )}
                     </td>
-                    <td className={`px-4 py-3 ${licenceStatus(p.caaLicenceExpiryDate, p.caaLicenceRenewalSubmittedAt).className}`}>
-                      {licenceStatus(p.caaLicenceExpiryDate, p.caaLicenceRenewalSubmittedAt).label}
+                    <td className={`px-4 py-3 ${licenceStatus(p.caaLicenceExpiryDate, p.caaLicenceRenewalSubmittedAt, p.awaitingCaaLicenceSince).className}`}>
+                      {licenceStatus(p.caaLicenceExpiryDate, p.caaLicenceRenewalSubmittedAt, p.awaitingCaaLicenceSince).label}
                     </td>
                     <td className="px-4 py-3">
                       <Link
