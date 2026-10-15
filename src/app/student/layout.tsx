@@ -2,6 +2,7 @@ import { requireStudent } from "@/lib/auth/dal";
 import { getRadioCallScript, getStudentNotice } from "@/lib/settings";
 import NavHeader from "@/components/nav-header";
 import ConsentGate from "@/components/consent-gate";
+import SahpaGate from "@/components/sahpa-gate";
 import StudentNoticeBanner from "@/components/student-notice-banner";
 
 const links = [
@@ -27,25 +28,31 @@ export default async function StudentLayout({
   // area until they do, not just a status badge on the admin review page.
   const needsConsent = !user.consentSigned || !user.indemnitySigned;
 
+  // Second hard gate (15 Oct 2026, Riaan): no SAHPA number, no logbook / folio.
+  const needsSahpa = !needsConsent && !profile?.sahpaNumber?.trim();
+  const locked = needsConsent || needsSahpa;
+
   return (
     <div className="flex min-h-screen flex-col">
       <NavHeader
         name={user.name}
         roleLabel="Student"
-        links={needsConsent ? [] : links}
+        links={locked ? [] : links}
         apexNumber={user.apexNumber}
         sacaaNumber={profile?.sacaaNumber}
-        profileHref={needsConsent ? null : "/student/profile"}
+        profileHref={locked ? null : "/student/profile"}
       />
-      {!needsConsent && <StudentNoticeBanner notice={studentNotice} />}
+      {!locked && <StudentNoticeBanner notice={studentNotice} />}
       <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8">
         {needsConsent ? (
           <ConsentGate name={user.name} hasSignature={!!user.signatureFile} />
+        ) : needsSahpa ? (
+          <SahpaGate name={user.name} />
         ) : (
           children
         )}
       </main>
-      {!needsConsent && radioCallScript && (
+      {!locked && radioCallScript && (
         <footer className="border-t border-slate-200 bg-white">
           <div className="mx-auto max-w-7xl px-4 py-4">
             <div className="text-xs font-semibold uppercase tracking-wide text-slate-400">

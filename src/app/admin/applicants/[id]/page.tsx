@@ -160,6 +160,12 @@ export default async function ApplicantReviewPage({
         </Link>
       </div>
 
+      {applicant.role === "student" && !student?.profile.sahpaNumber?.trim() && (
+        <div className="rounded-md border-2 border-red-500 bg-red-50 px-4 py-3 text-sm font-bold text-red-700">
+          SAHPA No. is NOT loaded. This student cannot log flights or continue until a SAHPA number is entered.
+        </div>
+      )}
+
       {applicant.accountStatus !== "pending_verification" && (
         <div className="rounded-md bg-slate-100 px-3 py-2 text-sm text-slate-600">
           Already reviewed -- status: <span className="font-medium">{applicant.accountStatus}</span>

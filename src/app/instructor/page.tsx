@@ -145,7 +145,7 @@ function StudentCard({
         <div>
           <dt className="text-xs text-slate-400">Student No.</dt>
           <dd className="text-slate-700">
-            {s.sahpaNumber ?? <span className="text-slate-300">—</span>}
+            {s.sahpaNumber?.trim() ? s.sahpaNumber : <span className="rounded bg-red-600 px-1.5 py-0.5 text-[10px] font-bold uppercase text-white">SAHPA No. not loaded</span>}
           </dd>
         </div>
         <div>
@@ -270,7 +270,7 @@ function StudentTable({
                 )}
               </td>
               <td className="px-4 py-3 text-slate-600">
-                {s.sahpaNumber ?? <span className="text-xs text-slate-300">—</span>}
+                {s.sahpaNumber?.trim() ? s.sahpaNumber : <span className="rounded bg-red-600 px-1.5 py-0.5 text-[10px] font-bold uppercase text-white">Not loaded</span>}
               </td>
               <td className="px-4 py-3">
                 {s.sahpaExpiryDate ? (
@@ -390,6 +390,8 @@ export default async function InstructorDashboard() {
             Action needed: {pendingApplicants.length} new sign-up
             {pendingApplicants.length > 1 ? "s" : ""} waiting to be verified
             {pendingApplicants.length === 1 ? ` -- ${pendingApplicants[0].name}` : ""}
+            {pendingApplicants.some((a) => a.sahpaMissing) &&
+              ` (SAHPA No. NOT loaded: ${pendingApplicants.filter((a) => a.sahpaMissing).map((a) => a.name).join(", ")})`}
           </span>
           <span className="font-semibold text-red-700">Review in verification queue &rarr;</span>
         </Link>

@@ -50,6 +50,7 @@ export default async function AdminVerificationQueue({
           <p className="mt-1 text-sm font-semibold text-red-600">
             Action needed: {applicants.length} sign-up{applicants.length > 1 ? "s" : ""} waiting
             for review below.
+            {applicants.some((a) => a.sahpaMissing) && " SAHPA No. is NOT loaded for: " + applicants.filter((a) => a.sahpaMissing).map((a) => a.name).join(", ") + "."}
           </p>
         ) : (
           <p className="mt-1 text-sm text-slate-500">
@@ -74,6 +75,7 @@ export default async function AdminVerificationQueue({
                     <div>
                       <div className="font-medium text-slate-900">{a.name}</div>
                       <div className="text-xs text-slate-500">{a.email}</div>
+                      {a.sahpaMissing && <div className="mt-0.5 text-xs font-bold text-red-600">SAHPA No. NOT LOADED</div>}
                     </div>
                   </div>
                   <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-700">
@@ -118,7 +120,10 @@ export default async function AdminVerificationQueue({
                     <td className="px-4 py-3 font-medium text-slate-900">
                       <div className="flex items-center gap-2.5">
                         <Avatar userId={a.id} filename={a.profilePictureFile} name={a.name} size={28} />
-                        {a.name}
+                        <span>
+                          {a.name}
+                          {a.sahpaMissing && <span className="ml-2 rounded bg-red-600 px-1.5 py-0.5 text-[10px] font-bold uppercase text-white">SAHPA No. not loaded</span>}
+                        </span>
                       </div>
                     </td>
                     <td className="px-4 py-3">

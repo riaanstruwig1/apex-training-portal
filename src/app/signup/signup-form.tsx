@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useState } from "react";
+import SahpaSignupNote from "@/components/sahpa-signup-note";
 import { submitSignup, type SignupState } from "@/lib/actions/signup";
 import { ENDORSEMENT_OPTIONS } from "@/lib/pilot-endorsements";
 import PasswordInput from "@/components/password-input";
@@ -178,6 +179,15 @@ export default function SignupForm() {
               ))}
             </div>
           </fieldset>
+          <SahpaSignupNote />
+          <div className="grid grid-cols-2 gap-4">
+            <Field id="sahpaNumber" label="SAHPA Membership No. (needed before you can log flights)">
+              <input id="sahpaNumber" name="sahpaNumber" value={values.sahpaNumber} onChange={set("sahpaNumber")} className={inputClass} />
+            </Field>
+            <Field id="sahpaExpiryDate" label="SAHPA membership expiry">
+              <input id="sahpaExpiryDate" name="sahpaExpiryDate" type="date" value={values.sahpaExpiryDate} onChange={set("sahpaExpiryDate")} className={inputClass} />
+            </Field>
+          </div>
           <Field id="initialSignUpDate" label="Initial student sign-up date">
             <input
               id="initialSignUpDate"

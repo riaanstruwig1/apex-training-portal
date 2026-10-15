@@ -92,6 +92,11 @@ export default async function StudentFolioPage(
 
   return (
     <div className="space-y-8">
+      {!profile?.sahpaNumber?.trim() && (
+        <div className="rounded-md border-2 border-red-500 bg-red-50 px-4 py-3 text-sm font-bold text-red-700">
+          SAHPA No. is NOT loaded. The student cannot log flights or continue until he enters his SAHPA number.
+        </div>
+      )}
       <SignoffPanel student={student} profile={profile} staffId={staff.id} isCFI={isCFI} />
       <div className="flex items-start gap-3">
         <Avatar userId={student.id} filename={student.profilePictureFile} name={student.name} size={48} />

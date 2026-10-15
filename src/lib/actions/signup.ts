@@ -206,6 +206,8 @@ export async function submitSignup(
         phone: data.phone,
         trainingType: formatTrainingTypes(data.trainingTypes ?? []),
         signUpDate: data.initialSignUpDate ? new Date(data.initialSignUpDate) : null,
+        sahpaNumber: data.sahpaNumber || null,
+        sahpaExpiryDate: data.sahpaExpiryDate ? new Date(data.sahpaExpiryDate) : null,
         status: "active", // gating is via users.accountStatus, not this
       });
     } else {
