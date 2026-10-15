@@ -90,3 +90,11 @@ export function computeAccumulatedMinutes<
   }
   return map;
 }
+
+/** Flight No. = position in chronological (date) order, 1 = first flight. */
+export function computeFlightNumbers<T extends { id: string; date: Date }>(entries: T[]): Map<string, number> {
+  const chronological = [...entries].sort((a, b) => a.date.getTime() - b.date.getTime());
+  const map = new Map<string, number>();
+  chronological.forEach((e, i) => map.set(e.id, i + 1));
+  return map;
+}

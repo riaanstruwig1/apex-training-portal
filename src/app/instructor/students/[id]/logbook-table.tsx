@@ -12,6 +12,7 @@ import {
 import type { getLogbookEntries } from "@/lib/logbook";
 import {
   computeAccumulatedMinutes,
+  computeFlightNumbers,
   formatHoursMinutes,
   formatExerciseCodes,
   formatFlightType,
@@ -290,6 +291,7 @@ export default function LogbookTable({
   }
 
   const accumulatedById = computeAccumulatedMinutes(entries);
+  const flightNoById = computeFlightNumbers(entries);
 
   return (
     <>
@@ -321,6 +323,7 @@ export default function LogbookTable({
         <table className="w-full text-left text-sm">
           <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
             <tr>
+              <th className="px-3 py-2">Flight No.</th>
               <th className="px-3 py-2">Date</th>
               <th className="px-3 py-2">Site</th>
               <th className="px-3 py-2">Aircraft</th>
@@ -338,7 +341,7 @@ export default function LogbookTable({
             {entries.map((e) =>
               editingId === e.id ? (
                 <tr key={e.id}>
-                  <td colSpan={11} className="px-3 py-3">
+                  <td colSpan={12} className="px-3 py-3">
                     <EditForm
                       entry={e}
                       studentId={studentId}
@@ -349,6 +352,7 @@ export default function LogbookTable({
                 </tr>
               ) : (
                 <tr key={e.id}>
+                  <td className="px-3 py-2 font-semibold text-slate-700">{flightNoById.get(e.id)}</td>
                   <td className="px-3 py-2 whitespace-nowrap">
                     {new Date(e.date).toLocaleDateString()}
                   </td>

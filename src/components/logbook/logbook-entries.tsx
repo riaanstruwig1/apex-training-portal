@@ -1,5 +1,6 @@
 import {
   computeAccumulatedMinutes,
+  computeFlightNumbers,
   formatHoursMinutes,
   formatExerciseCodes,
   formatFlightType,
@@ -39,6 +40,7 @@ export default function LogbookEntries({
   entries: Awaited<ReturnType<typeof getLogbookEntries>>;
 }) {
   const accumulatedById = computeAccumulatedMinutes(entries);
+  const flightNoById = computeFlightNumbers(entries);
 
   if (entries.length === 0) {
     return (
@@ -108,6 +110,7 @@ export default function LogbookEntries({
         <table className="w-full text-left text-sm">
           <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
             <tr>
+              <th className="px-3 py-2">Flight No.</th>
               <th className="px-3 py-2">Date</th>
               <th className="px-3 py-2">Site</th>
               <th className="px-3 py-2">Aircraft</th>
@@ -123,6 +126,7 @@ export default function LogbookEntries({
           <tbody className="divide-y divide-slate-100">
             {entries.map((e) => (
               <tr key={e.id}>
+                <td className="px-3 py-2 font-semibold text-slate-700">{flightNoById.get(e.id)}</td>
                 <td className="px-3 py-2 whitespace-nowrap">
                   {new Date(e.date).toLocaleDateString()}
                 </td>

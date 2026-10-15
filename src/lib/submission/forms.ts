@@ -145,15 +145,16 @@ function licenceNo(s: PackData["student"]): string {
   return s.sahpaNumber || s.licenceNumber || "";
 }
 
-/** Flights/hours for the course type: last 12 months and since commencing. */
+/** Flights/hours for the initial application: EVERY logbook flight counts,
+ * whatever its equipment type (Riaan, 15 Oct 2026). Flights = launches. */
 function courseStats(d: PackData) {
-  const match = (t: string) => (d.trainingType === "pg" ? t === "pg" || t === "winching" : t === d.trainingType);
   const from = new Date(d.signedOffAt);
   from.setFullYear(from.getFullYear() - 1);
-  const all = d.logbook.filter((e) => match(e.flightType));
+  const all = d.logbook;
   const yr = all.filter((e) => e.date >= from);
   const hrs = (rows: typeof all) => (Math.round((rows.reduce((a, e) => a + e.durationMinutes, 0) / 60) * 10) / 10).toFixed(1);
-  return { yearFlights: yr.length, yearHours: hrs(yr), totalFlights: all.length, totalHours: hrs(all) };
+  const fl = (rows: typeof all) => rows.reduce((a, e) => a + Math.max(1, e.launches || 1), 0);
+  return { yearFlights: fl(yr), yearHours: hrs(yr), totalFlights: fl(all), totalHours: hrs(all) };
 }
 
 // ---------------------------------------------------------------------------

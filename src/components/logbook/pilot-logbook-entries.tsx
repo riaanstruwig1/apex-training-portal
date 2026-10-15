@@ -6,6 +6,7 @@ import { updateLogbookEntry, deleteLogbookEntry, type LogEntryState } from "@/li
 import { useActionState } from "react";
 import {
   computeAccumulatedMinutes,
+  computeFlightNumbers,
   formatHoursMinutes,
   formatExerciseCodes,
   formatFlightType,
@@ -156,6 +157,7 @@ export default function PilotLogbookEntries({
 }) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const accumulatedById = computeAccumulatedMinutes(entries);
+  const flightNoById = computeFlightNumbers(entries);
 
   if (entries.length === 0) {
     return (
@@ -237,6 +239,7 @@ export default function PilotLogbookEntries({
         <table className="w-full text-left text-sm">
           <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
             <tr>
+              <th className="px-3 py-2">Flight No.</th>
               <th className="px-3 py-2">Date</th>
               <th className="px-3 py-2">Site</th>
               <th className="px-3 py-2">Aircraft</th>
@@ -254,12 +257,13 @@ export default function PilotLogbookEntries({
             {entries.map((e) =>
               editingId === e.id ? (
                 <tr key={e.id}>
-                  <td colSpan={11} className="px-3 py-3">
+                  <td colSpan={12} className="px-3 py-3">
                     <EditForm entry={e} instructors={instructors} onDone={() => setEditingId(null)} />
                   </td>
                 </tr>
               ) : (
                 <tr key={e.id}>
+                  <td className="px-3 py-2 font-semibold text-slate-700">{flightNoById.get(e.id)}</td>
                   <td className="px-3 py-2 whitespace-nowrap">{new Date(e.date).toLocaleDateString()}</td>
                   <td className="px-3 py-2">{e.site}</td>
                   <td className="px-3 py-2">{e.aircraftType}</td>

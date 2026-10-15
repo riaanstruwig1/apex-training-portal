@@ -28,16 +28,16 @@ const M = 28; // margin
 const ROW_H = 17;
 
 const COLS: { key: string; label: string; w: number }[] = [
-  { key: "n", label: "#", w: 24 },
+  { key: "n", label: "Flight No.", w: 38 },
   { key: "date", label: "Date", w: 52 },
   { key: "site", label: "Site", w: 110 },
-  { key: "aircraft", label: "Aircraft / equipment", w: 150 },
+  { key: "aircraft", label: "Aircraft / equipment", w: 118 },
   { key: "type", label: "Type", w: 34 },
   { key: "dur", label: "Time", w: 38 },
   { key: "launches", label: "Launches", w: 42 },
   { key: "ex", label: "Exercises", w: 92 },
   { key: "instr", label: "Instructor", w: 90 },
-  { key: "signed", label: "Signed off by instructor", w: 178 },
+  { key: "signed", label: "Signed off by instructor", w: 150 },
 ];
 
 function hm(min: number): string {
