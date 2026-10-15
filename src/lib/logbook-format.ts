@@ -109,3 +109,43 @@ export function chronologicalCompare(
   if (c !== 0) return c;
   return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
 }
+
+// ---------------------------------------------------------------------------
+// Wing / motor / wind (15 Oct 2026, Riaan)
+// ---------------------------------------------------------------------------
+export const WIND_DIRECTIONS = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"] as const;
+export const WIND_SPEEDS = ["0-5 km/h", "5-10 km/h", "10-15 km/h", "15-20 km/h", "20-25 km/h", ">25 km/h"] as const;
+
+/** "Wing / Motor" text kept in aircraftType for the pack, CSV import etc. */
+export function composeAircraft(wing: string, motor?: string | null): string {
+  const w = wing.trim();
+  const m = (motor ?? "").trim();
+  return m ? `${w} / ${m}` : w;
+}
+
+/** Wing and motor of an entry; older entries only have the combined text. */
+export function splitAircraft(e: { aircraftType: string; wing?: string | null; motor?: string | null }): { wing: string; motor: string } {
+  if (e.wing) return { wing: e.wing, motor: e.motor ?? "" };
+  const i = e.aircraftType.indexOf(" / ");
+  if (i < 0) return { wing: e.aircraftType, motor: "" };
+  return { wing: e.aircraftType.slice(0, i).trim(), motor: e.aircraftType.slice(i + 3).trim() };
+}
+
+/** Distinct previously used wings / motors (most recent first) for the dropdown suggestions. */
+export function aircraftOptionsFrom(
+  entries: { aircraftType: string; wing?: string | null; motor?: string | null; date: Date }[]
+): { wings: string[]; motors: string[] } {
+  const sorted = [...entries].sort((a, b) => b.date.getTime() - a.date.getTime());
+  const wings: string[] = [];
+  const motors: string[] = [];
+  for (const e of sorted) {
+    const { wing, motor } = splitAircraft(e);
+    if (wing && !wings.includes(wing)) wings.push(wing);
+    if (motor && !motors.includes(motor)) motors.push(motor);
+  }
+  return { wings, motors };
+}
+
+export function formatWind(e: { windDirection?: string | null; windSpeed?: string | null }): string {
+  return [e.windDirection, e.windSpeed].filter(Boolean).join(" ") || "—";
+}

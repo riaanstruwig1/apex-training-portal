@@ -371,6 +371,13 @@ export const flightLogEntries = sqliteTable("flight_log_entries", {
     // CHECK constraint -- see the 0004 migration's own note).
     enum: ["pg", "ppg", "ppt", "winching"],
   }).notNull(),
+  // Wing and motor logged separately (15 Oct 2026, Riaan); aircraftType above
+  // still holds the combined "Wing / Motor" text for the pack, CSV import etc.
+  wing: text("wing"),
+  motor: text("motor"),
+  // Wind at the time of the flight: compass point + speed band (km/h).
+  windDirection: text("wind_direction"),
+  windSpeed: text("wind_speed"),
   durationMinutes: integer("duration_minutes").notNull(),
   launches: integer("launches").notNull().default(1),
   exerciseCodesCovered: text("exercise_codes_covered"), // comma-separated codes
@@ -464,7 +471,7 @@ export const pilotProfiles = sqliteTable("pilot_profiles", {
   // expiry + first-issued dates, exactly like a renewal).
   awaitingCaaLicenceSince: integer("awaiting_caa_licence_since", { mode: "timestamp" }),
   status: text("status", {
-    enum: ["pending_verification", "active", "suspended"],
+    enum: ["pending_verification", "active", "suspended", "archived"],
   })
     .notNull()
     .default("pending_verification"),

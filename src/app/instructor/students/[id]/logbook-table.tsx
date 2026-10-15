@@ -13,6 +13,9 @@ import type { getLogbookEntries } from "@/lib/logbook";
 import {
   computeAccumulatedMinutes,
   computeFlightNumbers,
+  splitAircraft,
+  formatWind,
+  aircraftOptionsFrom,
   formatHoursMinutes,
   formatExerciseCodes,
   formatFlightType,
@@ -28,11 +31,13 @@ function EditForm({
   entry,
   studentId,
   instructors,
+  aircraftOptions,
   onDone,
 }: {
   entry: Awaited<ReturnType<typeof getLogbookEntries>>[number];
   studentId: string;
   instructors: { id: string; name: string }[];
+  aircraftOptions: { wings: string[]; motors: string[] };
   onDone: () => void;
 }) {
   const boundAction = adminUpdateLogbookEntry.bind(null, entry.id, studentId);
@@ -52,10 +57,14 @@ function EditForm({
         checklistLabel="Exercises covered"
         showChecklistCode
         instructors={instructors}
+        aircraftOptions={aircraftOptions}
         defaultValues={{
           date: entry.date.toISOString().slice(0, 10),
           site: entry.site,
-          aircraftType: entry.aircraftType,
+          wing: splitAircraft(entry).wing,
+          motor: splitAircraft(entry).motor,
+          windDirection: entry.windDirection ?? undefined,
+          windSpeed: entry.windSpeed ?? undefined,
           flightType: entry.flightType,
           durationMinutes: entry.durationMinutes,
           launches: entry.launches,
@@ -225,8 +234,16 @@ function LogbookEntryCard({
       </div>
       <dl className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-sm">
         <div>
-          <dt className="text-xs text-slate-400">Aircraft</dt>
-          <dd className="text-slate-700">{entry.aircraftType}</dd>
+          <dt className="text-xs text-slate-400">Wing</dt>
+          <dd className="text-slate-700">{splitAircraft(entry).wing}</dd>
+        </div>
+        <div>
+          <dt className="text-xs text-slate-400">Motor</dt>
+          <dd className="text-slate-700">{splitAircraft(entry).motor || "—"}</dd>
+        </div>
+        <div>
+          <dt className="text-xs text-slate-400">Wind</dt>
+          <dd className="text-slate-700">{formatWind(entry)}</dd>
         </div>
         <div>
           <dt className="text-xs text-slate-400">Duration</dt>
@@ -292,6 +309,7 @@ export default function LogbookTable({
 
   const accumulatedById = computeAccumulatedMinutes(entries);
   const flightNoById = computeFlightNumbers(entries);
+  const aircraftOptions = aircraftOptionsFrom(entries);
 
   return (
     <>
@@ -304,6 +322,7 @@ export default function LogbookTable({
               entry={e}
               studentId={studentId}
               instructors={instructors}
+              aircraftOptions={aircraftOptions}
               onDone={() => setEditingId(null)}
             />
           ) : (
@@ -326,7 +345,9 @@ export default function LogbookTable({
               <th className="px-3 py-2">Flight No.</th>
               <th className="px-3 py-2">Date</th>
               <th className="px-3 py-2">Site</th>
-              <th className="px-3 py-2">Aircraft</th>
+              <th className="px-3 py-2">Wing</th>
+              <th className="px-3 py-2">Motor</th>
+              <th className="px-3 py-2">Wind</th>
               <th className="px-3 py-2">Type</th>
               <th className="px-3 py-2">Duration</th>
               <th className="px-3 py-2">Accumulated</th>
@@ -341,11 +362,12 @@ export default function LogbookTable({
             {entries.map((e) =>
               editingId === e.id ? (
                 <tr key={e.id}>
-                  <td colSpan={12} className="px-3 py-3">
+                  <td colSpan={14} className="px-3 py-3">
                     <EditForm
                       entry={e}
                       studentId={studentId}
                       instructors={instructors}
+                      aircraftOptions={aircraftOptions}
                       onDone={() => setEditingId(null)}
                     />
                   </td>
@@ -357,7 +379,9 @@ export default function LogbookTable({
                     {new Date(e.date).toLocaleDateString()}
                   </td>
                   <td className="px-3 py-2">{e.site}</td>
-                  <td className="px-3 py-2">{e.aircraftType}</td>
+                  <td className="px-3 py-2">{splitAircraft(e).wing}</td>
+                  <td className="px-3 py-2">{splitAircraft(e).motor || "—"}</td>
+                  <td className="px-3 py-2 whitespace-nowrap">{formatWind(e)}</td>
                   <td className="px-3 py-2">{formatFlightType(e.flightType)}</td>
                   <td className="px-3 py-2">{e.durationMinutes} min</td>
                   <td className="px-3 py-2 whitespace-nowrap text-slate-500">

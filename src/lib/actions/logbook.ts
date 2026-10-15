@@ -8,6 +8,7 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/db";
 import { flightLogEntries, users } from "@/db/schema";
 import { requireStudentOrPilot, requireInstructor } from "@/lib/auth/dal";
+import { WIND_DIRECTIONS, WIND_SPEEDS, composeAircraft } from "@/lib/logbook-format";
 
 /** The logbook lives at a different URL for a student vs. a pilot-side
  * account (pilot, or a CFI/instructor's own linked pilot profile) even
@@ -20,7 +21,10 @@ function logbookPathFor(role: string): string {
 const LogEntrySchema = z.object({
   date: z.string().min(1, { error: "Enter the flight date." }),
   site: z.string().trim().min(1, { error: "Enter the site/location." }),
-  aircraftType: z.string().trim().min(1, { error: "Enter the wing/motor used." }),
+  wing: z.string().trim().min(1, { error: "Enter the wing used." }),
+  motor: z.string().trim().optional(),
+  windDirection: z.enum(WIND_DIRECTIONS).optional(),
+  windSpeed: z.enum(WIND_SPEEDS).optional(),
   flightType: z.enum(["pg", "ppg", "ppt", "winching"]),
   durationMinutes: z.coerce.number().int().min(1, { error: "Enter a duration in minutes." }),
   launches: z.coerce.number().int().min(1).default(1),
@@ -44,7 +48,10 @@ export async function addLogbookEntry(
   const parsed = LogEntrySchema.safeParse({
     date: formData.get("date"),
     site: formData.get("site"),
-    aircraftType: formData.get("aircraftType"),
+    wing: formData.get("wing"),
+    motor: formData.get("motor") || undefined,
+    windDirection: formData.get("windDirection") || undefined,
+    windSpeed: formData.get("windSpeed") || undefined,
     flightType: formData.get("flightType"),
     durationMinutes: formData.get("durationMinutes"),
     launches: formData.get("launches") || 1,
@@ -58,6 +65,7 @@ export async function addLogbookEntry(
   }
 
   const data = parsed.data;
+  const aircraftType = composeAircraft(data.wing, data.motor);
 
   // Trust but verify: confirm the picked instructorUserId is actually a
   // current CFI/instructor account before storing it, rather than trusting
@@ -85,7 +93,11 @@ export async function addLogbookEntry(
     studentId: user.id,
     date: new Date(data.date),
     site: data.site,
-    aircraftType: data.aircraftType,
+    aircraftType,
+    wing: data.wing,
+    motor: data.motor || null,
+    windDirection: data.windDirection ?? null,
+    windSpeed: data.windSpeed ?? null,
     flightType: data.flightType,
     durationMinutes: data.durationMinutes,
     launches: data.launches,
@@ -130,7 +142,10 @@ export async function updateLogbookEntry(
   const parsed = LogEntrySchema.safeParse({
     date: formData.get("date"),
     site: formData.get("site"),
-    aircraftType: formData.get("aircraftType"),
+    wing: formData.get("wing"),
+    motor: formData.get("motor") || undefined,
+    windDirection: formData.get("windDirection") || undefined,
+    windSpeed: formData.get("windSpeed") || undefined,
     flightType: formData.get("flightType"),
     durationMinutes: formData.get("durationMinutes"),
     launches: formData.get("launches") || 1,
@@ -142,6 +157,7 @@ export async function updateLogbookEntry(
     return { error: parsed.error.issues[0]?.message ?? "Invalid input." };
   }
   const data = parsed.data;
+  const aircraftType = composeAircraft(data.wing, data.motor);
 
   let instructorUserId: string | null = null;
   if (data.instructorUserId) {
@@ -158,7 +174,11 @@ export async function updateLogbookEntry(
     .set({
       date: new Date(data.date),
       site: data.site,
-      aircraftType: data.aircraftType,
+      aircraftType,
+      wing: data.wing,
+      motor: data.motor || null,
+      windDirection: data.windDirection ?? null,
+      windSpeed: data.windSpeed ?? null,
       flightType: data.flightType,
       durationMinutes: data.durationMinutes,
       launches: data.launches,
@@ -210,7 +230,10 @@ export async function adminUpdateLogbookEntry(
   const parsed = LogEntrySchema.safeParse({
     date: formData.get("date"),
     site: formData.get("site"),
-    aircraftType: formData.get("aircraftType"),
+    wing: formData.get("wing"),
+    motor: formData.get("motor") || undefined,
+    windDirection: formData.get("windDirection") || undefined,
+    windSpeed: formData.get("windSpeed") || undefined,
     flightType: formData.get("flightType"),
     durationMinutes: formData.get("durationMinutes"),
     launches: formData.get("launches") || 1,
@@ -222,6 +245,7 @@ export async function adminUpdateLogbookEntry(
     return { error: parsed.error.issues[0]?.message ?? "Invalid input." };
   }
   const data = parsed.data;
+  const aircraftType = composeAircraft(data.wing, data.motor);
 
   let instructorUserId: string | null = null;
   if (data.instructorUserId) {
@@ -238,7 +262,11 @@ export async function adminUpdateLogbookEntry(
     .set({
       date: new Date(data.date),
       site: data.site,
-      aircraftType: data.aircraftType,
+      aircraftType,
+      wing: data.wing,
+      motor: data.motor || null,
+      windDirection: data.windDirection ?? null,
+      windSpeed: data.windSpeed ?? null,
       flightType: data.flightType,
       durationMinutes: data.durationMinutes,
       launches: data.launches,

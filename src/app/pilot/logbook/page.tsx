@@ -1,4 +1,5 @@
 import { requirePilot } from "@/lib/auth/dal";
+import { splitAircraft, aircraftOptionsFrom } from "@/lib/logbook-format";
 import { getLogbookEntries, getInstructorRoster } from "@/lib/logbook";
 import LogEntryForm from "@/components/logbook/log-entry-form";
 import PilotLogbookEntries from "@/components/logbook/pilot-logbook-entries";
@@ -36,7 +37,9 @@ export default async function PilotLogbookPage() {
         <LogEntryForm
           mode="pilot"
           defaultSite={lastEntry?.site}
-          defaultAircraftType={lastEntry?.aircraftType}
+          defaultWing={lastEntry ? splitAircraft(lastEntry).wing : undefined}
+          defaultMotor={lastEntry ? splitAircraft(lastEntry).motor : undefined}
+          aircraftOptions={aircraftOptionsFrom(entries)}
           instructors={instructors}
         />
       </div>

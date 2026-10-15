@@ -71,6 +71,8 @@ export async function gatherPackData(studentUserId: string, input: SignoffInput)
       flightType: flightLogEntries.flightType,
       durationMinutes: flightLogEntries.durationMinutes,
       launches: flightLogEntries.launches,
+      windDirection: flightLogEntries.windDirection,
+      windSpeed: flightLogEntries.windSpeed,
       exerciseCodes: flightLogEntries.exerciseCodesCovered,
       verified: flightLogEntries.verified,
       verifiedAt: flightLogEntries.verifiedAt,

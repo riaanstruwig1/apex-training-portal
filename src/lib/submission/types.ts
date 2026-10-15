@@ -24,6 +24,8 @@ export type PackLogEntry = {
   flightType: string;
   durationMinutes: number;
   launches: number;
+  windDirection: string | null;
+  windSpeed: string | null;
   exerciseCodes: string | null;
   verified: boolean;
   verifiedByName: string | null;

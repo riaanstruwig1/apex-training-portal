@@ -23,7 +23,7 @@ export type PilotSummary = {
  * account or a CFI/instructor who is also a pilot -- see the account-model
  * decision in the status doc. Pending (not-yet-approved) applicants are
  * excluded; they're reviewed via the sign-up verification queue instead. */
-export async function getAllPilotsWithSummary(): Promise<PilotSummary[]> {
+export async function getAllPilotsWithSummary(status: "active" | "archived" = "active"): Promise<PilotSummary[]> {
   // NOTE: selects pilotProfiles.userId (not users.id) for the user-id field
   // -- selecting .id from both joined tables in one query collides under
   // this project's drizzle-orm/sqlite-proxy setup (both come back mapped to
@@ -47,7 +47,7 @@ export async function getAllPilotsWithSummary(): Promise<PilotSummary[]> {
     })
     .from(pilotProfiles)
     .innerJoin(users, eq(pilotProfiles.userId, users.id))
-    .where(and(eq(pilotProfiles.status, "active"), eq(users.accountStatus, "active")));
+    .where(and(eq(pilotProfiles.status, status), eq(users.accountStatus, "active")));
 
   const endorsements = await db.select().from(pilotEndorsements);
   const byProfile = new Map<string, { verified: number; pending: number }>();

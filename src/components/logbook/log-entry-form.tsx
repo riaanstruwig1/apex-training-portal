@@ -9,7 +9,9 @@ import LogEntryFields from "@/components/logbook/log-entry-fields";
 export default function LogEntryForm({
   mode,
   defaultSite,
-  defaultAircraftType,
+  defaultWing,
+  defaultMotor,
+  aircraftOptions,
   instructors,
 }: {
   // "V23" item 11 (25 Sep 2026): the pilot side of the logbook shows a fixed
@@ -17,7 +19,9 @@ export default function LogEntryForm({
   // list -- see log-entry-fields.tsx and logbook-flight-tasks.ts.
   mode: "student" | "pilot";
   defaultSite?: string;
-  defaultAircraftType?: string;
+  defaultWing?: string;
+  defaultMotor?: string;
+  aircraftOptions?: { wings: string[]; motors: string[] };
   instructors: { id: string; name: string }[];
 }) {
   const [state, action, pending] = useActionState<LogEntryState, FormData>(
@@ -32,7 +36,8 @@ export default function LogEntryForm({
         checklistLabel={mode === "pilot" ? "Flight Task" : "Exercises covered"}
         showChecklistCode={mode === "student"}
         instructors={instructors}
-        defaultValues={{ site: defaultSite, aircraftType: defaultAircraftType }}
+        aircraftOptions={aircraftOptions}
+        defaultValues={{ site: defaultSite, wing: defaultWing, motor: defaultMotor }}
       />
 
       {state?.error && (

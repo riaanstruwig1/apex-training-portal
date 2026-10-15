@@ -1,6 +1,9 @@
 import {
   computeAccumulatedMinutes,
   computeFlightNumbers,
+  splitAircraft,
+  formatWind,
+  aircraftOptionsFrom,
   formatHoursMinutes,
   formatExerciseCodes,
   formatFlightType,
@@ -67,8 +70,16 @@ export default function LogbookEntries({
             </div>
             <dl className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-sm">
               <div>
-                <dt className="text-xs text-slate-400">Aircraft</dt>
-                <dd className="text-slate-700">{e.aircraftType}</dd>
+                <dt className="text-xs text-slate-400">Wing</dt>
+                <dd className="text-slate-700">{splitAircraft(e).wing}</dd>
+              </div>
+              <div>
+                <dt className="text-xs text-slate-400">Motor</dt>
+                <dd className="text-slate-700">{splitAircraft(e).motor || "—"}</dd>
+              </div>
+              <div>
+                <dt className="text-xs text-slate-400">Wind</dt>
+                <dd className="text-slate-700">{formatWind(e)}</dd>
               </div>
               <div>
                 <dt className="text-xs text-slate-400">Type</dt>
@@ -113,7 +124,9 @@ export default function LogbookEntries({
               <th className="px-3 py-2">Flight No.</th>
               <th className="px-3 py-2">Date</th>
               <th className="px-3 py-2">Site</th>
-              <th className="px-3 py-2">Aircraft</th>
+              <th className="px-3 py-2">Wing</th>
+              <th className="px-3 py-2">Motor</th>
+              <th className="px-3 py-2">Wind</th>
               <th className="px-3 py-2">Type</th>
               <th className="px-3 py-2">Duration</th>
               <th className="px-3 py-2">Accumulated</th>
@@ -131,7 +144,9 @@ export default function LogbookEntries({
                   {new Date(e.date).toLocaleDateString()}
                 </td>
                 <td className="px-3 py-2">{e.site}</td>
-                <td className="px-3 py-2">{e.aircraftType}</td>
+                <td className="px-3 py-2">{splitAircraft(e).wing}</td>
+                <td className="px-3 py-2">{splitAircraft(e).motor || "—"}</td>
+                <td className="px-3 py-2 whitespace-nowrap">{formatWind(e)}</td>
                 <td className="px-3 py-2">{formatFlightType(e.flightType)}</td>
                 <td className="px-3 py-2">{e.durationMinutes} min</td>
                 <td className="px-3 py-2 whitespace-nowrap text-slate-500">

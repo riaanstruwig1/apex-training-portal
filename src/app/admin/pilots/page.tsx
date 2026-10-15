@@ -3,6 +3,8 @@ import { getAllPilotsWithSummary } from "@/lib/pilots";
 import { getPendingInvites } from "@/lib/invites";
 import { isWhatsAppConfigured } from "@/lib/whatsapp";
 import InvitesBlock from "./invites-block";
+import PilotRowActions from "./pilot-row-actions";
+import { getCurrentUser } from "@/lib/auth/dal";
 
 const roleLabel: Record<string, string> = {
   pilot: "Pilot",
@@ -50,7 +52,13 @@ function licenceStatus(
 }
 
 export default async function PilotsPage() {
-  const [pilots, invites] = await Promise.all([getAllPilotsWithSummary(), getPendingInvites("pilot")]);
+  const [pilots, invites, archivedPilots, me] = await Promise.all([
+    getAllPilotsWithSummary(),
+    getPendingInvites("pilot"),
+    getAllPilotsWithSummary("archived"),
+    getCurrentUser(),
+  ]);
+  const isCFI = me?.role === "cfi";
   const pendingTotal = pilots.reduce((sum, p) => sum + p.pendingCount, 0);
   const renewalPending = pilots.filter((p) => p.caaLicenceRenewalSubmittedAt).length;
 
@@ -134,6 +142,11 @@ export default async function PilotsPage() {
                 >
                   Open
                 </Link>
+                {isCFI && p.role === "pilot" && (
+                  <div className="mt-3">
+                    <PilotRowActions pilotId={p.id} archived={false} />
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -150,6 +163,7 @@ export default async function PilotsPage() {
                   <th className="px-4 py-3">Pending</th>
                   <th className="px-4 py-3">Licence</th>
                   <th className="px-4 py-3"></th>
+                  {isCFI && <th className="px-4 py-3"></th>}
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -180,12 +194,33 @@ export default async function PilotsPage() {
                         Open
                       </Link>
                     </td>
+                    {isCFI && (
+                      <td className="px-4 py-3">
+                        {p.role === "pilot" && <PilotRowActions pilotId={p.id} archived={false} />}
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
         </>
+      )}
+
+      {isCFI && archivedPilots.length > 0 && (
+        <details className="mt-8 rounded-xl border border-slate-200 bg-white">
+          <summary className="cursor-pointer px-4 py-3 text-sm font-semibold text-slate-600">
+            Archived pilots ({archivedPilots.length})
+          </summary>
+          <ul className="divide-y divide-slate-100">
+            {archivedPilots.map((p) => (
+              <li key={p.id} className="flex items-center justify-between gap-3 px-4 py-3 text-sm">
+                <span className="text-slate-700">{p.name}</span>
+                {p.role === "pilot" && <PilotRowActions pilotId={p.id} archived />}
+              </li>
+            ))}
+          </ul>
+        </details>
       )}
 
       <InvitesBlock audience="pilot" invites={invites} configured={isWhatsAppConfigured()} />

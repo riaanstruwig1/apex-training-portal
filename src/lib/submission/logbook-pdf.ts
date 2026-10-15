@@ -30,14 +30,15 @@ const ROW_H = 17;
 const COLS: { key: string; label: string; w: number }[] = [
   { key: "n", label: "Flight No.", w: 38 },
   { key: "date", label: "Date", w: 52 },
-  { key: "site", label: "Site", w: 110 },
-  { key: "aircraft", label: "Aircraft / equipment", w: 118 },
+  { key: "site", label: "Site", w: 96 },
+  { key: "aircraft", label: "Wing / motor", w: 130 },
   { key: "type", label: "Type", w: 34 },
   { key: "dur", label: "Time", w: 38 },
-  { key: "launches", label: "Launches", w: 42 },
-  { key: "ex", label: "Exercises", w: 92 },
-  { key: "instr", label: "Instructor", w: 90 },
-  { key: "signed", label: "Signed off by instructor", w: 150 },
+  { key: "launches", label: "Launches", w: 40 },
+  { key: "wind", label: "Wind", w: 62 },
+  { key: "ex", label: "Exercises", w: 70 },
+  { key: "instr", label: "Instructor", w: 78 },
+  { key: "signed", label: "Signed off by instructor", w: 130 },
 ];
 
 function hm(min: number): string {
@@ -127,6 +128,7 @@ export async function buildLogbookPdf(d: PackData, photoJpeg: Buffer | null): Pr
       type: typeLabel(e.flightType),
       dur: hm(e.durationMinutes),
       launches: String(e.launches),
+      wind: [e.windDirection, e.windSpeed].filter(Boolean).join(" "),
       ex: e.exerciseCodes ?? "",
       instr: e.instructorName ?? "",
       signed,

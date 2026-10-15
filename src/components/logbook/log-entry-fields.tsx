@@ -1,4 +1,4 @@
-import { FLIGHT_TYPE_OPTIONS } from "@/lib/logbook-format";
+import { FLIGHT_TYPE_OPTIONS, WIND_DIRECTIONS, WIND_SPEEDS } from "@/lib/logbook-format";
 
 /**
  * The shared set of flight-log input fields -- factored out of the "Add
@@ -21,6 +21,7 @@ export default function LogEntryFields({
   showChecklistCode = false,
   instructors,
   defaultValues,
+  aircraftOptions,
 }: {
   checklist: { code: string; label: string }[];
   checklistLabel: string;
@@ -30,10 +31,15 @@ export default function LogEntryFields({
   // opt-in rather than always shown.
   showChecklistCode?: boolean;
   instructors: { id: string; name: string }[];
+  // Previously used wings / motors, offered as a drop-down list while typing.
+  aircraftOptions?: { wings: string[]; motors: string[] };
   defaultValues?: {
     date?: string; // "YYYY-MM-DD"
     site?: string;
-    aircraftType?: string;
+    wing?: string;
+    motor?: string;
+    windDirection?: string;
+    windSpeed?: string;
     flightType?: string;
     durationMinutes?: number;
     launches?: number;
@@ -67,16 +73,73 @@ export default function LogEntryFields({
         />
       </div>
       <div>
-        <label className="block text-xs font-medium text-slate-700">
-          Wing / motor used
-        </label>
+        <label className="block text-xs font-medium text-slate-700">Wing</label>
         <input
-          name="aircraftType"
+          name="wing"
           required
-          defaultValue={defaultValues?.aircraftType}
-          placeholder="Ozone MotoP 24 / Cumulus"
+          list="wing-options"
+          autoComplete="off"
+          defaultValue={defaultValues?.wing}
+          placeholder="Ozone Rush 6"
           className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
         />
+        <datalist id="wing-options">
+          {(aircraftOptions?.wings ?? []).map((w) => (
+            <option key={w} value={w} />
+          ))}
+        </datalist>
+      </div>
+      <div>
+        <label className="block text-xs font-medium text-slate-700">
+          Motor <span className="text-slate-400">(leave empty for a paraglider flight)</span>
+        </label>
+        <input
+          name="motor"
+          list="motor-options"
+          autoComplete="off"
+          defaultValue={defaultValues?.motor}
+          placeholder="Paramotor Rotex 503"
+          className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+        />
+        <datalist id="motor-options">
+          {(aircraftOptions?.motors ?? []).map((m) => (
+            <option key={m} value={m} />
+          ))}
+        </datalist>
+      </div>
+      <div>
+        <label className="block text-xs font-medium text-slate-700">
+          Wind direction <span className="text-slate-400">(optional)</span>
+        </label>
+        <select
+          name="windDirection"
+          defaultValue={defaultValues?.windDirection ?? ""}
+          className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+        >
+          <option value="">-</option>
+          {WIND_DIRECTIONS.map((d) => (
+            <option key={d} value={d}>
+              {d}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div>
+        <label className="block text-xs font-medium text-slate-700">
+          Wind speed <span className="text-slate-400">(optional)</span>
+        </label>
+        <select
+          name="windSpeed"
+          defaultValue={defaultValues?.windSpeed ?? ""}
+          className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+        >
+          <option value="">-</option>
+          {WIND_SPEEDS.map((w) => (
+            <option key={w} value={w}>
+              {w}
+            </option>
+          ))}
+        </select>
       </div>
       <div>
         <label className="block text-xs font-medium text-slate-700">Flight type</label>

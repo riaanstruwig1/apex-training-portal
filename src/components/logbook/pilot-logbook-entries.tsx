@@ -7,6 +7,9 @@ import { useActionState } from "react";
 import {
   computeAccumulatedMinutes,
   computeFlightNumbers,
+  splitAircraft,
+  formatWind,
+  aircraftOptionsFrom,
   formatHoursMinutes,
   formatExerciseCodes,
   formatFlightType,
@@ -81,10 +84,12 @@ function DeleteButton({ entryId }: { entryId: string }) {
 function EditForm({
   entry,
   instructors,
+  aircraftOptions,
   onDone,
 }: {
   entry: Entry;
   instructors: { id: string; name: string }[];
+  aircraftOptions: { wings: string[]; motors: string[] };
   onDone: () => void;
 }) {
   const boundAction = updateLogbookEntry.bind(null, entry.id);
@@ -103,10 +108,14 @@ function EditForm({
         checklist={PILOT_FLIGHT_TASKS}
         checklistLabel="Flight Task"
         instructors={instructors}
+        aircraftOptions={aircraftOptions}
         defaultValues={{
           date: entry.date.toISOString().slice(0, 10),
           site: entry.site,
-          aircraftType: entry.aircraftType,
+          wing: splitAircraft(entry).wing,
+          motor: splitAircraft(entry).motor,
+          windDirection: entry.windDirection ?? undefined,
+          windSpeed: entry.windSpeed ?? undefined,
           flightType: entry.flightType,
           durationMinutes: entry.durationMinutes,
           launches: entry.launches,
@@ -158,6 +167,7 @@ export default function PilotLogbookEntries({
   const [editingId, setEditingId] = useState<string | null>(null);
   const accumulatedById = computeAccumulatedMinutes(entries);
   const flightNoById = computeFlightNumbers(entries);
+  const aircraftOptions = aircraftOptionsFrom(entries);
 
   if (entries.length === 0) {
     return (
@@ -173,7 +183,7 @@ export default function PilotLogbookEntries({
       <div className="space-y-3 sm:hidden">
         {entries.map((e) =>
           editingId === e.id ? (
-            <EditForm key={e.id} entry={e} instructors={instructors} onDone={() => setEditingId(null)} />
+            <EditForm key={e.id} entry={e} instructors={instructors} aircraftOptions={aircraftOptions} onDone={() => setEditingId(null)} />
           ) : (
             <div key={e.id} className="rounded-xl border border-slate-200 bg-white p-4">
               <div className="mb-2 flex items-start justify-between gap-2">
@@ -187,8 +197,16 @@ export default function PilotLogbookEntries({
               </div>
               <dl className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-sm">
                 <div>
-                  <dt className="text-xs text-slate-400">Aircraft</dt>
-                  <dd className="text-slate-700">{e.aircraftType}</dd>
+                  <dt className="text-xs text-slate-400">Wing</dt>
+                  <dd className="text-slate-700">{splitAircraft(e).wing}</dd>
+                </div>
+                <div>
+                  <dt className="text-xs text-slate-400">Motor</dt>
+                  <dd className="text-slate-700">{splitAircraft(e).motor || "—"}</dd>
+                </div>
+                <div>
+                  <dt className="text-xs text-slate-400">Wind</dt>
+                  <dd className="text-slate-700">{formatWind(e)}</dd>
                 </div>
                 <div>
                   <dt className="text-xs text-slate-400">Type</dt>
@@ -242,7 +260,9 @@ export default function PilotLogbookEntries({
               <th className="px-3 py-2">Flight No.</th>
               <th className="px-3 py-2">Date</th>
               <th className="px-3 py-2">Site</th>
-              <th className="px-3 py-2">Aircraft</th>
+              <th className="px-3 py-2">Wing</th>
+              <th className="px-3 py-2">Motor</th>
+              <th className="px-3 py-2">Wind</th>
               <th className="px-3 py-2">Type</th>
               <th className="px-3 py-2">Duration</th>
               <th className="px-3 py-2">Accumulated</th>
@@ -257,8 +277,8 @@ export default function PilotLogbookEntries({
             {entries.map((e) =>
               editingId === e.id ? (
                 <tr key={e.id}>
-                  <td colSpan={12} className="px-3 py-3">
-                    <EditForm entry={e} instructors={instructors} onDone={() => setEditingId(null)} />
+                  <td colSpan={14} className="px-3 py-3">
+                    <EditForm entry={e} instructors={instructors} aircraftOptions={aircraftOptions} onDone={() => setEditingId(null)} />
                   </td>
                 </tr>
               ) : (
@@ -266,7 +286,9 @@ export default function PilotLogbookEntries({
                   <td className="px-3 py-2 font-semibold text-slate-700">{flightNoById.get(e.id)}</td>
                   <td className="px-3 py-2 whitespace-nowrap">{new Date(e.date).toLocaleDateString()}</td>
                   <td className="px-3 py-2">{e.site}</td>
-                  <td className="px-3 py-2">{e.aircraftType}</td>
+                  <td className="px-3 py-2">{splitAircraft(e).wing}</td>
+                  <td className="px-3 py-2">{splitAircraft(e).motor || "—"}</td>
+                  <td className="px-3 py-2 whitespace-nowrap">{formatWind(e)}</td>
                   <td className="px-3 py-2">{formatFlightType(e.flightType)}</td>
                   <td className="px-3 py-2">{e.durationMinutes} min</td>
                   <td className="px-3 py-2 whitespace-nowrap text-slate-500">
