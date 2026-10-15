@@ -363,6 +363,13 @@ export default async function InstructorDashboard() {
     <div>
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-xl font-semibold text-slate-900">Students</h1>
+        <div className="flex items-center gap-2">
+        <a
+          href="/api/students-export"
+          className="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+        >
+          Download Excel
+        </a>
         {isCFI && (
           <Link
             href="/instructor/students/new"
@@ -371,6 +378,7 @@ export default async function InstructorDashboard() {
             Add student
           </Link>
         )}
+        </div>
       </div>
 
       {pendingApplicants.length > 0 && (
