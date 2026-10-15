@@ -104,7 +104,7 @@ export function SignoffForm(props: {
       <button disabled={pending} className="rounded-md bg-blue-700 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-800 disabled:opacity-50">
         {pending ? "Signing off and building pack..." : "Sign off student - award Solo wings"}
       </button>
-      <p className="text-xs text-slate-500">This moves the student to Pilots (pending licence from CAA) and builds the SAHPA/CAA submission pack.</p>
+      <p className="text-xs text-slate-500">The student stays on the Student list until his CAA licence is submitted. This builds the SAHPA/CAA submission pack.</p>
     </form>
   );
 }

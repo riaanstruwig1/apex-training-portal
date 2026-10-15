@@ -144,7 +144,8 @@ export async function signOffStudent(_prev: SignoffState, formData: FormData): P
     packGeneratedAt: now,
   });
 
-  await db.update(users).set({ role: "pilot" }).where(eq(users.id, studentId));
+  // The student stays on the Student list (and can be re-signed / the pack resubmitted)
+  // until his CAA licence is uploaded -- see lib/promote.ts.
   if (existingPilot) {
     await db.update(pilotProfiles).set({ awaitingCaaLicenceSince: now, status: "active" }).where(eq(pilotProfiles.id, existingPilot.id));
   } else {
@@ -163,7 +164,7 @@ export async function signOffStudent(_prev: SignoffState, formData: FormData): P
   revalidatePath(`/instructor/students/${studentId}`);
   revalidatePath("/instructor/pilots");
   const wa = await notifySignoff(studentId, staff.id, student.name, staff.name, TRAINING_LABEL[trainingType]).catch(() => "WhatsApp could not be sent.");
-  return { success: `${student.name} is signed off, awarded Solo wings and moved to Pilots (pending licence from CAA). ${wa}`, warnings };
+  return { success: `${student.name} is signed off and awarded Solo wings. He stays on the Student list until his CAA licence is submitted. ${wa}`, warnings };
 }
 
 /** Rebuilds the pack (e.g. after the student adds a signature or photo). Staff only. */

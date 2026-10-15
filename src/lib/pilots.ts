@@ -1,5 +1,5 @@
 import "server-only";
-import { eq, and, isNotNull } from "drizzle-orm";
+import { eq, and, isNotNull, ne } from "drizzle-orm";
 import { db } from "@/db";
 import { users, pilotProfiles, pilotEndorsements } from "@/db/schema";
 import { compareByName } from "@/lib/sort-by-name";
@@ -53,7 +53,7 @@ export async function getAllPilotsWithSummary(status: "active" | "archived" = "a
     })
     .from(pilotProfiles)
     .innerJoin(users, eq(pilotProfiles.userId, users.id))
-    .where(and(eq(pilotProfiles.status, status), eq(users.accountStatus, "active")));
+    .where(and(eq(pilotProfiles.status, status), eq(users.accountStatus, "active"), ne(users.role, "student")));
 
   const endorsements = await db.select().from(pilotEndorsements);
   const byProfile = new Map<string, { verified: number; pending: number }>();

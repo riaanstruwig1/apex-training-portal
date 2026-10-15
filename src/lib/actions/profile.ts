@@ -9,6 +9,7 @@ import { db } from "@/db";
 import { users, studentProfiles, pilotProfiles } from "@/db/schema";
 import { getCurrentUser, requireAdminOrCFI } from "@/lib/auth/dal";
 import { saveUpload, UploadError } from "@/lib/uploads";
+import { promoteIfLicenceSubmitted } from "@/lib/promote";
 
 // Fields every role can edit about themselves (Notes3 items 2 & 4 -- pilot
 // and student self-editing). Deliberately excludes name/email/DOB/ID-
@@ -524,6 +525,9 @@ export async function submitCaaLicence(_prev: CaaLicenceState, formData: FormDat
       ...(expiry ? { caaLicenceExpiryDate: new Date(expiry) } : {}),
     })
     .where(eq(pilotProfiles.id, pp.id));
+  await promoteIfLicenceSubmitted(user.id, true);
+  revalidatePath("/student");
+  revalidatePath("/instructor");
   revalidatePath("/pilot");
   revalidatePath("/pilot/profile");
   return { success: true };

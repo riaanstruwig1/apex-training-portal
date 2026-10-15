@@ -1,3 +1,7 @@
+import { eq } from "drizzle-orm";
+import { db } from "@/db";
+import { pilotProfiles, studentSignoffs } from "@/db/schema";
+import CaaLicenceForm from "@/app/pilot/caa-licence-form";
 import { requireStudent } from "@/lib/auth/dal";
 import { getRadioCallScript, getStudentNotice } from "@/lib/settings";
 import NavHeader from "@/components/nav-header";
@@ -29,6 +33,12 @@ export default async function StudentLayout({
   const needsConsent = !user.consentSigned || !user.indemnitySigned;
 
   // Second hard gate (15 Oct 2026, Riaan): no SAHPA number, no logbook / folio.
+  // Signed off but CAA licence not yet submitted: he stays a student and sees
+  // the licence upload here until it is in (then he moves to Pilots).
+  const [signoff] = await db.select({ at: studentSignoffs.signedOffAt }).from(studentSignoffs).where(eq(studentSignoffs.studentUserId, user.id)).limit(1);
+  const [pp] = await db.select({ awaiting: pilotProfiles.awaitingCaaLicenceSince, sacaa: pilotProfiles.sacaaNumber }).from(pilotProfiles).where(eq(pilotProfiles.userId, user.id)).limit(1);
+  const awaitingLicence = !!signoff && !!pp?.awaiting;
+
   const needsSahpa = !needsConsent && !profile?.sahpaNumber?.trim();
   const locked = needsConsent || needsSahpa;
 
@@ -49,7 +59,20 @@ export default async function StudentLayout({
         ) : needsSahpa ? (
           <SahpaGate name={user.name} />
         ) : (
-          children
+          <>
+            {awaitingLicence && (
+              <div className="mb-6 rounded-lg border border-amber-300 bg-amber-50 p-4">
+                <p className="text-base font-semibold text-amber-900">
+                  🪽 Solo wings awarded {signoff.at.toLocaleDateString()}
+                </p>
+                <p className="mt-1 text-sm text-amber-900">
+                  Status: <strong>Pending upload of licence from CAA</strong>. When your licence arrives, enter your SACAA No. and upload it below.
+                </p>
+                <CaaLicenceForm defaultSacaa={pp?.sacaa ?? ""} />
+              </div>
+            )}
+            {children}
+          </>
         )}
       </main>
       {!locked && radioCallScript && (
