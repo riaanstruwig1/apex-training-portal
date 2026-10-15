@@ -144,7 +144,7 @@ export default async function PilotsPage() {
                 </Link>
                 {isCFI && p.role === "pilot" && (
                   <div className="mt-3">
-                    <PilotRowActions pilotId={p.id} archived={false} />
+                    <PilotRowActions pilotId={p.id} archived={false} details={{ callSign: p.callSign, sacaaNumber: p.sacaaNumber, sahpaNumber: p.sahpaNumber, sahpaExpiryDate: p.sahpaExpiryDate ? p.sahpaExpiryDate.toISOString().slice(0, 10) : null }} />
                   </div>
                 )}
               </div>
@@ -196,7 +196,7 @@ export default async function PilotsPage() {
                     </td>
                     {isCFI && (
                       <td className="px-4 py-3">
-                        {p.role === "pilot" && <PilotRowActions pilotId={p.id} archived={false} />}
+                        {p.role === "pilot" && <PilotRowActions pilotId={p.id} archived={false} details={{ callSign: p.callSign, sacaaNumber: p.sacaaNumber, sahpaNumber: p.sahpaNumber, sahpaExpiryDate: p.sahpaExpiryDate ? p.sahpaExpiryDate.toISOString().slice(0, 10) : null }} />}
                       </td>
                     )}
                   </tr>

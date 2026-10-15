@@ -11,6 +11,9 @@ export type PilotSummary = {
   role: string;
   apexNumber: string | null;
   callSign: string | null;
+  sacaaNumber: string | null;
+  sahpaNumber: string | null;
+  sahpaExpiryDate: Date | null;
   pilotProfileId: string;
   verifiedCount: number;
   pendingCount: number;
@@ -40,6 +43,9 @@ export async function getAllPilotsWithSummary(status: "active" | "archived" = "a
       role: users.role,
       apexNumber: users.apexNumber,
       callSign: pilotProfiles.callSign,
+      sacaaNumber: pilotProfiles.sacaaNumber,
+      sahpaNumber: pilotProfiles.sahpaNumber,
+      sahpaExpiryDate: pilotProfiles.sahpaExpiryDate,
       pilotProfileId: pilotProfiles.id,
       caaLicenceExpiryDate: pilotProfiles.caaLicenceExpiryDate,
       caaLicenceRenewalSubmittedAt: pilotProfiles.caaLicenceRenewalSubmittedAt,
@@ -69,6 +75,9 @@ export async function getAllPilotsWithSummary(status: "active" | "archived" = "a
       role: r.role,
       apexNumber: r.apexNumber,
       callSign: r.callSign,
+      sacaaNumber: r.sacaaNumber,
+      sahpaNumber: r.sahpaNumber,
+      sahpaExpiryDate: r.sahpaExpiryDate,
       pilotProfileId: r.pilotProfileId,
       verifiedCount: byProfile.get(r.pilotProfileId)?.verified ?? 0,
       pendingCount: byProfile.get(r.pilotProfileId)?.pending ?? 0,

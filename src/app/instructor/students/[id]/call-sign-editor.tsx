@@ -128,7 +128,7 @@ export default function CallSignEditor({
           />
         </div>
         <div>
-          <label className="block text-[11px] text-slate-500">Start date</label>
+          <label className="block text-[11px] text-slate-500">Training start date</label>
           <input
             type="date"
             value={startDateValue}
@@ -206,10 +206,15 @@ export default function CallSignEditor({
     trainingType;
 
   return (
-    <button
-      onClick={() => setEditing(true)}
-      className="mt-1 block text-sm text-slate-500 hover:text-red-600"
-    >
+    <div className="mt-1 flex flex-wrap items-start gap-3 text-sm text-slate-500">
+      <button
+        type="button"
+        onClick={() => setEditing(true)}
+        className="rounded-md border border-slate-300 bg-white px-3 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+      >
+        Edit details
+      </button>
+      <span className="min-w-0 flex-1">
       {hasAnyDetail ? (
         <>
           {trainingType && (
@@ -268,8 +273,9 @@ export default function CallSignEditor({
           )}
         </>
       ) : (
-        "Set training type / call sign / start date / sign-up date / SAHPA details"
+        "Not set: training type, call sign, SACAA No, SAHPA No, expiry, training start date"
       )}
-    </button>
+      </span>
+    </div>
   );
 }

@@ -36,3 +36,23 @@ export async function deletePilot(pilotUserId: string) {
   await db.delete(users).where(and(eq(users.id, pilotUserId), eq(users.role, "pilot")));
   revalidatePath("/admin/pilots");
 }
+
+/** CFI edits a pilot's call sign, SACAA No., SAHPA No. and SAHPA expiry. */
+export async function updatePilotDetails(
+  pilotUserId: string,
+  d: { callSign: string; sacaaNumber: string; sahpaNumber: string; sahpaExpiryDate: string }
+) {
+  await requireCFI();
+  await assertPlainPilot(pilotUserId);
+  await db
+    .update(pilotProfiles)
+    .set({
+      callSign: d.callSign.trim().toUpperCase() || null,
+      sacaaNumber: d.sacaaNumber.trim() || null,
+      sahpaNumber: d.sahpaNumber.trim() || null,
+      sahpaExpiryDate: d.sahpaExpiryDate ? new Date(d.sahpaExpiryDate) : null,
+    })
+    .where(eq(pilotProfiles.userId, pilotUserId));
+  revalidatePath("/admin/pilots");
+  revalidatePath(`/admin/applicants/${pilotUserId}`);
+}
