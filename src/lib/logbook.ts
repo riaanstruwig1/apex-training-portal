@@ -8,7 +8,7 @@ export async function getLogbookEntries(studentId: string) {
     .select()
     .from(flightLogEntries)
     .where(eq(flightLogEntries.studentId, studentId))
-    .orderBy(desc(flightLogEntries.date));
+    .orderBy(desc(flightLogEntries.date), desc(flightLogEntries.createdAt), desc(flightLogEntries.id));
 
   // One extra lookup for instructor names rather than a join on every row --
   // there are only ever a handful of instructors, so this stays cheap even

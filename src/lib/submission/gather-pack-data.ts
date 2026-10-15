@@ -80,7 +80,7 @@ export async function gatherPackData(studentUserId: string, input: SignoffInput)
     })
     .from(flightLogEntries)
     .where(eq(flightLogEntries.studentId, studentUserId))
-    .orderBy(asc(flightLogEntries.date));
+    .orderBy(asc(flightLogEntries.date), asc(flightLogEntries.createdAt), asc(flightLogEntries.id));
   const nameRows = await db.select({ id: users.id, name: users.name }).from(users);
   const nameOf = new Map(nameRows.map((n) => [n.id, n.name]));
   const logbook = rows.map(({ verifiedByUserId, instructorUserId, ...r }) => ({

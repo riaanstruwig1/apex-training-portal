@@ -77,11 +77,9 @@ export function formatHoursMinutes(totalMinutes: number): string {
  * (date) order -- so the most recent flight's value is the grand total.
  */
 export function computeAccumulatedMinutes<
-  T extends { id: string; date: Date; durationMinutes: number },
+  T extends { id: string; date: Date; durationMinutes: number; createdAt?: Date | null },
 >(entries: T[]): Map<string, number> {
-  const chronological = [...entries].sort(
-    (a, b) => a.date.getTime() - b.date.getTime()
-  );
+  const chronological = [...entries].sort(chronologicalCompare);
   let running = 0;
   const map = new Map<string, number>();
   for (const e of chronological) {
@@ -92,9 +90,22 @@ export function computeAccumulatedMinutes<
 }
 
 /** Flight No. = position in chronological (date) order, 1 = first flight. */
-export function computeFlightNumbers<T extends { id: string; date: Date }>(entries: T[]): Map<string, number> {
-  const chronological = [...entries].sort((a, b) => a.date.getTime() - b.date.getTime());
+export function computeFlightNumbers<T extends { id: string; date: Date; createdAt?: Date | null }>(entries: T[]): Map<string, number> {
+  const chronological = [...entries].sort(chronologicalCompare);
   const map = new Map<string, number>();
   chronological.forEach((e, i) => map.set(e.id, i + 1));
   return map;
+}
+
+/** Oldest first: date, then the time the entry was logged, then id, so flights
+ * on the same day get a stable order (the list shows the exact reverse). */
+export function chronologicalCompare(
+  a: { id: string; date: Date; createdAt?: Date | null },
+  b: { id: string; date: Date; createdAt?: Date | null }
+): number {
+  const d = a.date.getTime() - b.date.getTime();
+  if (d !== 0) return d;
+  const c = (a.createdAt?.getTime() ?? 0) - (b.createdAt?.getTime() ?? 0);
+  if (c !== 0) return c;
+  return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
 }
