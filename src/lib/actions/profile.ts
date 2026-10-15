@@ -492,3 +492,39 @@ export async function updateOwnStudentProfile(
   }
   return result;
 }
+
+export type CaaLicenceState = { error: string; success?: never } | { error?: never; success: true } | undefined;
+
+/** Pilot dashboard "Pending upload of licence from CAA" block: the new pilot
+ * enters their SACAA licence number, uploads the licence and submits. Clears
+ * the pending status. */
+export async function submitCaaLicence(_prev: CaaLicenceState, formData: FormData): Promise<CaaLicenceState> {
+  const user = await getCurrentUser();
+  if (!user) return { error: "Your session has expired -- please sign in again." };
+  const sacaa = String(formData.get("sacaaNumber") ?? "").trim();
+  if (!sacaa) return { error: "Enter your SACAA licence number." };
+  const file = formData.get("caaLicenceFile");
+  if (!(file instanceof File) || file.size === 0) return { error: "Choose your CAA licence file (PDF or photo) to upload." };
+  const [pp] = await db.select({ id: pilotProfiles.id }).from(pilotProfiles).where(eq(pilotProfiles.userId, user.id)).limit(1);
+  if (!pp) return { error: "No pilot profile found for your account." };
+  let stored: string | null;
+  try {
+    stored = await saveUpload(user.id, "caa-licence", file);
+  } catch (err) {
+    return { error: err instanceof UploadError ? err.message : "Upload failed." };
+  }
+  if (!stored) return { error: "Upload failed." };
+  const expiry = String(formData.get("caaLicenceExpiryDate") ?? "").trim();
+  await db
+    .update(pilotProfiles)
+    .set({
+      sacaaNumber: sacaa,
+      caaLicenceFile: stored,
+      awaitingCaaLicenceSince: null,
+      ...(expiry ? { caaLicenceExpiryDate: new Date(expiry) } : {}),
+    })
+    .where(eq(pilotProfiles.id, pp.id));
+  revalidatePath("/pilot");
+  revalidatePath("/pilot/profile");
+  return { success: true };
+}

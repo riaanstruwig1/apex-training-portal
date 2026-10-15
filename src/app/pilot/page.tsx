@@ -5,6 +5,7 @@ import LadderTiers from "@/components/ladder-tiers";
 import Avatar from "@/components/avatar";
 import Link from "next/link";
 import ApplyButton from "./apply-button";
+import CaaLicenceForm from "./caa-licence-form";
 import { db } from "@/db";
 import { pilotEndorsements, studentSignoffs } from "@/db/schema";
 import { desc, eq } from "drizzle-orm";
@@ -202,9 +203,10 @@ export default async function PilotDashboard() {
           </p>
           {profile?.awaitingCaaLicenceSince && (
             <p className="mt-1 text-sm text-amber-900">
-              Status: <strong>Pending upload of licence from CAA</strong>. When your licence arrives, upload it under Edit profile.
+              Status: <strong>Pending upload of licence from CAA</strong>. When your licence arrives, enter your SACAA No. and upload it below.
             </p>
           )}
+          {profile?.awaitingCaaLicenceSince && <CaaLicenceForm defaultSacaa={profile.sacaaNumber ?? ""} />}
           <div className="mt-2 flex flex-wrap gap-2">
             <a href={`/api/signoff-certificate/${user.id}`} className="rounded-md border border-amber-400 bg-white px-3 py-1.5 text-xs font-semibold text-amber-900 hover:bg-amber-100">
               Solo wings certificate (PDF)
