@@ -16,6 +16,7 @@ import {
   type SectionTrainingType,
 } from "@/lib/syllabus-tags";
 import { compareByName } from "@/lib/sort-by-name";
+import { isShadowSection } from "@/lib/intro-course";
 
 export type ExerciseWithProgress = {
   id: string;
@@ -42,6 +43,10 @@ export type SectionWithProgress = {
   isComplete: boolean;
   /** True if the previous section is fully signed off (or this is the first section). */
   isUnlocked: boolean;
+  /** Intro (Phase 1 only) student: a section outside Phase 1 -- shown as a
+   * shadow (visible, not applicable, not counted) until Phase 2 is
+   * approved. Always false for a normal student. */
+  isShadow: boolean;
 };
 
 /**
@@ -68,7 +73,7 @@ export async function getStudentProgress(
       .from(studentExerciseProgress)
       .where(eq(studentExerciseProgress.studentId, studentId)),
     db
-      .select({ trainingType: studentProfiles.trainingType })
+      .select({ trainingType: studentProfiles.trainingType, courseLevel: studentProfiles.courseLevel })
       .from(studentProfiles)
       .where(eq(studentProfiles.userId, studentId))
       .limit(1),
@@ -113,6 +118,10 @@ export async function getStudentProgress(
     ).length;
     const isComplete = totalCount > 0 && signedOffCount === totalCount;
 
+    // Intro student: sections outside Phase 1 are a shadow -- locked, and
+    // they don't hold up (or count towards) the Phase 1 sections.
+    const isShadow = isShadowSection(profile?.courseLevel, section.phase);
+
     result.push({
       id: section.id,
       name: section.name,
@@ -124,10 +133,11 @@ export async function getStudentProgress(
       totalCount,
       signedOffCount,
       isComplete,
-      isUnlocked: previousComplete,
+      isUnlocked: isShadow ? false : previousComplete,
+      isShadow,
     });
 
-    previousComplete = isComplete;
+    if (!isShadow) previousComplete = isComplete;
   }
 
   return result;
@@ -150,6 +160,10 @@ export type StudentSummary = {
   /** Comma-separated list of TrainingType values, e.g. "pg,ppg" -- parse
    * with parseTrainingTypes() from lib/exams before rendering/comparing. */
   trainingType: string | null;
+  /** "intro" = PG/PPG Intro training (Phase 1 only); "full" otherwise. */
+  courseLevel: "intro" | "full";
+  /** Set while the intro student's "Sign up for Phase 2" waits for a CFI. */
+  phase2RequestedAt: Date | null;
 };
 
 /** Roster view for the instructor dashboard: one row per student, with a
@@ -159,10 +173,13 @@ export async function getAllStudentsWithSummary(): Promise<StudentSummary[]> {
   // in sections for their own training type(s) -- same rule as
   // getStudentProgress above.
   const [allSections, allExercises] = await Promise.all([
-    db.select({ id: sections.id, trainingType: sections.trainingType }).from(sections),
+    db
+      .select({ id: sections.id, trainingType: sections.trainingType, phase: sections.phase })
+      .from(sections),
     db.select({ id: exercises.id, sectionId: exercises.sectionId }).from(exercises),
   ]);
   const sectionType = new Map(allSections.map((sec) => [sec.id, sec.trainingType]));
+  const sectionPhase = new Map(allSections.map((sec) => [sec.id, sec.phase]));
 
   const students = await db
     .select({
@@ -174,6 +191,8 @@ export async function getAllStudentsWithSummary(): Promise<StudentSummary[]> {
       sahpaNumber: studentProfiles.sahpaNumber,
       sahpaExpiryDate: studentProfiles.sahpaExpiryDate,
       trainingType: studentProfiles.trainingType,
+      courseLevel: studentProfiles.courseLevel,
+      phase2RequestedAt: studentProfiles.phase2RequestedAt,
     })
     .from(users)
     .innerJoin(studentProfiles, eq(studentProfiles.userId, users.id))
@@ -203,9 +222,10 @@ export async function getAllStudentsWithSummary(): Promise<StudentSummary[]> {
     signedOffByStudent.set(r.studentId, set);
   }
 
-  function applicableExerciseIds(trainingTypeRaw: string | null): string[] {
+  function applicableExerciseIds(trainingTypeRaw: string | null, courseLevel: string): string[] {
     return allExercises
       .filter((e) => sectionAppliesTo(sectionType.get(e.sectionId) ?? "all", trainingTypeRaw))
+      .filter((e) => !isShadowSection(courseLevel, sectionPhase.get(e.sectionId)))
       .map((e) => e.id);
   }
 
@@ -223,7 +243,7 @@ export async function getAllStudentsWithSummary(): Promise<StudentSummary[]> {
   );
 
   return [...students].sort(compareByName).map((s) => {
-    const ids = applicableExerciseIds(s.trainingType);
+    const ids = applicableExerciseIds(s.trainingType, s.courseLevel);
     const done = signedOffByStudent.get(s.id);
     return {
     ...s,

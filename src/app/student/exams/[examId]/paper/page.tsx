@@ -5,6 +5,7 @@ import { studentProfiles } from "@/db/schema";
 import { requireStudent } from "@/lib/auth/dal";
 import { getExamsForStudent, visibleExamCategories, type ExamCategory } from "@/lib/exams";
 import PaperExamForm from "./paper-exam-form";
+import { isIntroCourse } from "@/lib/intro-course";
 
 /** V22-follow-up (25 Sep 2026, Riaan): some students already wrote the
  * Basic/PPG exam on paper, or already hold an SACAA radio licence from
@@ -20,7 +21,7 @@ export default async function PaperExamPage(
   const { examId } = await props.params;
 
   const [studentProfile] = await db
-    .select({ trainingType: studentProfiles.trainingType })
+    .select({ trainingType: studentProfiles.trainingType, courseLevel: studentProfiles.courseLevel })
     .from(studentProfiles)
     .where(eq(studentProfiles.userId, user.id))
     .limit(1);
@@ -41,6 +42,8 @@ export default async function PaperExamPage(
     notFound();
   }
   if (!summary.canSubmitPaper) notFound();
+  // 19 Oct 2026: intro (Phase 1 only) students can't submit exams yet.
+  if (isIntroCourse(studentProfile?.courseLevel)) notFound();
 
   return (
     <div className="space-y-6">

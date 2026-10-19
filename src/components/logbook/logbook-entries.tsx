@@ -9,6 +9,7 @@ import {
   formatFlightType,
 } from "@/lib/logbook-format";
 import type { getLogbookEntries } from "@/lib/logbook";
+import OneLineText from "./one-line-text";
 
 function StatusBadge({ entry }: { entry: Awaited<ReturnType<typeof getLogbookEntries>>[number] }) {
   return (
@@ -22,11 +23,8 @@ function StatusBadge({ entry }: { entry: Awaited<ReturnType<typeof getLogbookEnt
           Pending
         </span>
       )}
-      {entry.instructorComment && (
-        <div className="mt-1 text-xs italic text-slate-500">
-          &ldquo;{entry.instructorComment}&rdquo;
-        </div>
-      )}
+      {/* 19 Oct 2026: one line; hover (or tap) for the full comment. */}
+      <OneLineText text={entry.instructorComment} quoted className="mt-1 text-xs italic text-slate-500" />
     </>
   );
 }
@@ -155,7 +153,7 @@ export default function LogbookEntries({
                 <td className="px-3 py-2">{e.launches}</td>
                 <td className="px-3 py-2 text-slate-600">{e.instructorName ?? "—"}</td>
                 <td className="max-w-[12rem] px-3 py-2 text-xs text-slate-500">
-                  {formatExerciseCodes(e.exerciseCodesCovered)}
+                  <OneLineText text={formatExerciseCodes(e.exerciseCodesCovered)} />
                 </td>
                 <td className="px-3 py-2">
                   <StatusBadge entry={e} />

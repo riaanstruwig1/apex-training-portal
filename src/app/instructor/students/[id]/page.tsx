@@ -26,6 +26,8 @@ import CallSignEditor from "./call-sign-editor";
 import StudentEndorsementToggle from "./student-endorsement-toggle";
 import StaffPaperUpload from "./staff-paper-upload";
 import SignoffPanel from "./signoff-panel";
+import Phase2ApprovalPanel from "./phase2-approval-panel";
+import { INTRO_LABEL, isIntroCourse } from "@/lib/intro-course";
 import { studentSignoffs } from "@/db/schema";
 
 const TRAINING_TYPE_LABELS: Record<TrainingType, string> = {
@@ -74,9 +76,10 @@ export default async function StudentFolioPage(
     visibleExamCategories(profile?.trainingType) ?? EXAM_CATEGORY_ORDER
   ).filter((cat) => !examSummaries.some((e) => e.category === cat));
   const studentTrainingTypes = parseTrainingTypes(profile?.trainingType);
-  const studentTrainingLabel = studentTrainingTypes
-    .map((t) => TRAINING_TYPE_LABELS[t])
-    .join(" + ");
+  const intro = isIntroCourse(profile?.courseLevel);
+  const studentTrainingLabel = intro
+    ? `${INTRO_LABEL} (Phase 1 only)`
+    : studentTrainingTypes.map((t) => TRAINING_TYPE_LABELS[t]).join(" + ");
 
   const grantedEndorsements = profile
     ? await db
@@ -96,6 +99,18 @@ export default async function StudentFolioPage(
         <div className="rounded-md border-2 border-red-500 bg-red-50 px-4 py-3 text-sm font-bold text-red-700">
           SAHPA No. is NOT loaded. The student cannot log flights or continue until he enters his SAHPA number.
         </div>
+      )}
+      {(intro || profile?.phase2ApprovedAt) && student.role === "student" && (
+        <Phase2ApprovalPanel
+          studentUserId={student.id}
+          studentName={student.name}
+          requestedAt={profile?.phase2RequestedAt ?? null}
+          requestedTypes={profile?.phase2RequestedTypes ?? null}
+          declineReason={profile?.phase2DeclineReason ?? null}
+          canApprove={isCFI}
+          isIntro={intro}
+          approvedAt={profile?.phase2ApprovedAt ?? null}
+        />
       )}
       <SignoffPanel student={student} profile={profile} staffId={staff.id} isCFI={isCFI} />
       <div className="flex items-start gap-3">

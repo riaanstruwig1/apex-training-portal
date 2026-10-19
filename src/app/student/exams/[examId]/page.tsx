@@ -7,6 +7,7 @@ import { getExamDetail, getAttemptHistory, visibleExamCategories, type ExamCateg
 import { ensureAttempt } from "@/lib/actions/exams";
 import ExamForm from "./exam-form";
 import StartExamGate from "./start-exam-gate";
+import { INTRO_LOCK_TEXT, isIntroCourse } from "@/lib/intro-course";
 
 export default async function StudentExamPage(
   props: PageProps<"/student/exams/[examId]">
@@ -27,7 +28,7 @@ export default async function StudentExamPage(
   // link. A category-less exam (not yet slotted into PG/PPG/PPT/RT)
   // always stays reachable.
   const [studentProfile] = await db
-    .select({ trainingType: studentProfiles.trainingType })
+    .select({ trainingType: studentProfiles.trainingType, courseLevel: studentProfiles.courseLevel })
     .from(studentProfiles)
     .where(eq(studentProfiles.userId, user.id))
     .limit(1);
@@ -38,6 +39,20 @@ export default async function StudentExamPage(
     !visibleCategories.includes(peek.exam.category as ExamCategory)
   ) {
     notFound();
+  }
+
+  // 19 Oct 2026: PG/PPG Intro (Phase 1 only) students see the exams but
+  // can't open or write them until Phase 2 is approved.
+  if (isIntroCourse(studentProfile?.courseLevel)) {
+    return (
+      <div className="max-w-2xl space-y-4">
+        <h1 className="text-xl font-semibold text-slate-900">{peek.exam.title}</h1>
+        <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+          🔒 {INTRO_LOCK_TEXT}. You&apos;re on the PG/PPG Intro training (Phase 1) -- use the
+          &ldquo;Sign up for Phase 2&rdquo; button on your dashboard.
+        </p>
+      </div>
+    );
   }
 
   // A "paper" attempt (submitted via /paper -- pre-written exam or an

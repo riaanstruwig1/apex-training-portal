@@ -1,5 +1,7 @@
 "use client";
 
+import OneLineText from "@/components/logbook/one-line-text";
+
 import { useState, useTransition, useActionState } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -152,6 +154,9 @@ function VerifyCell({
   instructorComment: string | null;
 }) {
   const [comment, setComment] = useState(instructorComment ?? "");
+  // 19 Oct 2026: a verified flight's comment shows on one line (hover or
+  // click for the rest); "Edit" opens the box -- keeps the logbook short.
+  const [editing, setEditing] = useState(false);
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
@@ -165,8 +170,29 @@ function VerifyCell({
   function saveComment() {
     startTransition(async () => {
       await updateLogbookComment(entryId, studentId, comment);
+      setEditing(false);
       router.refresh();
     });
+  }
+
+  if (verified && !editing) {
+    return (
+      <div className="flex min-w-[10rem] flex-col gap-1">
+        <span className="flex items-center gap-2">
+          <span className="w-fit rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800">
+            Verified
+          </span>
+          <button
+            type="button"
+            onClick={() => setEditing(true)}
+            className="text-[11px] text-slate-400 hover:text-red-600"
+          >
+            {instructorComment ? "Edit comment" : "+ Comment"}
+          </button>
+        </span>
+        <OneLineText text={instructorComment} quoted className="text-xs italic text-slate-500" />
+      </div>
+    );
   }
 
   return (
@@ -390,7 +416,7 @@ export default function LogbookTable({
                   <td className="px-3 py-2">{e.launches}</td>
                   <td className="px-3 py-2 text-slate-600">{e.instructorName ?? "—"}</td>
                   <td className="max-w-[14rem] px-3 py-2 text-xs text-slate-500">
-                    {formatExerciseCodes(e.exerciseCodesCovered)}
+                    <OneLineText text={formatExerciseCodes(e.exerciseCodesCovered)} />
                   </td>
                   <td className="px-3 py-2">
                     <VerifyCell

@@ -63,7 +63,11 @@ export default async function StudentExercisesPage() {
                     {SECTION_TYPE_SHORT[section.trainingType as SectionTrainingType]}
                   </span>
                   {section.name}
-                  {!section.isUnlocked && (
+                  {section.isShadow ? (
+                    <span className="ml-2 text-xs font-normal text-slate-500">
+                      Not part of your intro course -- opens once you sign up for Phase 2
+                    </span>
+                  ) : !section.isUnlocked && (
                     <span className="ml-2 text-xs font-normal text-slate-400">
                       Locked &mdash; finish the previous section first
                     </span>

@@ -390,6 +390,12 @@ export default async function ApplicantReviewPage({
             What this student signed up to train toward -- gates which exams they see once
             approved. Adjust it here if it needs correcting before (or after) approval.
           </p>
+          {student?.profile.courseLevel === "intro" && (
+            <p className="mb-2 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-medium text-amber-800">
+              PG/PPG Intro training -- Phase 1 only (no exams, study notes locked). Phase 2 is
+              approved on the student&apos;s folio when they sign up for it.
+            </p>
+          )}
           <ApplicantTrainingTypeEditor
             studentUserId={applicant.id}
             trainingType={student?.profile.trainingType ?? null}

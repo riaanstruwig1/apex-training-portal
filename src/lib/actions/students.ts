@@ -8,6 +8,7 @@ import { db } from "@/db";
 import { users, studentProfiles, studentExerciseProgress } from "@/db/schema";
 import { requireInstructor, requireCFI, requireAdminOrCFI } from "@/lib/auth/dal";
 import { getBaseUrl } from "@/lib/base-url";
+import { INTRO_TRAINING_TYPES } from "@/lib/intro-course";
 import { formatTrainingTypes } from "@/lib/exams";
 
 const INVITE_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
@@ -45,7 +46,10 @@ export async function createInvitedStudent(
     name: formData.get("name"),
     email: formData.get("email"),
     phone: formData.get("phone") || undefined,
-    trainingType: formData.getAll("trainingType"),
+    // 19 Oct 2026: "PG/PPG Intro training" (Phase 1 only) is stored as a
+    // PG + PPG student with course_level "intro".
+    trainingType:
+      formData.get("introCourse") === "1" ? [...INTRO_TRAINING_TYPES] : formData.getAll("trainingType"),
     callSign: formData.get("callSign") || undefined,
     startDate: formData.get("startDate") || undefined,
     sahpaNumber: formData.get("sahpaNumber") || undefined,
@@ -80,6 +84,7 @@ export async function createInvitedStudent(
     userId: user.id,
     phone,
     trainingType: formatTrainingTypes(trainingType),
+    courseLevel: formData.get("introCourse") === "1" ? "intro" : "full",
     callSign,
     startDate: startDate ? new Date(startDate) : undefined,
     sahpaNumber,

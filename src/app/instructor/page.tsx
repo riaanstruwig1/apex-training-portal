@@ -43,6 +43,36 @@ const TRAINING_TYPE_LABELS: Record<TrainingType, string> = {
   ppt: "PPT",
 };
 
+
+/** Training-type chip on the roster. 19 Oct 2026: intro (Phase 1 only)
+ * students show "PG/PPG Intro", plus a red chip while their Phase 2
+ * sign-up waits for the CFI. */
+function TrainingChip({ s }: { s: StudentSummary }) {
+  return (
+    <>
+      {s.courseLevel === "intro" ? (
+        <span className="ml-1.5 rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-medium text-amber-800">
+          PG/PPG Intro (Phase 1)
+        </span>
+      ) : s.trainingType && (
+        <span className="ml-1.5 rounded-full bg-slate-100 px-1.5 py-0.5 text-[10px] font-medium text-slate-500">
+          {parseTrainingTypes(s.trainingType)
+            .map((t) => TRAINING_TYPE_LABELS[t])
+            .join(" + ")}
+        </span>
+      )}
+      {s.phase2RequestedAt && (
+        <Link
+          href={`/instructor/students/${s.id}#phase2`}
+          className="ml-1.5 rounded-full bg-red-600 px-1.5 py-0.5 text-[10px] font-bold text-white hover:bg-red-700"
+        >
+          Phase 2 requested
+        </Link>
+      )}
+    </>
+  );
+}
+
 function isExpired(d: Date): boolean {
   return d.getTime() < Date.now();
 }
@@ -121,13 +151,7 @@ function StudentCard({
             >
               {s.name}
             </Link>
-            {s.trainingType && (
-              <span className="ml-1.5 rounded-full bg-slate-100 px-1.5 py-0.5 text-[10px] font-medium text-slate-500">
-                {parseTrainingTypes(s.trainingType)
-                  .map((t) => TRAINING_TYPE_LABELS[t])
-                  .join(" + ")}
-              </span>
-            )}
+            <TrainingChip s={s} />
             <div className="text-xs text-slate-500">{s.email}</div>
           </div>
         </div>
@@ -247,13 +271,7 @@ function StudentTable({
                     >
                       {s.name}
                     </Link>
-                    {s.trainingType && (
-                      <span className="ml-1.5 rounded-full bg-slate-100 px-1.5 py-0.5 text-[10px] font-medium text-slate-500">
-                        {parseTrainingTypes(s.trainingType)
-                          .map((t) => TRAINING_TYPE_LABELS[t])
-                          .join(" + ")}
-                      </span>
-                    )}
+                    <TrainingChip s={s} />
                   </div>
                 </div>
               </td>

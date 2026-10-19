@@ -22,6 +22,32 @@ import {
   type SectionTrainingType,
 } from "@/lib/syllabus-tags";
 import type { ExamSummary, ExamCategory } from "@/lib/exams";
+import { INTRO_LABEL, INTRO_LOCK_TEXT, isIntroCourse } from "@/lib/intro-course";
+import Phase2SignupCard from "./phase2-signup-card";
+
+/** Intro (Phase 1 only) student: the exam is shown but can't be opened. */
+function LockedExamCard({ title }: { title: string }) {
+  return (
+    <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-4" title={INTRO_LOCK_TEXT}>
+      <div className="text-sm font-medium text-slate-500">{title}</div>
+      <span className="mt-1 inline-block rounded-full bg-slate-200 px-2 py-0.5 text-xs font-medium text-slate-600">
+        🔒 {INTRO_LOCK_TEXT}
+      </span>
+    </div>
+  );
+}
+
+function LockedStudyNoteCard({ title }: { title: string }) {
+  return (
+    <div
+      className="flex items-center justify-between rounded-xl border border-dashed border-slate-300 bg-slate-50 p-4"
+      title={INTRO_LOCK_TEXT}
+    >
+      <div className="text-sm font-medium text-slate-500">{title}</div>
+      <span className="text-xs font-medium text-slate-500">🔒 Locked</span>
+    </div>
+  );
+}
 
 function formatBytes(bytes: number | null): string {
   if (!bytes) return "";
@@ -148,6 +174,9 @@ export default async function StudentDashboard() {
   const examSummaries = await getExamsForStudent(user.id, profile?.trainingType);
   const summary = summarizeLogbook(logEntries);
   const studentTrainingTypes = parseTrainingTypes(profile?.trainingType);
+  // 19 Oct 2026: PG/PPG Intro training (Phase 1 only) -- exams and study
+  // notes are shown but locked until Phase 2 is approved.
+  const intro = isIntroCourse(profile?.courseLevel);
 
   // V24 item 74: one row per exam the student can see, in Riaan's order
   // (Basic Licence PG, PPG, DTO Radio, PPT), with the CFI's study note for
@@ -173,8 +202,8 @@ export default async function StudentDashboard() {
     : [];
   const groupedGrantedEndorsements = groupEndorsementItems(grantedEndorsements);
 
-  const totalExercises = sections.reduce((n, s) => n + s.totalCount, 0);
-  const signedOff = sections.reduce((n, s) => n + s.signedOffCount, 0);
+  const totalExercises = sections.filter((s) => !s.isShadow).reduce((n, s) => n + s.totalCount, 0);
+  const signedOff = sections.filter((s) => !s.isShadow).reduce((n, s) => n + s.signedOffCount, 0);
 
   return (
     <div className="space-y-8">
@@ -195,7 +224,11 @@ export default async function StudentDashboard() {
             <h1 className="text-xl font-semibold text-slate-900">
               Welcome, {user.name.split(" ")[0]}
             </h1>
-            {studentTrainingTypes.length > 0 && (
+            {intro ? (
+              <p className="text-sm text-slate-500">
+                Training: <span className="font-medium text-slate-900">{INTRO_LABEL} (Phase 1)</span>
+              </p>
+            ) : studentTrainingTypes.length > 0 && (
               <p className="text-sm text-slate-500">
                 Training:{" "}
                 <span className="font-medium text-slate-900">
@@ -268,6 +301,15 @@ export default async function StudentDashboard() {
         </div>
       </div>
 
+      {intro && (
+        <Phase2SignupCard
+          requestedAt={profile?.phase2RequestedAt ?? null}
+          requestedTypes={profile?.phase2RequestedTypes ?? null}
+          declinedAt={profile?.phase2DeclinedAt ?? null}
+          declineReason={profile?.phase2DeclineReason ?? null}
+        />
+      )}
+
       <Link
         href="/student/logbook"
         className="flex items-center justify-center gap-2 rounded-xl bg-red-600 px-6 py-5 text-lg font-semibold text-white shadow-sm hover:bg-red-700"
@@ -294,7 +336,9 @@ export default async function StudentDashboard() {
               <div key={row.category} className="grid items-start gap-3 md:grid-cols-2 md:gap-6">
                 <div className="space-y-3">
                   {row.exams.length > 0 ? (
-                    row.exams.map((e) => <ExamCard key={e.examId} e={e} />)
+                    row.exams.map((e) =>
+                      intro ? <LockedExamCard key={e.examId} title={e.title} /> : <ExamCard key={e.examId} e={e} />
+                    )
                   ) : (
                     <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 p-4">
                       <div className="text-sm font-medium text-slate-500">
@@ -307,15 +351,15 @@ export default async function StudentDashboard() {
                   )}
                 </div>
                 <div className="space-y-3">
-                  {row.notes.map((n) => (
-                    <StudyNoteCard key={n.id} item={n} />
-                  ))}
+                  {row.notes.map((n) =>
+                    intro ? <LockedStudyNoteCard key={n.id} title={n.title ?? n.originalName ?? "Study note"} /> : <StudyNoteCard key={n.id} item={n} />
+                  )}
                 </div>
               </div>
             ))}
             {uncategorisedExams.map((e) => (
               <div key={e.examId} className="grid items-start gap-3 md:grid-cols-2 md:gap-6">
-                <ExamCard e={e} />
+                {intro ? <LockedExamCard title={e.title} /> : <ExamCard e={e} />}
               </div>
             ))}
           </div>
@@ -440,7 +484,11 @@ export default async function StudentDashboard() {
                       {SECTION_TYPE_SHORT[section.trainingType as SectionTrainingType]}
                     </span>
                     {section.name}
-                    {!section.isUnlocked && (
+                    {section.isShadow ? (
+                      <span className="ml-2 text-xs font-normal text-slate-400">
+                        (after Phase 2 sign-up)
+                      </span>
+                    ) : !section.isUnlocked && (
                       <span className="ml-2 text-xs font-normal text-slate-400">
                         (locked)
                       </span>

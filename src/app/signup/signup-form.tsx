@@ -76,6 +76,9 @@ export default function SignupForm() {
   // V24 item 71 (1 Oct 2026): a student can sign up for one, two or all
   // three training types at once.
   const [trainingTypes, setTrainingTypes] = useState<Set<"pg" | "ppg" | "ppt">>(new Set());
+  // 19 Oct 2026: "PG/PPG Intro training" -- Phase 1 only, instead of the
+  // three full courses above (the student can sign up for Phase 2 later).
+  const [introCourse, setIntroCourse] = useState(false);
   // V24 item 72: only for students who started with Apex before the Hub.
   const [initialSignUpDate, setInitialSignUpDate] = useState("");
   // Everything except the file inputs is controlled from here, so a failed
@@ -142,7 +145,9 @@ export default function SignupForm() {
               What type(s) of training are you signing up for?{" "}
               <span className="text-red-600">*</span>
             </legend>
-            <p className="mb-2 text-xs text-slate-500">Tick one, two or all three.</p>
+            <p className="mb-2 text-xs text-slate-500">
+              Tick one, two or all three -- or choose the PG/PPG Intro training below.
+            </p>
             <div className="grid gap-2 sm:grid-cols-3">
               {(
                 [
@@ -154,7 +159,9 @@ export default function SignupForm() {
                 <label
                   key={value}
                   className={`flex cursor-pointer items-center gap-2 rounded-md border px-3 py-2.5 text-sm ${
-                    trainingTypes.has(value)
+                    introCourse
+                      ? "cursor-not-allowed border-slate-200 text-slate-400"
+                      : trainingTypes.has(value)
                       ? "border-red-500 bg-red-50 text-red-700"
                       : "border-slate-300 text-slate-700 hover:bg-slate-50"
                   }`}
@@ -163,7 +170,8 @@ export default function SignupForm() {
                     type="checkbox"
                     name="trainingType"
                     value={value}
-                    checked={trainingTypes.has(value)}
+                    checked={!introCourse && trainingTypes.has(value)}
+                    disabled={introCourse}
                     onChange={() =>
                       setTrainingTypes((prev) => {
                         const next = new Set(prev);
@@ -178,6 +186,30 @@ export default function SignupForm() {
                 </label>
               ))}
             </div>
+            <label
+              className={`mt-2 flex cursor-pointer items-start gap-2 rounded-md border px-3 py-2.5 text-sm ${
+                introCourse
+                  ? "border-red-500 bg-red-50 text-red-700"
+                  : "border-slate-300 text-slate-700 hover:bg-slate-50"
+              }`}
+            >
+              <input
+                type="checkbox"
+                name="introCourse"
+                value="1"
+                checked={introCourse}
+                onChange={(e) => setIntroCourse(e.target.checked)}
+                className="mt-0.5 rounded border-slate-300"
+              />
+              <span>
+                <span className="font-medium">PG/PPG Intro training</span>
+                <span className="block text-xs text-slate-500">
+                  Phase 1 only, no exams. Your logbook and Phase 1 training folio are active; you can
+                  see Phase 2, the study notes and the exams, and sign up for Phase 2 (the full
+                  course) from your dashboard when you&apos;re ready.
+                </span>
+              </span>
+            </label>
           </fieldset>
           <SahpaSignupNote />
           <div className="grid grid-cols-2 gap-4">

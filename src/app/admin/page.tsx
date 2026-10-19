@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { getPendingApplicants } from "@/lib/verification";
 import Avatar from "@/components/avatar";
+import { getCurrentUser } from "@/lib/auth/dal";
+import { getPhase2Requests } from "@/lib/intro-course-server";
 
 const roleLabel: Record<string, string> = {
   student: "Student",
@@ -31,7 +33,12 @@ export default async function AdminVerificationQueue({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const [applicants, sp] = await Promise.all([getPendingApplicants(), searchParams]);
+  const [applicants, sp, phase2Requests, viewer] = await Promise.all([
+    getPendingApplicants(),
+    searchParams,
+    getPhase2Requests(),
+    getCurrentUser(),
+  ]);
   // Set by ApplicantReviewActions after an approval (30 Sep 2026) -- shows
   // whether the "you can now log in" WhatsApp went out.
   const banner =
@@ -59,6 +66,37 @@ export default async function AdminVerificationQueue({
         )}
       </div>
 
+      {/* 19 Oct 2026: PG/PPG Intro students who signed up for Phase 2 --
+          the CFI approves on the student's page. */}
+      {phase2Requests.length > 0 && (
+        <div className="mb-6 rounded-xl border-2 border-red-300 bg-red-50 p-4">
+          <h2 className="text-sm font-semibold text-red-800">
+            Phase 2 sign-ups waiting for CFI approval ({phase2Requests.length})
+          </h2>
+          <ul className="mt-2 space-y-1.5 text-sm">
+            {phase2Requests.map((r) => (
+              <li key={r.userId} className="flex flex-wrap items-center gap-2">
+                <span className="font-medium text-slate-900">{r.name}</span>
+                <span className="text-slate-600">
+                  PG/PPG Intro → {(r.requestedTypes ?? "").toUpperCase().split(",").join(" + ")}
+                  {r.requestedAt ? `, requested ${r.requestedAt.toLocaleDateString()}` : ""}
+                </span>
+                {viewer?.role === "cfi" ? (
+                  <Link
+                    href={`/instructor/students/${r.userId}#phase2`}
+                    className="rounded-md bg-red-600 px-2 py-0.5 text-xs font-semibold text-white hover:bg-red-700"
+                  >
+                    Review &amp; approve →
+                  </Link>
+                ) : (
+                  <span className="text-xs text-slate-500">(the CFI approves this)</span>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       {applicants.length === 0 ? (
         <div className="rounded-xl border border-dashed border-slate-300 bg-white p-8 text-center text-sm text-slate-500">
           Nothing pending -- new sign-ups will show up here.
@@ -79,7 +117,7 @@ export default async function AdminVerificationQueue({
                     </div>
                   </div>
                   <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-700">
-                    {roleLabel[a.role]}
+                    {roleLabel[a.role]}{a.introCourse ? " -- PG/PPG Intro (Phase 1)" : ""}
                   </span>
                 </div>
                 <dl className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-sm">
@@ -128,7 +166,7 @@ export default async function AdminVerificationQueue({
                     </td>
                     <td className="px-4 py-3">
                       <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-700">
-                        {roleLabel[a.role]}
+                        {roleLabel[a.role]}{a.introCourse ? " -- PG/PPG Intro (Phase 1)" : ""}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-slate-600">{a.apexNumber ?? "—"}</td>

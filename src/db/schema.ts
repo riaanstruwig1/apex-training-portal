@@ -225,6 +225,24 @@ export const studentProfiles = sqliteTable("student_profiles", {
   popFile: text("pop_file"),
   popUploadedAt: integer("pop_uploaded_at", { mode: "timestamp" }),
   invoiceRequestedAt: integer("invoice_requested_at", { mode: "timestamp" }),
+  // 19 Oct 2026 (Riaan): "PG/PPG Intro training" -- a student who signs up
+  // for Phase 1 only. "intro": Phase 1 folio + logbook only; Phase 2 and
+  // theory sections, study notes and exams are shown but locked, until the
+  // student asks to "Sign up for Phase 2" and a CFI approves -- then
+  // "full", i.e. a normal student (see lib/intro-course.ts). Existing
+  // students are "full".
+  courseLevel: text("course_level", { enum: ["intro", "full"] })
+    .notNull()
+    .default("full"),
+  // The student's "Sign up for Phase 2" request: when, and the course(s)
+  // they picked (comma-separated pg/ppg/ppt, like trainingType). Cleared
+  // when a CFI approves or declines it.
+  phase2RequestedAt: integer("phase2_requested_at", { mode: "timestamp" }),
+  phase2RequestedTypes: text("phase2_requested_types"),
+  phase2ApprovedAt: integer("phase2_approved_at", { mode: "timestamp" }),
+  phase2ApprovedByUserId: text("phase2_approved_by_user_id").references(() => users.id),
+  phase2DeclinedAt: integer("phase2_declined_at", { mode: "timestamp" }),
+  phase2DeclineReason: text("phase2_decline_reason"),
   status: text("status", {
     enum: ["invited", "active", "suspended", "archived"],
   })

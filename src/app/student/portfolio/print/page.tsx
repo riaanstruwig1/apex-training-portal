@@ -20,8 +20,8 @@ export default async function StudentPortfolioPrintPage() {
     getLogbookEntries(user.id),
   ]);
   const summary = summarizeLogbook(logEntries);
-  const totalExercises = sections.reduce((n, s) => n + s.totalCount, 0);
-  const signedOff = sections.reduce((n, s) => n + s.signedOffCount, 0);
+  const totalExercises = sections.filter((s) => !s.isShadow).reduce((n, s) => n + s.totalCount, 0);
+  const signedOff = sections.filter((s) => !s.isShadow).reduce((n, s) => n + s.signedOffCount, 0);
 
   return (
     <div className="mx-auto max-w-3xl space-y-6 p-6">

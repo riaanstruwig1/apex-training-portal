@@ -4,6 +4,7 @@ import { db } from "@/db";
 import { studyMaterials } from "@/db/schema";
 import { getCurrentUser } from "@/lib/auth/dal";
 import { resolveStudyMaterialPath } from "@/lib/study-material-uploads";
+import { isIntroStudent } from "@/lib/intro-course-server";
 
 const CONTENT_TYPES: Record<string, string> = {
   zip: "application/zip",
@@ -29,6 +30,11 @@ export async function GET(
 
   const user = await getCurrentUser();
   if (!user) return new Response("Not found", { status: 404 });
+  // 19 Oct 2026: PG/PPG Intro (Phase 1 only) students can see the study
+  // notes listed but not download them until Phase 2 is approved.
+  if (user.role === "student" && (await isIntroStudent(user.id))) {
+    return new Response("Study notes open once you sign up for Phase 2.", { status: 403 });
+  }
 
   const filePath = resolveStudyMaterialPath(filename);
   if (!filePath) return new Response("Not found", { status: 404 });

@@ -64,8 +64,8 @@ export default async function PrintProfilePage({
     getLogbookEntries(a.id),
   ]);
   const summary = summarizeLogbook(logEntries);
-  const totalExercises = sections.reduce((n, s) => n + s.totalCount, 0);
-  const signedOff = sections.reduce((n, s) => n + s.signedOffCount, 0);
+  const totalExercises = sections.filter((s) => !s.isShadow).reduce((n, s) => n + s.totalCount, 0);
+  const signedOff = sections.filter((s) => !s.isShadow).reduce((n, s) => n + s.signedOffCount, 0);
   const sp = student?.profile;
   const pp = pilot?.profile;
   const roleLabel =

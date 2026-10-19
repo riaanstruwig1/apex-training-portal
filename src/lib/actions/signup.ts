@@ -10,6 +10,7 @@ import { generateApexNumber } from "@/lib/apex-number";
 import { saveUpload, UploadError } from "@/lib/uploads";
 import { ENDORSEMENT_OPTIONS } from "@/lib/pilot-endorsements";
 import { formatTrainingTypes } from "@/lib/training-types";
+import { INTRO_TRAINING_TYPES } from "@/lib/intro-course";
 
 const SignupSchema = z
   .object({
@@ -96,7 +97,12 @@ export async function submitSignup(
     postalAddress: formData.get("postalAddress") || undefined,
     homeAddress: formData.get("homeAddress") || undefined,
     clubName: formData.get("clubName") || undefined,
-    trainingTypes: formData.getAll("trainingType").map(String),
+    // 19 Oct 2026: "PG/PPG Intro training" (Phase 1 only) -- stored as a
+    // PG + PPG student with course_level "intro" (see lib/intro-course.ts).
+    trainingTypes:
+      formData.get("introCourse") === "1"
+        ? [...INTRO_TRAINING_TYPES]
+        : formData.getAll("trainingType").map(String),
     initialSignUpDate: formData.get("initialSignUpDate") || undefined,
     consentName: formData.get("consentName"),
     indemnityName: formData.get("indemnityName"),
@@ -205,6 +211,7 @@ export async function submitSignup(
         userId: user.id,
         phone: data.phone,
         trainingType: formatTrainingTypes(data.trainingTypes ?? []),
+        courseLevel: formData.get("introCourse") === "1" ? "intro" : "full",
         signUpDate: data.initialSignUpDate ? new Date(data.initialSignUpDate) : null,
         sahpaNumber: data.sahpaNumber || null,
         sahpaExpiryDate: data.sahpaExpiryDate ? new Date(data.sahpaExpiryDate) : null,

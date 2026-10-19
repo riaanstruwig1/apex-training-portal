@@ -97,6 +97,13 @@ export default function NewStudentForm() {
             <input type="checkbox" name="trainingType" value="ppt" className="rounded border-slate-300" />
             Powered Paratrike (PPT)
           </label>
+          <label className="flex w-full items-center gap-1.5 border-t border-slate-100 pt-2">
+            <input type="checkbox" name="introCourse" value="1" className="rounded border-slate-300" />
+            <span>
+              <span className="font-medium">PG/PPG Intro training</span>{" "}
+              <span className="text-slate-500">(Phase 1 only -- overrides the ticks above)</span>
+            </span>
+          </label>
         </div>
       </div>
       <div>

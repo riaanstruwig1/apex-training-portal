@@ -212,7 +212,7 @@ export default function ExerciseChecklist({
             {SECTION_PHASE_LABELS[section.phase]}
           </h3>
         )}
-        <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
+        <div className={`overflow-hidden rounded-xl border border-slate-200 bg-white ${section.isShadow ? "opacity-60" : ""}`}>
           <div className="flex items-center justify-between bg-slate-50 px-4 py-3">
             <div>
               <h3 className="text-sm font-semibold text-slate-900">
@@ -226,7 +226,11 @@ export default function ExerciseChecklist({
               )}
             </div>
             <div className="flex items-center gap-2">
-              {!section.isUnlocked && (
+              {section.isShadow ? (
+                <span className="rounded-full bg-slate-200 px-2 py-0.5 text-xs font-medium text-slate-600">
+                  Not applicable -- Intro (Phase 1) student
+                </span>
+              ) : !section.isUnlocked && (
                 <span className="rounded-full bg-slate-200 px-2 py-0.5 text-xs font-medium text-slate-600">
                   Locked for student
                 </span>
@@ -236,7 +240,9 @@ export default function ExerciseChecklist({
               </span>
             </div>
           </div>
-          <div>
+          {/* 19 Oct 2026: an intro (Phase 1 only) student's Phase 2 / theory
+              sections are a read-only shadow until Phase 2 is approved. */}
+          <fieldset disabled={section.isShadow} className="min-w-0">
             {section.exercises.map((exercise) => (
               <ExerciseRow
                 key={exercise.id}
@@ -250,7 +256,7 @@ export default function ExerciseChecklist({
                 canEditInfo={canEditInfo}
               />
             ))}
-          </div>
+          </fieldset>
         </div>
         </div>
       ))}

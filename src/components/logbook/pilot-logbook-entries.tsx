@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import OneLineText from "./one-line-text";
 import { useRouter } from "next/navigation";
 import { updateLogbookEntry, deleteLogbookEntry, type LogEntryState } from "@/lib/actions/logbook";
 import { useActionState } from "react";
@@ -297,7 +298,7 @@ export default function PilotLogbookEntries({
                   <td className="px-3 py-2">{e.launches}</td>
                   <td className="px-3 py-2 text-slate-600">{e.instructorName ?? "—"}</td>
                   <td className="max-w-[12rem] px-3 py-2 text-xs text-slate-500">
-                    {formatExerciseCodes(e.exerciseCodesCovered)}
+                    <OneLineText text={formatExerciseCodes(e.exerciseCodesCovered)} />
                   </td>
                   <td className="px-3 py-2">
                     <SelfSignBadge selfSigned={e.selfSigned} />

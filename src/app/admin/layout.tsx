@@ -3,17 +3,19 @@ import NavHeader from "@/components/nav-header";
 import { countPendingApplicants } from "@/lib/verification";
 import { countPendingPilotEndorsements, countPendingLicenceRenewals } from "@/lib/pilots";
 import { countPasswordResetRequests } from "@/lib/password-resets";
+import { countPhase2Requests } from "@/lib/intro-course-server";
 
 export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
   const user = await requireAdminOrCFI();
-  const [pendingCount, pendingPilotCount, pendingRenewalCount, pendingResetCount] = await Promise.all([
+  const [pendingCount, pendingPilotCount, pendingRenewalCount, pendingResetCount, phase2Count] = await Promise.all([
     countPendingApplicants(),
     countPendingPilotEndorsements(),
     countPendingLicenceRenewals(),
     countPasswordResetRequests(),
+    countPhase2Requests(),
   ]);
   const sharedLinks = [
-    { href: "/admin", label: "Verification queue", badge: pendingCount },
+    { href: "/admin", label: "Verification queue", badge: pendingCount + phase2Count },
     { href: "/admin/students", label: "Students" },
     { href: "/admin/pilots", label: "Pilots", badge: pendingPilotCount + pendingRenewalCount },
     { href: "/admin/forms-procedures", label: "Forms & procedures" },

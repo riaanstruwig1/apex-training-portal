@@ -1,5 +1,7 @@
 "use server";
 
+import { INTRO_LOCK_TEXT, isIntroCourse } from "@/lib/intro-course";
+
 import { eq, and, desc, inArray, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { db } from "@/db";
@@ -29,7 +31,9 @@ async function latestAttempt(studentId: string, examId: string) {
  * exists, whatever its status. Does NOT start a retry on its own; that's
  * an explicit student action via startNewAttempt. */
 export async function ensureAttempt(examId: string) {
-  const { user } = await requireStudent();
+  const { user, profile: studentProfile } = await requireStudent();
+  // 19 Oct 2026: PG/PPG Intro (Phase 1 only) students can't write exams.
+  if (isIntroCourse(studentProfile?.courseLevel)) return null;
 
   const existing = await latestAttempt(user.id, examId);
   if (existing) return existing.id;
@@ -49,7 +53,9 @@ export type RetryState = { error: string } | undefined;
  * until that many days have passed since the failed attempt was
  * verified. */
 export async function startNewAttempt(examId: string): Promise<RetryState> {
-  const { user } = await requireStudent();
+  const { user, profile: studentProfile } = await requireStudent();
+  // 19 Oct 2026: PG/PPG Intro (Phase 1 only) students can't write exams.
+  if (isIntroCourse(studentProfile?.courseLevel)) return { error: `${INTRO_LOCK_TEXT}.` };
 
   const current = await latestAttempt(user.id, examId);
   if (!current || current.status !== "verified" || current.passed !== false) {
@@ -87,7 +93,9 @@ export async function saveExamAnswer(
   questionId: string,
   optionId: string
 ): Promise<SaveAnswerState> {
-  const { user } = await requireStudent();
+  const { user, profile: studentProfile } = await requireStudent();
+  // 19 Oct 2026: PG/PPG Intro (Phase 1 only) students can't write exams.
+  if (isIntroCourse(studentProfile?.courseLevel)) return { error: `${INTRO_LOCK_TEXT}.` };
 
   const attempt = await latestAttempt(user.id, examId);
   if (!attempt) return { error: "Exam attempt not found." };
@@ -122,7 +130,9 @@ export async function submitExam(
   examId: string,
   opts?: { auto?: boolean }
 ): Promise<SubmitExamState> {
-  const { user } = await requireStudent();
+  const { user, profile: studentProfile } = await requireStudent();
+  // 19 Oct 2026: PG/PPG Intro (Phase 1 only) students can't write exams.
+  if (isIntroCourse(studentProfile?.courseLevel)) return { error: `${INTRO_LOCK_TEXT}.` };
 
   const attempt = await latestAttempt(user.id, examId);
   if (!attempt) return { error: "Exam attempt not found." };
@@ -279,7 +289,9 @@ export async function submitPaperExam(
   _prevState: SubmitPaperExamState,
   formData: FormData
 ): Promise<SubmitPaperExamState> {
-  const { user } = await requireStudent();
+  const { user, profile: studentProfile } = await requireStudent();
+  // 19 Oct 2026: PG/PPG Intro (Phase 1 only) students can't write exams.
+  if (isIntroCourse(studentProfile?.courseLevel)) return { error: `${INTRO_LOCK_TEXT}.` };
 
   const [exam] = await db.select().from(exams).where(eq(exams.id, examId)).limit(1);
   if (!exam) return { error: "Exam not found." };
