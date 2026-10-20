@@ -38,10 +38,7 @@ import { parseTrainingTypes } from "@/lib/training-types";
  * once -- the visible set is the union across all of them):
  *  - PG: only the PG exam.
  *  - PPG: PG, PPG and the Radio (RT) exam.
- *  - PPT: PG, PPG, PPT and the Radio (RT) exam. (20 Oct 2026, Riaan: "if
- *    a student signs up for PPT, add the PPG exam also -- we currently do
- *    not have a PPT exam to upload". The PPT card shows "Under
- *    construction" until a PPT exam is loaded.)
+ *  - PPT: PG, PPT and the Radio (RT) exam. (20 Oct 2026, Riaan: a student who signs up for PPT sees the PG exam, the PPT exam and the DTO Radio exam -- not the PPG exam. Before a PPT exam is loaded the PPT card shows "Under construction".)
  * A student with no trainingType declared (older accounts from before this
  * field existed) sees everything, rather than having exams unexpectedly
  * disappear on them.
@@ -61,7 +58,6 @@ export function visibleExamCategories(
     }
     if (t === "ppt") {
       visible.add("pg");
-      visible.add("ppg");
       visible.add("ppt");
       visible.add("rt");
     }

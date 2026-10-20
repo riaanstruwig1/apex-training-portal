@@ -568,6 +568,16 @@ export const siteSettings = sqliteTable("site_settings", {
   noticeFile: text("notice_file"), // filename under data/uploads/forms-procedures/
   noticeFileOriginalName: text("notice_file_original_name"),
   noticeVisible: integer("notice_visible", { mode: "boolean" }).notNull().default(false),
+  // Birthday WhatsApp (20 Oct 2026, batch 78, Riaan: "Whatsapp that goes out
+  // to Henna, 0725614474 ... birthdays, day before and on the day at 8am of
+  // all pilots and students"). Recipient(s) comma-separated; lastSentOn is
+  // the SA date (YYYY-MM-DD) of the last daily run so it only sends once a
+  // day. See lib/birthdays.ts.
+  birthdayWhatsappTo: text("birthday_whatsapp_to").default("0725614474"),
+  birthdayWhatsappEnabled: integer("birthday_whatsapp_enabled", { mode: "boolean" })
+    .notNull()
+    .default(true),
+  birthdayLastSentOn: text("birthday_last_sent_on"),
   updatedAt: integer("updated_at", { mode: "timestamp" })
     .notNull()
     .default(sql`(unixepoch())`),
