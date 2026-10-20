@@ -1,0 +1,2063 @@
+{
+  "sections": [
+    {
+      "letter": "A",
+      "name": "TRIKE, ENGINE & PROPELLER",
+      "questions": [
+        {
+          "code": "A.1",
+          "letter": "A",
+          "num": 1,
+          "sub": null,
+          "prompt": "Explain the Propeller Torque Effect on a paratrike -- its cause, its effects on the ground and in the air, and how to compensate. Which of the following correctly covers this?",
+          "print_prompt": "Explain what you understand about Propeller Torque Effect on a paratrike. Include its cause, its effects on the ground and in the air, the factors that influence the extent of the effect, and the steps a pilot can take to compensate for it.",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Caused by gyroscopic precession of the spinning propeller whenever the trike pitches -- a force applied to the prop disc is felt 90 degrees further around its rotation, yawing the trike sharply to one side at lift-off; compensated by raising the nose slowly, making all pitch changes gradually and fitting a heavier propeller to steady the disc.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Caused by the propeller slipstream spiralling back and striking one side of the wing and tail area, pushing the trike off line during the take-off run only -- compensated by taking off with a slight crosswind from the slipstream side and avoiding any trimmer or brake input until the trike is airborne.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "The reaction to the spinning propeller (equal and opposite) tries to roll the engine and trike against the direction of prop rotation: on the ground one wheel is loaded more and the trike pulls to that side, and in the air the trike banks to that side under the wing, which then banks and turns the same way -- worst at high power and low airspeed. Compensate with asymmetric trimmer settings as per the manual, gentle opposite brake input or weight shift, smooth throttle changes and correct hang-point set-up (never trimmer and brake in the same direction together).",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "D",
+              "text": "Caused by uneven tyre pressures or a mis-aligned front wheel pulling the trike to one side during taxi and take-off, with no effect once airborne -- compensated by equalising the tyre pressures, correcting the wheel alignment and holding a constant foot-steering input throughout the take-off run.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 8
+        },
+        {
+          "code": "A.2",
+          "letter": "A",
+          "num": 2,
+          "sub": null,
+          "prompt": "Explain the hang point, centre of gravity and thrust line of a paratrike, how they influence handling, and what must be checked at set-up. Which of the following correctly covers this?",
+          "print_prompt": "Explain what is meant by the hang point (riser attachment), the centre of gravity (CG) and the thrust line of a paratrike. How does their relationship to each other influence handling, and what must be checked when setting up the trike or after changing the wing, pilot or load?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "The hang point is where the A-risers join the lines, the CG is measured on the empty trike and never changes once the trike leaves the factory, and the thrust line is always perfectly level; trike attitude is controlled entirely by trimmer position, so no static hang check or roll test is needed after changing the pilot, wing or load.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "The hang point is where the risers attach and the trike swings like a pendulum; the CG is that of trike, pilot, passenger, fuel and gear and must stay within the manufacturer's limits (it shifts as fuel burns or a passenger is added); the thrust line sets the pitch response to power changes. A mis-set CG gives a nose-high or nose-low trike, poor wheel loading and a longer take-off run, and a wide hang-point spread adds roll stability and reduces torque effect. Check the risers are untwisted, carabiners locked, hang point set per the manual and the trike attitude with the pilot seated (static hang / roll test) after any change of pilot, wing or load.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "C",
+              "text": "The hang point is where the propeller thrust acts on the frame, the CG should always be placed as far aft as possible to improve climb, and the thrust line only matters for engine alignment; a rear CG is always safer because it lifts the front wheel early, and at set-up only tyre pressures and fuel level need checking since the riser attachment is fixed at manufacture and never needs checking.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "The hang point is the pilot's seat position, the CG is the point where the wing's lift acts, and the thrust line is the line between the two main wheels; because these are fixed by the design they do not change with pilot weight, passenger or fuel load, so the only set-up check needed is that the brake lines are the correct length.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 6
+        },
+        {
+          "code": "A.3",
+          "letter": "A",
+          "num": 3,
+          "sub": null,
+          "prompt": "Describe the sequence from wing layout to lift-off on a paratrike -- inflation, taxi, take-off, abort criteria and the danger of an unbalanced wing. Which of the following correctly covers this?",
+          "print_prompt": "Describe the sequence a paratrike pilot follows from laying out the wing to lift-off. Include how the wing is brought overhead, how it is controlled while taxiing, when a take-off must be aborted, and the dangers of an unbalanced wing.",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Lay the wing out downwind so it inflates faster, power up as hard as possible and back right off as soon as the wing appears overhead; hold deep brake for several seconds to centre it and launch as soon as the wing is roughly overhead, since full power will pull the trike straight beneath it -- an unbalanced wing is corrected in the air, not on the ground.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Inflate with a short, sharp burst of full power, then release the controls and taxi hands-up so the wing finds its own balance; steer the trike first and let the wing follow, correct a drifting wing late and firmly with one deep brake pull, and always continue the take-off once started, because aborting at speed is more dangerous than flying.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Lay the wing out into wind with the lines clear of the prop cage and frame, complete the pre-take-off checks, then inflate forward with smooth, progressive throttle (do not back off as the wing rises); once overhead, release the A-risers and set only the power needed to hold it there. Taxi by checking the wing every second or two, centring it with short brake jabs and steering the wing first and the trike beneath it, using throttle as the main tool. Roll on full power smoothly only when the wing is balanced, and abort (close the throttle, brake the wing down) if it pulls off and cannot be corrected -- an unbalanced wing can tip the trike over or force an accidental take-off.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "D",
+              "text": "Lay the wing out across the wind with the lines under the trike, use a few seconds of half throttle to inflate, then apply full power immediately without checking the wing, relying on the pendulum effect to centre it; an unbalanced wing is harmless on the ground and only becomes a risk once airborne above about 50 ft.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 8
+        },
+        {
+          "code": "A.4",
+          "letter": "A",
+          "num": 4,
+          "sub": null,
+          "prompt": "Explain how throttle changes affect the pitch behaviour of the wing and trike (surge and pendulum), the dangers at low height, and the response to a parachutal condition. Which of the following correctly covers this?",
+          "print_prompt": "Describe how changes in throttle setting affect the pitch behaviour of the wing and trike (surge and pendulum). What are the dangers of abrupt throttle changes, particularly at low height, and how should the pilot respond to a parachutal condition?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "A surge after a power change is a fault of an incorrectly trimmed wing and is cured by closing the trimmers fully before every take-off; abrupt throttle changes are safe at any height provided the wing is trimmed correctly, and a parachutal condition is cured by applying full power and full brake together.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "The trike hangs like a pendulum and the thrust line is offset from the hang point, so a power change swings the trike relative to the wing and changes its angle of attack: an abrupt power cut lets the wing surge ahead (reduced angle of attack, collapse risk, especially low down), while an abrupt power increase with brake pitches the wing back and can lead to a parachutal stall. Over-controlling throttle and brakes can create a pilot-induced oscillation, so make small, smooth changes and let the pendulum settle; in a parachutal condition raise the hands (release the brakes) and adjust power smoothly.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "C",
+              "text": "Throttle changes only alter speed and climb rate; the wing's pitch and angle of attack are unaffected because the lines hold the trike rigidly in position, so an abrupt power cut is the correct, quickest response at any height, and a parachutal condition is cured by pulling both brakes deeply to restore forward speed.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Power changes pitch the trike only when flying in turbulence; in smooth air they have no effect, and the correct response to any surge or oscillation is a rapid, large throttle reversal followed by deep brake input to stop the pendulum, repeated until the motion stops.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 5
+        },
+        {
+          "code": "A.5",
+          "letter": "A",
+          "num": 5,
+          "sub": null,
+          "prompt": "Describe a normal power-assisted landing and a dead-stick (engine-off) landing on a paratrike, with reference to wind and wheel direction. Which of the following correctly covers this?",
+          "print_prompt": "Describe a normal power-assisted landing and a dead-stick (engine-off) landing on a paratrike, with particular reference to wind and wheel direction.",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Land across the wind whenever possible, because the wheels let the trike slide sideways to absorb drift; chop the throttle at about 50 ft in a power-assisted landing, in an engine-off landing hold a deep flare from the start for the lowest sink, and after touchdown release the brakes immediately so the wing flies off the trike's weight.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Always land with a slight crab into the crosswind and touch down on one main wheel first to bleed off drift; flare early and hold the brakes deep since a long float is safest, and in an engine-off landing flare as high as possible and hold the brakes fully down from there until the trike stops.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Land directly into wind: the wheels cannot slide sideways, so touching down with drift risks a tip-over -- if drifting, face the wind, and go around if unsure. In a power-assisted landing reduce power gradually from fly-by height and flare progressively (a sudden power cut causes a surge and a hard landing); in a dead-stick landing stop the engine early so the wing stabilises, fly at trim speed, keep the front wheel straight and flare progressively without jamming the brakes. After touchdown hold the brakes, keep straight, collapse the wing with the rear risers in strong wind and shut down.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "D",
+              "text": "Land downwind to increase groundspeed and keep the wing flying, flaring only at the last instant with a quick full pull of both brakes; if drifting, correct with sharp opposite foot steering after touchdown, and in all cases shut the engine down before the flare to avoid any propeller strike.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 4
+        },
+        {
+          "code": "A.6",
+          "letter": "A",
+          "num": 6,
+          "sub": null,
+          "prompt": "State the correct actions for a tip-over, engine failure after take-off, reserve deployment and steering failure on a paratrike. Which of the following correctly covers this?",
+          "print_prompt": "Briefly state the correct actions in each of the following paratrike emergencies: (a) tip-over / rollover, (b) engine failure after take-off, (c) reserve parachute deployment, (d) steering (brake line or pulley) failure.",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Tip-over: apply full power to drive the trike back upright. Engine failure after take-off: pull both brakes deeply to stretch the glide. Reserve: leave the engine running so the propeller thrust keeps the canopy open, then throw the handle clear. Steering failure: close the trimmers fully and land cross-wind to reduce speed.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Tip-over: unstrap and jump clear as the trike starts to go over. Engine failure after take-off: stretch the glide with the speed system fully applied. Reserve: throw only after the wing has fully collapsed and the trike is below 50 ft. Steering failure: use weight shift only and continue the circuit as normal.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Tip-over: put a hand out to stop the roll and release the seat belt at once. Engine failure after take-off: turn back to the field immediately with a steep turn to avoid obstacles. Reserve: apply full power to climb away from the problem before throwing it. Steering failure: pull both brakes to the stops and wait for the wing to settle.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Tip-over: keep arms, hands and feet inside the frame, kill the engine and stay strapped in until movement stops. Engine failure after take-off: fly the wing first (hands up, trim speed), land straight ahead or within a small arc and do not turn back. Reserve: kill the engine, find the handle and throw it firmly clear of the propeller and lines. Steering failure: steer with the rear risers, weight shift and differential trimmers and land as soon as practical.",
+              "image": null,
+              "correct": true
+            }
+          ],
+          "stem_image": null,
+          "marks": 4
+        },
+        {
+          "code": "A.7",
+          "letter": "A",
+          "num": 7,
+          "sub": null,
+          "prompt": "Discuss running-in of a new engine -- purpose, procedure and precautions. Which of the following correctly covers this?",
+          "print_prompt": "Discuss running-in of new engines, the purpose thereof, procedures and precautions. Cover aspects of carb tuning, ratio of oil mixtures, vibration problems, loosening fittings, etc.",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Running-in is mainly about getting the carburettor tuning correct for the site's altitude and temperature -- the piston, crankshaft and bearings settle in naturally during the first few normal flights, so no special idle-and-cool cycling routine, vibration check, or fitting inspection is really necessary beforehand at all.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Run the engine at full power for around 10 minutes on first start-up so the piston rings seat against the cylinder wall quickly under load, then let it idle for cool-down for the remainder of that first session before checking the carb tuning and oil mixture are correct for the site's altitude, and looking over the whole unit for any vibration or fittings that worked loose along the way.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Leave the engine idling continuously for a full hour without ever raising the RPM above idle, letting the piston and rings bed in slowly at low load, then fly the unit normally from the very next start-up once the hour of idling is complete, the engine has fully cooled, and a quick check for loose fittings and correct carb tuning has been done.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Following the manufacturer's specification: idle 5 minutes, switch off and cool 5 minutes, idle again, briefly take it to around 2000rpm then back to idle, cool again -- repeating while raising the ceiling by about 1000rpm each cycle up to full rpm (held no longer than 30 seconds) -- to let the piston, crankshaft and bearings settle in gradually, checking for vibration, loose fittings, correct carb tuning for altitude, and the right oil mixture throughout.",
+              "image": null,
+              "correct": true
+            }
+          ],
+          "stem_image": null,
+          "marks": 10
+        },
+        {
+          "code": "A.8",
+          "letter": "A",
+          "num": 8,
+          "sub": null,
+          "prompt": "Comment on fuel mixtures, oil types, and running-in considerations. Which of the following correctly covers this?",
+          "print_prompt": "Comment on Fuel Mixtures with specific reference to oil types (i.e. Synthetic vs Mineral oils), mixture ratio's and running-in considerations.",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Mineral oil is generally preferred over synthetic for two-stroke engines because of its higher flash point and resistance to breakdown under heat, and the fuel mixture should be progressively leaned out as the engine works through its running-in period.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Oil type makes little real difference to engine protection provided the mixture ratio itself is correct for the manufacturer's specification; running-in actually calls for a slightly leaner mixture than normal cruise to help the rings seat faster.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Always follow the manufacturer's specified oil and mixture ratio; use synthetic oil, which has a much higher flash point (temperature breakdown) than mineral oil; a richer mixture is needed during running-in, tapering off once the engine is broken in.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "D",
+              "text": "Synthetic and mineral oils have essentially the same flash point and heat-breakdown resistance; the mixture ratio only needs to be richened once the engine is fully broken in and being flown at higher power settings regularly.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 5
+        },
+        {
+          "code": "A.9",
+          "letter": "A",
+          "num": 9,
+          "sub": null,
+          "prompt": "Discuss heat-seizure of engines -- causes, extent of damage, repairs, and prevention. Which of the following correctly covers this?",
+          "print_prompt": "Discuss heat-seizure of engines, causes thereof, assessing extent of damage, resulting repairs required, and preventative action.",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Caused by low compression from gradually worn piston rings over many hours of normal running -- unlike a sudden seizure this develops slowly over time, and once compression drops far enough it always requires a full engine replacement rather than a lesser repair, rebuild, or simple honing of the cylinder wall.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Caused specifically by using synthetic oil instead of mineral oil in the fuel mixture, which some engines are said not to tolerate well at sustained high RPM on a hot day -- prevented simply by switching back to a mineral-oil mixture, keeping the same ratio the manufacturer specifies, and avoiding a lean carburettor setting.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Caused by excess heat or inadequate lubrication -- a carburettor set too lean, wrong spark plug, old fuel, or a leaking gasket -- melting and smearing the piston onto the cylinder wall; ranges from burnt rings to a fully damaged piston/sleeve; repaired by replacing damaged parts, honing if needed, then running-in again; prevented with the correct fuel/oil mixture, a carb set slightly rich rather than lean, and tight nuts/bolts to stop gasket leaks.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "D",
+              "text": "Caused by over-lubrication combined with an over-rich mixture fouling the spark plug and washing oil off the cylinder wall -- fixed by leaning the carburettor slightly, correcting the oil ratio, and replacing the fouled plug, with no further internal repair usually needed beyond that, though nuts and bolts should still be checked for tightness and any leaking gasket replaced afterwards.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 15
+        }
+      ]
+    },
+    {
+      "letter": "B",
+      "name": "AIR LAW & RADIO PROCEDURES",
+      "questions": [
+        {
+          "code": "B.1",
+          "letter": "B",
+          "num": 1,
+          "sub": null,
+          "prompt": "Briefly describe the Semi-Circular Separation Rule. Which of the following correctly covers this?",
+          "print_prompt": "Briefly describe the concept of the Semi-Circular Separation Rule, as pertaining to air-traffic separation. (no need to reproduce the actual table here)",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Provides horizontal separation below 1500ft AGL in uncontrolled airspace by requiring aircraft on opposite headings to stay at least one nautical mile apart laterally, regardless of the flight level or altitude either aircraft happens to be flying at.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Requires every aircraft flying above 1500ft AGL to use even flight levels only, regardless of magnetic track flown, with the 500ft VFR offset applied only inside controlled airspace rather than in the open uncontrolled airspace most paratrike pilots use.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Applies only within controlled airspace and splits traffic by altitude band rather than by magnetic track, with air traffic control assigning each aircraft an altitude band on first contact rather than pilots self-selecting a flight level.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Provides vertical separation above 1500ft AGL in uncontrolled airspace by splitting tracks into two regions (000-179 degrees and 180-359 degrees): the first flies odd flight levels, the second even, with 500ft added for VFR (e.g. 5500ft vs 6500ft).",
+              "image": null,
+              "correct": true
+            }
+          ],
+          "stem_image": null,
+          "marks": 3
+        },
+        {
+          "code": "B.2",
+          "letter": "B",
+          "num": 2,
+          "sub": null,
+          "prompt": "Explain the Following Line Rule. Which of the following correctly covers this?",
+          "print_prompt": "Explain the principles and application of the Following Line Rule.",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "At or below 1500ft AGL, when following a line feature (road, railway, power line, canal, coastline, etc.) within one nautical mile, fly to the right of it unless ATC instructs otherwise.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "Line features such as roads, railways and power lines must always be crossed at right angles rather than followed alongside in either direction, to keep pilots from being mistaken for traffic tracking the feature itself.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "At or below 1500ft AGL, always fly to the left of any line feature you are following -- road, railway, power line, canal or coastline -- regardless of any instruction given by air traffic control on frequency at the time.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "The rule only applies above 1500ft AGL, and requires aircraft following a line feature within one nautical mile to keep it on their right-hand side at all times, with no exception even when instructed otherwise by ATC.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 2
+        },
+        {
+          "code": "B.3",
+          "letter": "B",
+          "num": 3,
+          "sub": null,
+          "prompt": "What do VMC, VFR, QNE, AGL, FL, UTC, CTR and FAR stand for? Which of the following correctly defines all eight?",
+          "print_prompt": "What do the following abbreviations stand for, and give a brief description of each: VMC, VFR, QNE, AGL, FL, UTC, CTR, FAR.",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "VMC = Visual Meteorological Conditions (clear of cloud, minimum visibility); VFR = Visual Flight Rules (visual reference, weather, separation and clearance rules); QNE = altimeter subscale set to standard pressure 1013.2 hPa; AGL = Above Ground Level; FL = Flight Level, altitude on the QNE setting expressed without the last two zeros; UTC = Universal Co-ordinated Time (no timezone/DST); CTR = Control Zone around an airfield, roughly 10x30nm, ground level up to about 6500ft; FAR = (South African) Restricted Area, entry restricted, usually needing military/authority permission.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "VMC = Visual Meteorological Conditions with no defined minimum visibility requirement anywhere; VFR = rules that apply only to night flying under visual reference; QNE = altimeter set to 1013.2 hPa but only used above Flight Level 200; AGL = height measured above the highest obstacle within the area rather than the ground; FL = altitude expressed in metres rather than feet on the QNE setting; UTC = a time zone used only by air traffic control staff, never by pilots; CTR = airspace with no defined vertical limit at all; FAR = an area civilians may enter freely at any time without restriction.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "VMC = Visual Flight Rules governing when radio calls are mandatory; VFR = Visual Meteorological Conditions describing cloud cover only; QNE = altimeter subscale set to the departure aerodrome's local pressure; AGL = altitude measured above mean sea level rather than the ground; FL = Flight Level shown with the last two zeros still included; UTC = local time adjusted for daylight saving where it applies; CTR = a Restricted Area drawn around a military base; FAR = a Control Zone drawn around a civilian airfield.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "VMC = clear of cloud with an 8km minimum flight visibility and no other requirement; VFR = a set of rules that apply only above Flight Level 100 in controlled airspace; QNE = altimeter set to the nearest airfield's current QNH reading; AGL = height measured from mean sea level rather than the ground below; FL = altitude flown on the QNH setting rather than standard pressure; UTC = the time kept in the pilot's own home timezone; CTR = an area civilian aircraft are always prohibited from entering; FAR = a race-track shaped danger area drawn around a city centre.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 16
+        },
+        {
+          "code": "B.4",
+          "letter": "B",
+          "num": 4,
+          "sub": null,
+          "prompt": "How often should you make general radio announcements in flight? Which of the following correctly covers this?",
+          "print_prompt": "How often do you need to make general radio announcements while in flight?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "There's no fixed interval (it isn't simply every 5 minutes) -- announce whenever you change direction or altitude, and more frequently in areas with more air traffic.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "Only when specifically instructed to make a call by air traffic control on frequency -- self-initiated position reports are discouraged in uncontrolled airspace since they add unnecessary radio chatter.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Only once, immediately after you first depart from the take-off field -- no further position or intention announcements are required for the remainder of the flight, even if your routing or altitude changes.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Every 5 minutes exactly by the clock, regardless of whether you have changed direction or altitude in that time, and regardless of how much other air traffic is operating in the same area at that moment.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 2
+        },
+        {
+          "code": "B.5",
+          "letter": "B",
+          "num": 5,
+          "sub": null,
+          "prompt": "Give an example of a general radio broadcast for your area. Which of the following correctly follows the standard structure?",
+          "print_prompt": "Write an example of a general radio broadcast announcement for your area.",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Structured around just a call sign and current position -- e.g. 'Traffic, Delta Delta Delta, overhead Bethlehem' -- with altitude, routing and intentions treated as optional extras only included when the pilot personally judges them necessary for that particular call.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Structured as CAPARI -- Call sign, Aircraft type, Position, Altitude, Routing, Intentions -- e.g. 'Traffic on 124.8, Delta Delta Delta, is a Powered Paratrike 5 miles south of Bethlehem, below 500ft, heading north toward Bethlehem airport on a pleasure flight, Delta Delta Delta'.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "C",
+              "text": "Structured as Aircraft type, Fuel state, Souls on board, and Estimated Time of Arrival -- the standard format used for any general aviation position report, regardless of whether the flight itself is powered or unpowered.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Structured as Call sign, Altitude and Squawk code only -- e.g. 'Delta Delta Delta, 500ft, squawking 7000' -- since position and intentions are assumed to already be covered automatically by radar in that area.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 6
+        }
+      ]
+    },
+    {
+      "letter": "C",
+      "name": "SAFETY & AIRMANSHIP",
+      "questions": [
+        {
+          "code": "C.1",
+          "letter": "C",
+          "num": 1,
+          "sub": null,
+          "prompt": "When should you inspect your motor and trike for potential problems (nuts, bolts, rubbers, belt, frame, wheels, steering, etc)? Which of the following correctly covers this?",
+          "print_prompt": "When should you inspect your motor and trike for potential problems (nuts, bolts, rubbers, belt, frame, wheels, steering etc.)?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Before and after every flight (pre-flight and post-flight checks are equally important), covering the motor and the trike frame, wheels and steering, plus at the manufacturer's specified hourly intervals for parts like piston/rings, spark plugs, and carb diaphragms.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "Only after any flight where something felt unusual in the air, such as extra vibration or a rough-running engine -- routine, uneventful flights don't generally call for a hands-on inspection afterwards.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "At the manufacturer's specified hourly service intervals only -- a quick visual check before each individual flight isn't strictly necessary provided the unit was serviced correctly and on schedule.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Before each flight only -- a thorough pre-flight walk-round is essential, but post-flight checks become optional once a pilot has built up enough hours to reliably feel when something on the unit isn't right.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 4
+        },
+        {
+          "code": "C.2",
+          "letter": "C",
+          "num": 2,
+          "sub": null,
+          "prompt": "If your engine kill-switch fails while about to land, what should you do? Which of the following correctly covers this?",
+          "print_prompt": "If you are about to land and discover that your engine kill-switch is not functional, what would you do and how would you kill the engine?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Release the risers from the trike while still in flight and continue the landing approach on the wing alone, leaving the running trike and motor to fall away separately once clear of the pilot.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Climb to at least 500ft AGL first, then try closing the fuel valve or pinching the fuel line, using the secondary ignition switch if fitted, priming/flooding the engine, pulling the spark-plug cap (not the plug itself) or covering the air filter if it can be done safely -- and plan a power-off (dead-stick) landing.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "C",
+              "text": "Land immediately regardless of your current altitude, treating the approach and landing as the priority, and only switch the ignition off at the magneto or battery terminal once the unit is safely down on the ground.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Increase the throttle to maximum power deliberately, aiming to force the engine to flood itself on excess fuel and stall out on its own, then glide the remainder of the approach with the propeller stopped.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 3
+        },
+        {
+          "code": "C.3",
+          "letter": "C",
+          "num": 3,
+          "sub": null,
+          "prompt": "Why is it important to have a working speed system (speed bar or trimmers) fitted? Which of the following correctly covers this?",
+          "print_prompt": "Why is it important to have a speed system (speed bar or trimmers) fitted and working?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "To increase airspeed in strong or unexpected wind -- check your wing's manual first, as on some wings using the speed system and brakes together when trimmed out can cause a serious collapse.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "To reduce airspeed and give a more controlled, slower approach on landing, particularly useful in gusty conditions where extra margin above stall speed is wanted during the final stages of the flare.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "To trim the wing for comfortable, hands-free straight and level cruising over longer distances, freeing the pilot's hands for navigation, radio calls, or adjusting the harness during extended flights.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "To increase glide ratio when searching for lift in weak thermal conditions, letting the pilot cover more ground per foot of height lost while working a thermal that hasn't yet built up much strength.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 2
+        },
+        {
+          "code": "C.4",
+          "letter": "C",
+          "num": 4,
+          "sub": null,
+          "prompt": "What are the benefits and usages of trimmers on a paratrike wing? Which of the following correctly covers this?",
+          "print_prompt": "What are the benefits and usages of trimmers on a paratrike wing?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Closed (slow) trim gives a higher angle of attack that helps on take-off and climb; open (fast) trim gives higher speed for cruise and wind penetration but less margin against collapse; different left/right settings can also help counter torque effect.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "They only affect trim speed during normal cruise flight -- take-off performance and canopy inflation behaviour are essentially unaffected by whatever position the trimmers are set to before launch.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Closed (slow) trim reduces the wing's angle of attack to shorten the take-off run; open (fast) trim slows the wing down noticeably, which is useful for a softer, more controlled landing in confined spaces.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "They exist mainly for pilot comfort during long flights and have no meaningful aerodynamic effect on either the take-off run or how the canopy inflates during the launch sequence.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 2
+        },
+        {
+          "code": "C.5",
+          "letter": "C",
+          "num": 5,
+          "sub": null,
+          "prompt": "If you are flying with a friend, what must you beware of? Which of the following correctly covers this?",
+          "print_prompt": "If you are flying with a friend, what must you beware of?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Only wind direction needs watching when flying near others -- spacing between aircraft and right-of-way in a turn are set entirely by air traffic control rather than by the pilots themselves.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Only radio communication matters for safe formation flying -- a good visual lookout for other aircraft isn't really necessary provided everyone announces their position regularly on frequency.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Stay aware of nearby aircraft, look before you turn, keep enough separation to avoid touching wingtips, watch for prop wash, and observe right-of-way rules.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "D",
+              "text": "Only your own altitude and heading really matter -- other pilots flying nearby are responsible for keeping clear of you and adjusting their own flight path to avoid any conflict.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 2
+        },
+        {
+          "code": "C.6",
+          "letter": "C",
+          "num": 6,
+          "sub": null,
+          "prompt": "If you accidentally bump wingtips with a buddy in flight, what's the correct course of action for both pilots? Which of the following correctly covers this?",
+          "print_prompt": "If you are flying alongside a buddy and you accidentally bump wingtips, what is the correct course of action for both pilots?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "The left-hand pilot climbs while the right-hand pilot descends, with both maintaining their existing heading rather than turning, so as to gain vertical separation without changing course.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "The left-hand pilot decreases power and turns left; the right-hand pilot increases power and turns right -- both establish vertical and horizontal separation by turning away from each other.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "C",
+              "text": "Both pilots should turn toward each other and try to match altitude, re-establishing eye contact so each can visually confirm the other's wing hasn't been damaged before continuing the flight.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Both pilots should cut power immediately and glide straight ahead on the existing heading until well clear of one another, without turning left or right in either direction.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 2
+        },
+        {
+          "code": "C.7",
+          "letter": "C",
+          "num": 7,
+          "sub": null,
+          "prompt": "What is a safe distance/height when flying near the coast, a lake or a dam? Which of the following correctly covers this?",
+          "print_prompt": "If you are flying near the coast (or lake or dam), what is a safe distance and height to go out over the water?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Stay within a 1:1 distance-to-height ratio at all times; if you do end up in the water, keep the seat belt fastened and stay seated until the trike has completely sunk, as the frame will keep you afloat.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "There's no fixed ratio to worry about -- any distance out over the water is acceptable provided you remain above roughly 1000ft AGL for the entire time you're out over the lake, dam or coastline.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Never exceed a 2:1 distance-to-height ratio, always stay within gliding range of the shore, and avoid flying over water unless necessary; because the seat belt and frame make escape after ditching difficult, wear a life jacket or flotation and know how to release the seat belt quickly.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "D",
+              "text": "A 4:1 distance-to-height ratio is considered safe provided the water is calm and you remain reasonably close to shore, without needing any life jacket, flotation or seat-belt release drill.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 2
+        }
+      ]
+    },
+    {
+      "letter": "D",
+      "name": "GENERAL FLIGHT KNOWLEDGE",
+      "questions": [
+        {
+          "code": "D.1",
+          "letter": "D",
+          "num": 1,
+          "sub": null,
+          "prompt": "Why would you log your flying hours?",
+          "print_prompt": null,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Mainly to keep servicing records for the engine -- training progress and licence applications are tracked separately by the CFI using the syllabus sign-off sheet, not the pilot's own personal log.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Mainly to record training progress toward a rating -- proof of experience for licence applications comes from the CFI's own records, and engine hours are tracked on a separate service log kept with the unit.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "It matters only if you plan to compete or apply for an instructor rating later on -- for an ordinary recreational pilot flying for pleasure, keeping a personal log of hours isn't really necessary.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "To record training progress, support licence and renewal applications, provide proof of experience and licences received, and track engine hours for servicing intervals.",
+              "image": null,
+              "correct": true
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "D.2",
+          "letter": "D",
+          "num": 2,
+          "sub": null,
+          "prompt": "If you double your flying height above the ground, by what factor is the landing area reachable by gliding increased (in the event of an engine-out)?",
+          "print_prompt": null,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Doubled only -- engine-out glide distance simply doubles foot-for-foot as height above the ground increases, with no compounding effect on the area reachable.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Increased by only 50% -- glide ratio flattens out noticeably as altitude increases, so doubling height adds far less reachable area than it would at low level.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Tripled -- every extra 100ft of height adds three times the horizontal glide range achievable before the wing reaches the ground in an engine-out scenario.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Four times greater -- doubling your height above the ground quadruples the ground area reachable within gliding range, since that reachable area is a circle whose size grows with the square of the glide radius.",
+              "image": null,
+              "correct": true
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "D.3",
+          "letter": "D",
+          "num": 3,
+          "sub": null,
+          "prompt": "How far do you need to remain away from cloud, vertically and horizontally? Which of the following correctly covers this?",
+          "print_prompt": "How far do you need to remain away from clouds? Vertically and horizontally.",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "You must remain at least 1000ft vertically and 1500ft horizontally from cloud at all altitudes, with no lower-level exemption.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Below 1000ft AGL you need 500ft vertical and 1000ft horizontal clearance; above 1000ft up to FL100 you must remain clear of cloud entirely.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Cloud clearance rules apply above FL100 in controlled airspace -- below that level you may fly through cloud freely provided you remain in radio contact with the nearest air traffic control unit.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Below 1000ft AGL you must remain clear of cloud (no set distance specified); from 1000ft AGL up to FL100 you need at least 2000ft vertically and 500ft horizontally from cloud.",
+              "image": null,
+              "correct": true
+            }
+          ],
+          "stem_image": null,
+          "marks": 4
+        },
+        {
+          "code": "D.4",
+          "letter": "D",
+          "num": 4,
+          "sub": null,
+          "prompt": "When flying around sunset, what is the latest you may remain in the air?",
+          "print_prompt": "When flying around sunset, what is the latest you may remain in the air?",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Official sunset itself only -- no further flying is permitted after that exact time is reached.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "30 minutes after official sunset, local time as published in the AIP.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Until last light, entirely at the pilot's own discretion on the day.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "15 minutes after official sunset, local time as published in the AIP.",
+              "image": null,
+              "correct": true
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "D.5",
+          "letter": "D",
+          "num": 5,
+          "sub": null,
+          "prompt": "What do you need (licensing and equipment) before you may take a passenger on a paratrike? Which of the following correctly covers this?",
+          "print_prompt": "What do you need before you may take a passenger on a paratrike? (in terms of licensing and equipment)",
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "A valid tandem (passenger-carrying) rating applicable to paratrikes, a trike approved for two occupants (seat, seat belts and helmets) with a motor strong enough for the extra weight, a wing certified for the full all-up weight, and signed indemnity forms with a passenger briefing.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "A tandem-rated wing is the only extra requirement -- the pilot's normal licence, trike and motor otherwise cover carrying a passenger without any further paperwork or fitting checks.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Any current PPT licence together with verbal consent from the passenger and a helmet for each person -- no separate tandem rating or additional equipment checks are required beyond that.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "SAHPA membership in good standing plus the passenger's own signed medical declaration -- no additional licence, seat and belt fit, or wing-rating checks apply beyond those two documents.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 3
+        },
+        {
+          "code": "D.6",
+          "letter": "D",
+          "num": 6,
+          "sub": null,
+          "prompt": "A lighter all-up take-off weight will increase:",
+          "print_prompt": null,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Take-off distance.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Climb rate.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "C",
+              "text": "Power-off stall speed.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Power-on stall speed.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "D.7",
+          "letter": "D",
+          "num": 7,
+          "sub": null,
+          "prompt": "A heavier all-up take-off weight will increase:",
+          "print_prompt": null,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Stall speed alone -- airspeed and take-off run stay roughly the same regardless of how much total weight the pilot happens to be carrying on that particular flight.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Trim airspeed, sink rate, stall speed and take-off run all increase together as the wing loading rises.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "C",
+              "text": "Take-off run alone -- stall speed and airspeed are set mainly by the wing's own design rather than by the pilot's total take-off weight on any given day.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Overall airspeed alone -- stall speed actually decreases slightly as the total take-off weight increases, contrary to what most pilots would expect to happen.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "D.8",
+          "letter": "D",
+          "num": 8,
+          "sub": null,
+          "prompt": "The _______ is an imaginary straight line drawn through an airfoil (wing) from the leading edge to the trailing edge.",
+          "print_prompt": null,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Relative wind line.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Angle of attack.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Camber line.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Chord line.",
+              "image": null,
+              "correct": true
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "D.9",
+          "letter": "D",
+          "num": 9,
+          "sub": null,
+          "prompt": "Angle of attack is defined as:",
+          "print_prompt": null,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "The angle between the horizon and the chord line.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "The angle between the wing chord line and the vertical tail.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "The angle between the wing chord line and the relative airflow.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "D",
+              "text": "The angle between the horizon and the relative wind.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "D.10",
+          "letter": "D",
+          "num": 10,
+          "sub": null,
+          "prompt": "A stall occurs when:",
+          "print_prompt": null,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "The critical angle of attack is exceeded.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "The engine loses power unexpectedly.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "The nose rises too far above the horizon.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "The airspeed drops below trim speed.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "D.11",
+          "letter": "D",
+          "num": 11,
+          "sub": null,
+          "prompt": "Trimspeed is defined as:",
+          "print_prompt": null,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Flying as slowly as possible with the trimmers fully closed.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Flying at roughly 50% throttle with light brake pressure held.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Flying hands-up, off the speed system, with the trimmers set to neutral.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "D",
+              "text": "Flying hands-up, on the full speed system, with the trimmers set to neutral.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "D.12",
+          "letter": "D",
+          "num": 12,
+          "sub": null,
+          "prompt": "In heavy turbulence it is safest to minimise deflations by flying:",
+          "print_prompt": null,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "As fast as possible, held well past trim speed.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "At trim speed with the speed system off, using light, active brake pressure.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "C",
+              "text": "Downwind of any high ground you can find nearby.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "As slowly as possible, flown close to stall.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "D.13",
+          "letter": "D",
+          "num": 13,
+          "sub": null,
+          "prompt": "You are on a head-on collision course with another aircraft in open areas. You should avoid the other aircraft by:",
+          "print_prompt": null,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Turning to the left instead of to the right, the opposite of the standard rule.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Climbing steeply to pass above the other aircraft's current flight path instead.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Descending quickly to pass below the other aircraft's current flight path instead.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Turning to the right, per the standard head-on right-of-way rule.",
+              "image": null,
+              "correct": true
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "D.14",
+          "letter": "D",
+          "num": 14,
+          "sub": null,
+          "prompt": "You are flying north in straight and level flight with a True Airspeed of 38km/h. The wind at your altitude is from 180 degrees at 10km/h. What is your groundspeed?",
+          "print_prompt": null,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "28 km/h",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "38 km/h",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "48 km/h",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "D",
+              "text": "10 km/h",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "D.15",
+          "letter": "D",
+          "num": 15,
+          "sub": null,
+          "prompt": "A magnetic compass is accurate:",
+          "print_prompt": null,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Only in straight and level flight at a constant speed.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "In any attitude, including turns, climbs and descents.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "At all times, regardless of flight condition.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Only when flown below the wing's specified manoeuvring speed limit.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "D.16",
+          "letter": "D",
+          "num": 16,
+          "sub": null,
+          "prompt": "You would most likely find turbulent flying in conditions near:",
+          "print_prompt": null,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Near high, wispy cirrus clouds well above the altitudes normal paratrike flying takes place at.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Near cumulus clouds, especially tall, building cumulus with strong vertical development.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "C",
+              "text": "Near fog or low-lying mist sitting close to the ground on a calm, still morning.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Near flat, featureless stratus cloud layers that show little or no vertical development at all.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "D.17",
+          "letter": "D",
+          "num": 17,
+          "sub": null,
+          "prompt": "You would likely find turbulence:",
+          "print_prompt": null,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Near mountains, during the mid-afternoon heating peak, deep inland, and downwind of buildings -- all of these increase turbulence.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "Mostly near mountains -- the time of day and terrain elsewhere generally make only a small difference to how rough the air feels.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Mainly directly over open water, well away from any terrain features, buildings or other obstacles that might disturb the airflow.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Mainly in the early morning hours, before the ground has had a chance to warm up and start generating any convective activity.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "D.18",
+          "letter": "D",
+          "num": 18,
+          "sub": null,
+          "prompt": "Why does SAHPA exist?",
+          "print_prompt": null,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Mainly to manufacture and formally approve equipment sold to pilots in South Africa, similar to a national standards body.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Mainly to act as a social club connecting pilots around the country, without taking on much of a regulatory or insurance role.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Mainly to organise national competitions, record badge flights, and rank pilots on a national scoreboard for each discipline.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "To keep the sport self-regulating, provide third-party aviation insurance, run a safety-oriented licensing system, and give the sport international recognition.",
+              "image": null,
+              "correct": true
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "D.19",
+          "letter": "D",
+          "num": 19,
+          "sub": null,
+          "prompt": "What is the very last safety action to perform prior to starting an engine?",
+          "print_prompt": null,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Confirm there is a sufficient quantity of fuel on board for the planned flight.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Call \"clear prop\" and confirm the prop area is clear of people.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "C",
+              "text": "Complete one final full walk-around pre-flight inspection of the whole unit.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Double-check the fuel-to-oil mixture ratio is correctly blended for that tank.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "D.20",
+          "letter": "D",
+          "num": 20,
+          "sub": null,
+          "prompt": "Considering density altitude, your motor and wing would perform better on:",
+          "print_prompt": null,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Warm humid days.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Cold humid days.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Warm dry days.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Cold, dry days.",
+              "image": null,
+              "correct": true
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "D.21",
+          "letter": "D",
+          "num": 21,
+          "sub": null,
+          "prompt": "When may you enter a Restricted Area (FAR)?",
+          "print_prompt": null,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "After receiving permission from the appropriate authority.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "Only at weekends, when the areas are officially closed.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Never -- Restricted Areas may not be entered under any circumstance.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Whenever you wish, provided you exercise extreme caution.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "D.22",
+          "letter": "D",
+          "num": 22,
+          "sub": null,
+          "prompt": "When may you enter a Prohibited Area (FAP)?",
+          "print_prompt": null,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Any time between official sunset and official sunrise, when the area is considered officially inactive.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "With informal verbal permission from whichever agency happens to be controlling that airspace at the time.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Never at all -- Prohibited Areas may not be entered under any circumstance, no matter the reason given.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Only with written permission from the SACAA or the authority responsible for the area.",
+              "image": null,
+              "correct": true
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "D.23",
+          "letter": "D",
+          "num": 23,
+          "sub": null,
+          "prompt": "What frequency is used for emergency communications?",
+          "print_prompt": null,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "130.35 MHz",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "126.7 MHz",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "121.5 MHz",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "D",
+              "text": "124.8 MHz",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "D.24",
+          "letter": "D",
+          "num": 24,
+          "sub": null,
+          "prompt": "Take-off run distance is increased by:",
+          "print_prompt": null,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "A lighter headwind, higher altitude, higher humidity, and lower QNH -- all of these increase the take-off run.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "Mainly a stronger headwind -- the other factors listed make comparatively little practical difference to the length of run needed.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Mainly higher altitude -- humidity and the current QNH setting are largely negligible by comparison for take-off performance.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Mainly a lower QNH reading -- wind strength and altitude have comparatively little effect on the length of the take-off run.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "D.25",
+          "letter": "D",
+          "num": 25,
+          "sub": null,
+          "prompt": "Carb mixture adjustment should be:",
+          "print_prompt": null,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Adjusted the same way regardless of altitude, QNH or humidity, since none of those affect mixture in practice.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Richened as altitude decreases (the denser, lower air needs more fuel for the same ratio).",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "C",
+              "text": "Richened whenever the QNH reading is low that day, regardless of the actual altitude being flown at the time.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Richened for higher humidity conditions, since the theory goes that damp air needs extra fuel to combust cleanly.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "D.26",
+          "letter": "D",
+          "num": 26,
+          "sub": null,
+          "prompt": "Which of the following is true, regarding altimeter settings and radio calls?",
+          "print_prompt": null,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Below 1500ft AGL the altimeter subscale is set to local QNH and altitude is given in feet; above transition altitude it's set to QNE, and altitude is then given as a Flight Level.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "Altitude is always given in feet throughout the flight, even once the subscale has been switched over to the standard QNE setting above the transition altitude.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "The altimeter subscale is always kept set to standard pressure QNE regardless of altitude flown, with altitude reported in feet at every stage of the flight, never as a Flight Level.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Below 1500ft AGL the subscale is set to QNE while above transition altitude it's set to local QNH, with altitude given as a Flight Level only below that transition layer.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "D.27",
+          "letter": "D",
+          "num": 27,
+          "sub": null,
+          "prompt": "Which one is true regarding rate of climb?",
+          "print_prompt": null,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Increased when flying into a headwind and correspondingly reduced when flying with a tailwind.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Affected by your throttle setting; unaffected by windspeed or direction.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "C",
+              "text": "Reduced when flying into a headwind and correspondingly increased when flying with a tailwind.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Unaffected by throttle setting at all -- determined entirely by the wind's speed and direction.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "D.28",
+          "letter": "D",
+          "num": 28,
+          "sub": null,
+          "prompt": "Angle of climb is:",
+          "print_prompt": null,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Mainly increased in a headwind -- power setting and trim speed make comparatively little difference to the resulting angle of climb.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Reduced in a headwind and increased at a faster airspeed trim, the reverse of how rate of climb typically behaves in those same conditions.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Increased in a headwind, increased with added power, reduced at a faster airspeed trim, and reduced in turns.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "D",
+              "text": "Mainly increased with added power -- wind strength and trim speed setting make comparatively little difference to the resulting angle of climb.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "D.29",
+          "letter": "D",
+          "num": 29,
+          "sub": null,
+          "prompt": "During taxi, before lift-off, what is the main control used to keep the wing overhead?",
+          "print_prompt": null,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "The speed system, adjusted continuously.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Throttle, with short brake jabs to centre the wing.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "C",
+              "text": "Deep, held brake input on the side the wing is leaning toward.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "The rear risers, held half-way down throughout the taxi.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "D.30",
+          "letter": "D",
+          "num": 30,
+          "sub": null,
+          "prompt": "During the take-off run the wing drifts to one side and starts pulling the trike over. What is the correct action?",
+          "print_prompt": null,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Apply full throttle to get airborne before the wing drifts any further.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Hold deep brake on the side the wing is drifting toward.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Short brake input on the opposite side and steer the trike under the wing; if it cannot be corrected, close the throttle and abort.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "D",
+              "text": "Release the brakes and take your hands off the controls to let the wing re-centre itself.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "D.31",
+          "letter": "D",
+          "num": 31,
+          "sub": null,
+          "prompt": "Why must a paratrike land directly into wind, without drift?",
+          "print_prompt": null,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "The wing cannot be flared when flying across the wind.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "The propeller is more efficient with a headwind component at touchdown.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "It saves fuel on the approach.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "The wheels cannot slide sideways, so landing with drift risks a tip-over.",
+              "image": null,
+              "correct": true
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "D.32",
+          "letter": "D",
+          "num": 32,
+          "sub": null,
+          "prompt": "In a tip-over / rollover, the pilot should:",
+          "print_prompt": null,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Keep hands, arms and feet inside the frame, kill the engine and stay strapped in until movement stops.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "B",
+              "text": "Release the seat belt immediately and jump clear.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Apply full power to drive the trike back upright.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Put a hand out to stop the roll.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "D.33",
+          "letter": "D",
+          "num": 33,
+          "sub": null,
+          "prompt": "Before throwing the reserve parachute from a paratrike you should first:",
+          "print_prompt": null,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "Pull both brakes to the stops and then decide.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "Kill the engine and locate the handle.",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "C",
+              "text": "Apply full power to climb away from the problem.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "D",
+              "text": "Release the risers from the trike.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        },
+        {
+          "code": "D.34",
+          "letter": "D",
+          "num": 34,
+          "sub": null,
+          "prompt": "The weight that must fall within the wing's certified weight range is:",
+          "print_prompt": null,
+          "type": "text",
+          "options": [
+            {
+              "label": "A",
+              "text": "The pilot only.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "B",
+              "text": "The pilot and seat only.",
+              "image": null,
+              "correct": false
+            },
+            {
+              "label": "C",
+              "text": "Pilot, passenger, trike, fuel and all equipment (the total all-up weight).",
+              "image": null,
+              "correct": true
+            },
+            {
+              "label": "D",
+              "text": "The empty trike only.",
+              "image": null,
+              "correct": false
+            }
+          ],
+          "stem_image": null,
+          "marks": 1
+        }
+      ]
+    }
+  ]
+}

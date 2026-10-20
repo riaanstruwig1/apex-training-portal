@@ -78,7 +78,7 @@ export async function buildExamDocx(
   // other exam. Every other category (currently just the RT radio exam)
   // gets a plain, honest cover instead: no SAHPA branding, no invented
   // regulatory text, just the student's answers and score.
-  const useSahpaMasterCover = exam.category === "pg" || exam.category === "ppg";
+  const useSahpaMasterCover = exam.category === "pg" || exam.category === "ppg" || exam.category === "ppt";
 
   const dateWritten = attempt.submittedAt
     ? attempt.submittedAt.toLocaleDateString()
@@ -356,7 +356,7 @@ export async function buildExamDocx(
   const instructionParas =
     exam.category === "pg"
       ? pgInstructionParas
-      : exam.category === "ppg"
+      : exam.category === "ppg" || exam.category === "ppt"
         ? ppgInstructionParas
         : genericInstructionParas;
 
