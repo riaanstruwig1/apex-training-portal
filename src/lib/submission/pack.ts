@@ -8,6 +8,7 @@ import { fillConsentForm, fillMedicalForm, fillCA6216, fillCA6215 } from "./form
 import { PackData } from "./types";
 import { buildDtoCertificate, buildRadioCertificate } from "./certificates";
 import { buildExamCopyPdf } from "./exam-copy-pdf";
+import { appendScanToExamPdf } from "./merge-scan";
 
 function slug(s: string): string {
   return s.replace(/[^A-Za-z0-9]+/g, "_").replace(/^_|_$/g, "") || "student";
@@ -46,8 +47,21 @@ export async function buildSubmissionPack(d: PackData): Promise<{ zip: Buffer; f
   let n = 10;
   for (const e of d.examCopies) {
     const base = `${n++}_Exam_${slug(e.title)}`;
-    files.push({ name: `${base}_PASSED.pdf`, data: await buildExamCopyPdf(e, { name: d.student.fullName, apexNumber: d.student.apexNumber }), what: `${e.title} - passed (${e.passPercent}% pass mark), verified by instructor` });
-    if (e.proof) files.push({ name: `${base}_Scan.${e.proof.ext}`, data: e.proof.bytes, what: `${e.title} - candidate's scan` });
+    const passed = await buildExamCopyPdf(e, { name: d.student.fullName, apexNumber: d.student.apexNumber });
+    const what = `${e.title} - passed (${e.passPercent}% pass mark), verified by instructor`;
+    if (!e.proof) {
+      files.push({ name: `${base}_PASSED.pdf`, data: passed, what });
+      continue;
+    }
+    // One PDF per exam: the PASSED record first, then the candidate's scan.
+    const combined = await appendScanToExamPdf(passed, e.proof, `${d.student.fullName} - ${e.title}`);
+    if (combined) {
+      files.push({ name: `${base}_PASSED.pdf`, data: combined, what: `${what}, followed by the candidate's scan` });
+    } else {
+      warnings.push(`${e.title}: the scan couldn't be added to the exam PDF, so it is included as a separate file.`);
+      files.push({ name: `${base}_PASSED.pdf`, data: passed, what });
+      files.push({ name: `${base}_Scan.${e.proof.ext}`, data: e.proof.bytes, what: `${e.title} - candidate's scan` });
+    }
   }
   files.push({ name: "Solo_Wings_Certificate.pdf", data: await buildWingsCertificate(d), what: "student's Solo Wings certificate (keep, not submitted)" });
 

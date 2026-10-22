@@ -69,7 +69,7 @@ export async function buildExamCopyPdf(e: ExamCopyData, student: { name: string;
   y -= 76;
 
   if (e.source === "paper") {
-    text("Paper exam / held licence: the candidate's scan follows in this pack as a separate file.", 9);
+    text("Paper exam / held licence: the candidate's scan follows on the next page(s).", 9);
     return doc.save();
   }
 
