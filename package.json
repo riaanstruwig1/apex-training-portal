@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "tsx src/db/migrate.ts && next start",
+    "start": "tsx src/db/migrate.ts && (tsx src/db/seed-ppt-exam.ts || echo PPT-exam-seed-skipped) && next start",
     "lint": "eslint",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx src/db/migrate.ts",
