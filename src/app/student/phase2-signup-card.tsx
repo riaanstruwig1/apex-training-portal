@@ -6,7 +6,7 @@ import { requestPhase2, type Phase2State } from "@/lib/actions/intro-course";
 const COURSES: [string, string][] = [
   ["pg", "Paraglider (PG)"],
   ["ppg", "Powered Paraglider (PPG)"],
-  ["ppt", "Powered Paratrike (PPT)"],
+  ["ppt", "Powered Trike/Chute (PPT/PPC)"],
 ];
 
 /** 19 Oct 2026: the intro student's course card on the dashboard -- what the

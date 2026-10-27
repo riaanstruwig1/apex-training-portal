@@ -8,7 +8,7 @@ import { parseTrainingTypes, type TrainingType } from "@/lib/exams";
 const TRAINING_TYPE_LABELS: Record<TrainingType, string> = {
   pg: "Paraglider (PG)",
   ppg: "Powered Paragliding (PPG)",
-  ppt: "Powered Paratrike (PPT)",
+  ppt: "Powered Trike/Chute (PPT/PPC)",
 };
 
 /** Printable student portfolio (Notes4 item 22) -- see the pilot version's

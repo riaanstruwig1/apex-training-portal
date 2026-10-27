@@ -14,7 +14,7 @@ export default async function StudyMaterialAdminPage() {
         PowerPoint, Word or PDF, up to 50MB) or a link. Students see them all on
         their Study Notes page. Pick a dashboard box (1-4) to also show an item
         on the student dashboard next to the matching exam: 1 Basic Licence (PG),
-        2 PPG, 3 DTO Radio, 4 PPT.
+        2 PPG, 3 DTO Radio, 4 PPT/PPC.
       </p>
       <StudyMaterialEditor slots={slots} />
     </div>

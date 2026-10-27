@@ -58,7 +58,7 @@ function formatBytes(bytes: number | null): string {
 const TRAINING_TYPE_LABELS: Record<TrainingType, string> = {
   pg: "Paraglider (PG)",
   ppg: "Powered Paragliding (PPG)",
-  ppt: "Powered Paratrike (PPT)",
+  ppt: "Powered Trike/Chute (PPT/PPC)",
 };
 
 function isExpired(d: Date): boolean {
@@ -70,7 +70,7 @@ function isExpired(d: Date): boolean {
 const PLACEHOLDER_EXAM_TITLES: Record<ExamCategory, string> = {
   pg: "Basic Licence Theory Test",
   ppg: "PPG Theory Knowledge Test",
-  ppt: "PPT Theory Knowledge Test",
+  ppt: "PPT/PPC Theory Knowledge Test",
   rt: "DTO Restricted Radio",
 };
 

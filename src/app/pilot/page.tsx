@@ -296,7 +296,7 @@ export default async function PilotDashboard() {
             </h2>
             {relevantEquipment.length > 0 && (
               <p className="mb-3 text-xs text-slate-500">
-                Your PG/PPG/PPT licence tiers (Basic, Intermediate, Sport, Tandem) show as a
+                Your PG/PPG/PPT/PPC licence tiers (Basic, Intermediate, Sport, Tandem) show as a
                 green ✓ in the &ldquo;Ratings &amp; progress&rdquo; ladder above once verified --
                 this section covers everything else: add-ons, instructor and display ratings.
               </p>

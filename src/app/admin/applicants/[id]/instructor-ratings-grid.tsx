@@ -13,7 +13,7 @@ type Equipment = "pg" | "ppg" | "ppt";
 const EQUIPMENT: { key: Equipment; label: string }[] = [
   { key: "pg", label: "PG" },
   { key: "ppg", label: "PPG" },
-  { key: "ppt", label: "PPT" },
+  { key: "ppt", label: "PPT/PPC" },
 ];
 const GRADES: { key: Grade; label: string }[] = [
   { key: "c", label: "Grade C" },

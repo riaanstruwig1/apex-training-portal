@@ -33,7 +33,7 @@ import { studentSignoffs } from "@/db/schema";
 const TRAINING_TYPE_LABELS: Record<TrainingType, string> = {
   pg: "Paraglider (PG)",
   ppg: "Powered Paragliding (PPG)",
-  ppt: "Powered Paratrike (PPT)",
+  ppt: "Powered Trike/Chute (PPT/PPC)",
 };
 
 export default async function StudentFolioPage(

@@ -31,7 +31,7 @@ export function formatExerciseCodes(codesCsv: string | null): string {
 export const FLIGHT_TYPE_OPTIONS: { value: string; label: string }[] = [
   { value: "pg", label: "PG" },
   { value: "ppg", label: "PPG" },
-  { value: "ppt", label: "PPT" },
+  { value: "ppt", label: "PPT/PPC" },
   { value: "winching", label: "Winching" },
 ];
 
@@ -45,8 +45,8 @@ const flightTypeLabelByValue = new Map(
 // convert real data to the current pg/ppg/ppt values.
 const legacyFlightTypeLabels: Record<string, string> = {
   solo_ppg: "PPG (legacy: solo)",
-  solo_trike: "PPT (legacy: solo)",
-  dual_trike: "PPT (legacy: dual)",
+  solo_trike: "PPT/PPC (legacy: solo)",
+  dual_trike: "PPT/PPC (legacy: dual)",
   solo: "Solo (legacy)",
   dual: "Dual (legacy)",
 };

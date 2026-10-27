@@ -6,7 +6,7 @@ import { approvePhase2, declinePhase2, type Phase2State } from "@/lib/actions/in
 const COURSES: [string, string][] = [
   ["pg", "Paraglider (PG)"],
   ["ppg", "Powered Paraglider (PPG)"],
-  ["ppt", "Powered Paratrike (PPT)"],
+  ["ppt", "Powered Trike/Chute (PPT/PPC)"],
 ];
 
 /** 19 Oct 2026: on an intro (PG/PPG Intro training, Phase 1 only)

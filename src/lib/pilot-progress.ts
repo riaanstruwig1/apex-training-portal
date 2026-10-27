@@ -46,7 +46,7 @@ export type Equipment = "pg" | "ppg" | "ppt";
 export const EQUIPMENT_LABELS: Record<Equipment, string> = {
   pg: "Paraglider (PG)",
   ppg: "Powered Paragliding (PPG)",
-  ppt: "Paratrike (PPT)",
+  ppt: "Trike/Chute (PPT/PPC)",
 };
 
 function addMonths(date: Date, months: number): Date {

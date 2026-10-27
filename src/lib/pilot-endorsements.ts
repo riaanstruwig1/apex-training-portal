@@ -52,15 +52,15 @@ export const ENDORSEMENT_OPTIONS: {
   { key: "ppg_engine", label: "Engine", group: "Powered Paragliding (PPG)", equipment: "ppg", tier: null },
   { key: "ppg_winching", label: "Winching", group: "Powered Paragliding (PPG)", equipment: "ppg", tier: null },
   { key: "ppg_xc", label: "Cross-Country (XC)", group: "Powered Paragliding (PPG)", equipment: "ppg", tier: null },
-  // Paratrike (PPT) -- ladder tiers (i, k, m)
-  { key: "ppt_base", label: "Basic", group: "Paratrike (PPT)", equipment: "ppt", tier: "basic" },
-  { key: "ppt_intermediate", label: "Intermediate", group: "Paratrike (PPT)", equipment: "ppt", tier: "intermediate" },
-  { key: "ppt_sport", label: "Sport", group: "Paratrike (PPT)", equipment: "ppt", tier: "sport" },
-  { key: "ppt_tandem", label: "Tandem", group: "Paratrike (PPT)", equipment: "ppt", tier: "tandem" },
+  // Trike/Chute (PPT/PPC) -- ladder tiers (i, k, m)
+  { key: "ppt_base", label: "Basic", group: "Trike/Chute (PPT/PPC)", equipment: "ppt", tier: "basic" },
+  { key: "ppt_intermediate", label: "Intermediate", group: "Trike/Chute (PPT/PPC)", equipment: "ppt", tier: "intermediate" },
+  { key: "ppt_sport", label: "Sport", group: "Trike/Chute (PPT/PPC)", equipment: "ppt", tier: "sport" },
+  { key: "ppt_tandem", label: "Tandem", group: "Trike/Chute (PPT/PPC)", equipment: "ppt", tier: "tandem" },
   // Non-tiered PPT add-ons -- same set as PPG above, same reasoning (22 Sep 2026).
-  { key: "ppt_engine", label: "Engine", group: "Paratrike (PPT)", equipment: "ppt", tier: null },
-  { key: "ppt_winching", label: "Winching", group: "Paratrike (PPT)", equipment: "ppt", tier: null },
-  { key: "ppt_xc", label: "Cross-Country (XC)", group: "Paratrike (PPT)", equipment: "ppt", tier: null },
+  { key: "ppt_engine", label: "Engine", group: "Trike/Chute (PPT/PPC)", equipment: "ppt", tier: null },
+  { key: "ppt_winching", label: "Winching", group: "Trike/Chute (PPT/PPC)", equipment: "ppt", tier: null },
+  { key: "ppt_xc", label: "Cross-Country (XC)", group: "Trike/Chute (PPT/PPC)", equipment: "ppt", tier: null },
   // n-w: Instructor ratings (not part of the equipment ladder -- their own
   // thresholds, see lib/pilot-progress.ts INSTRUCTOR_RATINGS)
   { key: "assistant_instructor", label: "Assistant Instructor", group: "Instructor Ratings", equipment: null, tier: null },
@@ -70,9 +70,9 @@ export const ENDORSEMENT_OPTIONS: {
   { key: "instructor_ppg_grade_c", label: "PPG -- Grade C", group: "Instructor Ratings", equipment: null, tier: null },
   { key: "instructor_ppg_grade_b", label: "PPG -- Grade B", group: "Instructor Ratings", equipment: null, tier: null },
   { key: "instructor_ppg_grade_a", label: "PPG -- Grade A", group: "Instructor Ratings", equipment: null, tier: null },
-  { key: "instructor_ppt_grade_c", label: "PPT -- Grade C", group: "Instructor Ratings", equipment: null, tier: null },
-  { key: "instructor_ppt_grade_b", label: "PPT -- Grade B", group: "Instructor Ratings", equipment: null, tier: null },
-  { key: "instructor_ppt_grade_a", label: "PPT -- Grade A", group: "Instructor Ratings", equipment: null, tier: null },
+  { key: "instructor_ppt_grade_c", label: "PPT/PPC -- Grade C", group: "Instructor Ratings", equipment: null, tier: null },
+  { key: "instructor_ppt_grade_b", label: "PPT/PPC -- Grade B", group: "Instructor Ratings", equipment: null, tier: null },
+  { key: "instructor_ppt_grade_a", label: "PPT/PPC -- Grade A", group: "Instructor Ratings", equipment: null, tier: null },
   // x-y: Display ratings
   { key: "display_acro", label: "Acro", group: "Display Ratings", equipment: null, tier: null },
   { key: "display_flat", label: "Flat Display (min. 50 ft)", group: "Display Ratings", equipment: null, tier: null },
@@ -83,7 +83,7 @@ export const ENDORSEMENT_OPTIONS: {
 export const ENDORSEMENT_GROUP_ORDER = [
   "Paraglider (PG)",
   "Powered Paragliding (PPG)",
-  "Paratrike (PPT)",
+  "Trike/Chute (PPT/PPC)",
   "Instructor Ratings",
   "Display Ratings",
 ];
@@ -146,7 +146,7 @@ export function endorsementGroup(key: string): string {
 export const STUDENT_ENDORSEMENT_GROUPS = [
   "Paraglider (PG)",
   "Powered Paragliding (PPG)",
-  "Paratrike (PPT)",
+  "Trike/Chute (PPT/PPC)",
 ];
 export const STUDENT_ENDORSEMENT_OPTIONS = ENDORSEMENT_OPTIONS.filter(
   (o) => o.tier === null && STUDENT_ENDORSEMENT_GROUPS.includes(o.group)
@@ -167,7 +167,7 @@ export function studentEndorsementOptionsFor(
         ? "Paraglider (PG)"
         : t === "ppg"
           ? "Powered Paragliding (PPG)"
-          : "Paratrike (PPT)"
+          : "Trike/Chute (PPT/PPC)"
     )
   );
   return STUDENT_ENDORSEMENT_OPTIONS.filter((o) => groups.has(o.group));

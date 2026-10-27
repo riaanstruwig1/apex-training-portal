@@ -155,5 +155,5 @@ export const GRADE_LABEL: Record<Grade, string> = {
 export const TRAINING_LABEL: Record<SignoffTrainingType, string> = {
   pg: "Paragliding (PG)",
   ppg: "Powered Paragliding (PPG)",
-  ppt: "Powered Paratrike (PPT)",
+  ppt: "Powered Trike/Chute (PPT/PPC)",
 };

@@ -17,7 +17,7 @@ export type ExamCategory = "pg" | "ppg" | "ppt" | "rt";
 export const EXAM_CATEGORY_LABELS: Record<ExamCategory, string> = {
   pg: "PG Exam",
   ppg: "PPG Exam",
-  ppt: "PPT Exam",
+  ppt: "PPT/PPC Exam",
   rt: "SAHPA RT Exam",
 };
 export const EXAM_CATEGORY_ORDER: ExamCategory[] = ["pg", "ppg", "ppt", "rt"];

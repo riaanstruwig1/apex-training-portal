@@ -26,7 +26,7 @@ export default async function SyllabusPage() {
     <div>
       <h1 className="mb-1 text-xl font-semibold text-slate-900">Manage syllabus</h1>
       <p className="mb-6 max-w-2xl text-sm text-slate-500">
-        Each section has a training type (PG / PPG / PPT, or applicable to all) and
+        Each section has a training type (PG / PPG / PPT/PPC, or applicable to all) and
         a phase. Students only see the sections for the training they signed up
         for, in order: Phase 1, Phase 2, Phase 3, then Conversion and Practical
         Theory. A student can&apos;t start a section until every exercise in the

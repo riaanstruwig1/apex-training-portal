@@ -19,7 +19,7 @@ const CATEGORY_OPTIONS: { value: ExamMetaInput["category"]; label: string }[] = 
   { value: "", label: "None" },
   { value: "pg", label: "PG Exam" },
   { value: "ppg", label: "PPG Exam" },
-  { value: "ppt", label: "PPT Exam" },
+  { value: "ppt", label: "PPT/PPC Exam" },
   { value: "rt", label: "SAHPA RT Exam" },
 ];
 

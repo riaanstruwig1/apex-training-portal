@@ -65,7 +65,7 @@ export function SignoffForm(props: {
           <select name="trainingType" defaultValue={props.trainingType} className={input}>
             <option value="pg">Paragliding (PG)</option>
             <option value="ppg">Powered Paragliding (PPG)</option>
-            <option value="ppt">Powered Paratrike (PPT)</option>
+            <option value="ppt">Powered Trike/Chute (PPT/PPC)</option>
           </select>
         </label>
         <label className="text-sm">Surname (as on ID)<input name="surname" defaultValue={props.surname} className={input} /></label>
@@ -86,7 +86,7 @@ export function SignoffForm(props: {
         <legend className="px-1 text-sm font-semibold text-slate-700">CA 62-15 skill test grades</legend>
         <div className="grid gap-2 sm:grid-cols-3">
           {GRADE_ITEMS.map((g) => (
-            <label key={g.key} className="text-sm">{g.label}{g.ppOnly ? " (PPG/PPT)" : ""}
+            <label key={g.key} className="text-sm">{g.label}{g.ppOnly ? " (PPG/PPT/PPC)" : ""}
               <select name={`grade_${g.key}`} defaultValue="good" className={input}>
                 <option value="excellent">Excellent</option>
                 <option value="good">Good</option>

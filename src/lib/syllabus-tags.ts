@@ -24,7 +24,7 @@ export const SECTION_PHASES: SectionPhase[] = ["p1", "p2", "p3", "cv", "pt"];
 export const SECTION_TRAINING_TYPE_LABELS: Record<SectionTrainingType, string> = {
   pg: "PG training",
   ppg: "PPG training",
-  ppt: "PPT training",
+  ppt: "PPT/PPC training",
   all: "Applicable to all",
 };
 
@@ -33,7 +33,7 @@ export const SECTION_GROUP_LABELS: Record<SectionTrainingType, string> = {
   all: "General (all training types)",
   pg: "PG — Paragliding",
   ppg: "PPG — Powered Paragliding",
-  ppt: "PPT — Powered Paratrike",
+  ppt: "PPT/PPC — Powered Trike/Chute",
 };
 
 export const SECTION_PHASE_LABELS: Record<SectionPhase, string> = {
@@ -49,7 +49,7 @@ export const SECTION_TYPE_SHORT: Record<SectionTrainingType, string> = {
   all: "All types",
   pg: "PG",
   ppg: "PPG",
-  ppt: "PPT",
+  ppt: "PPT/PPC",
 };
 
 export const SECTION_PHASE_SHORT: Record<SectionPhase, string> = {

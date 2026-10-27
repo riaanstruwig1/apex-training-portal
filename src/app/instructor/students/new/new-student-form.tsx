@@ -95,7 +95,7 @@ export default function NewStudentForm() {
           </label>
           <label className="flex items-center gap-1.5">
             <input type="checkbox" name="trainingType" value="ppt" className="rounded border-slate-300" />
-            Powered Paratrike (PPT)
+            Powered Trike/Chute (PPT/PPC)
           </label>
           <label className="flex w-full items-center gap-1.5 border-t border-slate-100 pt-2">
             <input type="checkbox" name="introCourse" value="1" className="rounded border-slate-300" />

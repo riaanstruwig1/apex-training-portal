@@ -11,7 +11,7 @@ import PrintButton from "@/components/print-button";
 const TRAINING_TYPE_LABELS: Record<TrainingType, string> = {
   pg: "Paraglider (PG)",
   ppg: "Powered Paragliding (PPG)",
-  ppt: "Powered Paratrike (PPT)",
+  ppt: "Powered Trike/Chute (PPT/PPC)",
 };
 
 function fmt(d: Date | null | undefined) {

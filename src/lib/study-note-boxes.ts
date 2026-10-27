@@ -12,7 +12,7 @@ export const STUDY_NOTE_BOXES: { box: StudyNoteBox; category: ExamCategoryKey; l
   { box: 1, category: "pg", label: "1 — next to Basic Licence (PG) exam" },
   { box: 2, category: "ppg", label: "2 — next to PPG Theory exam" },
   { box: 3, category: "rt", label: "3 — next to DTO Restricted Radio exam" },
-  { box: 4, category: "ppt", label: "4 — next to PPT Theory exam" },
+  { box: 4, category: "ppt", label: "4 — next to PPT/PPC Theory exam" },
 ];
 
 /** Dashboard exam rows run in this order (Riaan's example: Basic Licence,

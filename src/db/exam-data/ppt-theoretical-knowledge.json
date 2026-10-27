@@ -508,7 +508,7 @@
             },
             {
               "label": "B",
-              "text": "Structured as CAPARI -- Call sign, Aircraft type, Position, Altitude, Routing, Intentions -- e.g. 'Traffic on 124.8, Delta Delta Delta, is a Powered Paratrike 5 miles south of Bethlehem, below 500ft, heading north toward Bethlehem airport on a pleasure flight, Delta Delta Delta'.",
+              "text": "Structured as CAPARI -- Call sign, Aircraft type, Position, Altitude, Routing, Intentions -- e.g. 'Traffic on 124.8, Delta Delta Delta, is a Powered Trike/Chute 5 miles south of Bethlehem, below 500ft, heading north toward Bethlehem airport on a pleasure flight, Delta Delta Delta'.",
               "image": null,
               "correct": true
             },

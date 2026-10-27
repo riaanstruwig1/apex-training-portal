@@ -153,7 +153,7 @@ export default function SignupForm() {
                 [
                   ["pg", "Paraglider (PG)"],
                   ["ppg", "Powered Paraglider (PPG)"],
-                  ["ppt", "Powered Paratrike (PPT)"],
+                  ["ppt", "Powered Trike/Chute (PPT/PPC)"],
                 ] as const
               ).map(([value, label]) => (
                 <label

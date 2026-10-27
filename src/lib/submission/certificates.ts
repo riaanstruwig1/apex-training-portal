@@ -17,12 +17,12 @@ const TITLE = rgb(0.15, 0.32, 0.62);
 const COURSE_NAME: Record<SignoffTrainingType, string> = {
   pg: "Paragliding (PG)",
   ppg: "Power Paragliding (PPG)",
-  ppt: "Powered Paratrike (PPT)",
+  ppt: "Powered Trike/Chute (PPT/PPC)",
 };
 const COURSE_LONG: Record<SignoffTrainingType, string> = {
   pg: "a Paragliding",
   ppg: "a Powered Paragliding",
-  ppt: "a Powered Paratrike",
+  ppt: "a Powered Trike/Chute",
 };
 
 type Ctx = {

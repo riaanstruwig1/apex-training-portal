@@ -40,7 +40,7 @@ const examBadgeLabel: Record<ExamCategoryStatus, string> = {
 const TRAINING_TYPE_LABELS: Record<TrainingType, string> = {
   pg: "PG",
   ppg: "PPG",
-  ppt: "PPT",
+  ppt: "PPT/PPC",
 };
 
 

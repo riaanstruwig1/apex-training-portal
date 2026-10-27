@@ -42,7 +42,7 @@ async function main() {
     .insert(exams)
     .values({
       slug: "ppt-theoretical-knowledge",
-      title: "PPT Theoretical Knowledge Test",
+      title: "PPT/PPC Theoretical Knowledge Test",
       subtitle: "Last Updated 2026-10-20",
       category: "ppt",
       passPercent: 85,

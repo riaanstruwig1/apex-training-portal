@@ -201,7 +201,7 @@ export async function fillCA6216(d: PackData): Promise<Uint8Array> {
   // Section B (Riaan's notes, 14 Oct 2026): current licence = "Student", glider by course,
   // flights/hours for the course type -- past 12 months and since commencing.
   cellText(p1, fonts, "Student", c(201.2, 321.2, 681.2, 695.5), sz);
-  cellText(p1, fonts, d.trainingType === "pg" ? "PG" : d.trainingType === "ppg" ? "PPG" : "PPT", c(415.3, 538.6, 681.2, 695.5), sz);
+  cellText(p1, fonts, d.trainingType === "pg" ? "PG" : d.trainingType === "ppg" ? "PPG" : "PPT/PPC", c(415.3, 538.6, 681.2, 695.5), sz);
   const st = courseStats(d);
   const rowsB = isPG
     ? { page: p1, f: [726.8, 741.1], h: [742.1, 756.3] }

@@ -8,7 +8,7 @@ const CATEGORY_OPTIONS: { value: ExamMetaInput["category"]; label: string }[] = 
   { value: "", label: "None yet" },
   { value: "pg", label: "PG Exam" },
   { value: "ppg", label: "PPG Exam" },
-  { value: "ppt", label: "PPT Exam" },
+  { value: "ppt", label: "PPT/PPC Exam" },
   { value: "rt", label: "SAHPA RT Exam" },
 ];
 
@@ -62,7 +62,7 @@ export default function NewExamForm() {
           <input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="e.g. PPT Basic Licence Theory Test"
+            placeholder="e.g. PPT/PPC Basic Licence Theory Test"
             className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
           />
         </div>

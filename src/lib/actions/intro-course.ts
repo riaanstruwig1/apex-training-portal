@@ -21,7 +21,7 @@ import { sendWhatsAppText } from "@/lib/whatsapp";
 
 export type Phase2State = { error: string } | { success: string } | undefined;
 
-const TYPE_LABEL: Record<TrainingType, string> = { pg: "PG", ppg: "PPG", ppt: "PPT" };
+const TYPE_LABEL: Record<TrainingType, string> = { pg: "PG", ppg: "PPG", ppt: "PPT/PPC" };
 const typesText = (types: TrainingType[]) => types.map((t) => TYPE_LABEL[t]).join(" + ");
 
 function typesFrom(formData: FormData): TrainingType[] {
@@ -56,7 +56,7 @@ export async function requestPhase2(_prev: Phase2State, formData: FormData): Pro
     return { error: "You're already on the full course." };
   }
   const types = typesFrom(formData);
-  if (types.length === 0) return { error: "Tick at least one course for Phase 2 (PG, PPG or PPT)." };
+  if (types.length === 0) return { error: "Tick at least one course for Phase 2 (PG, PPG or PPT/PPC)." };
 
   await db
     .update(studentProfiles)
@@ -90,7 +90,7 @@ export async function approvePhase2(
 ): Promise<Phase2State> {
   const cfi = await requireCFI();
   const types = typesFrom(formData);
-  if (types.length === 0) return { error: "Tick at least one course (PG, PPG or PPT)." };
+  if (types.length === 0) return { error: "Tick at least one course (PG, PPG or PPT/PPC)." };
 
   const [row] = await db
     .select({ profile: studentProfiles, name: users.name, phone: users.phone })

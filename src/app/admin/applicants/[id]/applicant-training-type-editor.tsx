@@ -8,7 +8,7 @@ import { parseTrainingTypes, type TrainingType } from "@/lib/training-types";
 const TRAINING_TYPE_LABELS: Record<TrainingType, string> = {
   pg: "Paraglider (PG)",
   ppg: "Powered Paragliding (PPG)",
-  ppt: "Powered Paratrike (PPT)",
+  ppt: "Powered Trike/Chute (PPT/PPC)",
 };
 const TRAINING_TYPE_ORDER: TrainingType[] = ["pg", "ppg", "ppt"];
 
