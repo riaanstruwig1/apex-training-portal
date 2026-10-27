@@ -3,7 +3,7 @@ import { and, eq, inArray, isNotNull, isNull, ne, or } from "drizzle-orm";
 import { db } from "@/db";
 import { pilotProfiles, siteSettings, studentProfiles, users } from "@/db/schema";
 import { normalizePhone, formatPhone, HUB_URL } from "@/lib/invite-message";
-import { sendWhatsAppText, isWhatsAppConfigured } from "@/lib/whatsapp";
+import { sendWhatsAppText, sendWhatsAppToChat, isWhatsAppConfigured } from "@/lib/whatsapp";
 
 /**
  * Birthday WhatsApp (20 Oct 2026, batch 78). Riaan: "a Whatsapp that goes
@@ -57,6 +57,8 @@ function label(d: SADate): string {
 export type BirthdayPerson = {
   userId: string;
   name: string;
+  /** Nickname if set, else the first word of the name (group wishes). */
+  firstName: string;
   role: "Student" | "Pilot";
   phone: string | null; // display form
   month: number; // 1-12
@@ -118,6 +120,7 @@ export async function getBirthdayPeople(): Promise<BirthdayPerson[]> {
     people.push({
       userId: r.id,
       name: r.name,
+      firstName: (r.nickname?.trim() || r.name.trim().split(/\s+/)[0] || r.name).trim(),
       role: r.role === "pilot" ? "Pilot" : "Student",
       phone: norm ? formatPhone(norm) : r.phone || null,
       month: dob.getUTCMonth() + 1,
@@ -302,4 +305,155 @@ export async function runDailyBirthdayCheck(now = new Date()): Promise<BirthdayR
     console.error("[birthdays] all sends failed:", failures.join("; "));
   }
   return { status: "sent", recipients: recipients.length - failures.length, failures, birthdays: upcoming.length };
+}
+
+// ---------------------------------------------------------------------------
+// Batch 82 (Riaan, 22 Oct 2026): "send out the birthday wish for the DAY on
+// the WhatsApp group ... vary the time between 8am and 10am ... vary the text
+// between three or four types". Only on the day itself (Henna's 08:00 list
+// for today + tomorrow is separate and unchanged). One message per person.
+// ---------------------------------------------------------------------------
+
+export const DEFAULT_GROUP_WISHES = [
+  "Happy birthday, {name}! Have a spoilt day and a blessed year ahead. From all of us at Team Apex.",
+  "Happy birthday {name}! Wishing you blue skies, smooth air and a fantastic year ahead. - The Apex Team",
+  "Today we celebrate {name}! Happy birthday from the whole Apex Team. Enjoy your day, and many happy landings this year.",
+  "Happy birthday, {name}! May your day be spoilt rotten and your year full of great flying. Best wishes from the Apex Team.",
+];
+
+/** Minutes between two people's wishes when several share a birthday. */
+const GROUP_GAP_MIN = 4;
+/** Don't post wishes after this hour (e.g. server down all morning). */
+const GROUP_LATEST_HOUR = 20;
+
+function hash(str: string): number {
+  let h = 2166136261;
+  for (let i = 0; i < str.length; i++) {
+    h ^= str.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return h >>> 0;
+}
+
+/** Today's start time for the group wishes, minutes after midnight SA:
+ * a random-looking but fixed (per date) time from 08:00 to 09:59. */
+export function groupWishStartMinute(dateKey: string): number {
+  return 8 * 60 + (hash(`${dateKey}|apex-wish`) % 120);
+}
+
+export function fmtMinute(m: number): string {
+  return `${String(Math.floor(m / 60)).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`;
+}
+
+export function pickWish(templates: string[], dateKey: string, userId: string, firstName: string): string {
+  const list = templates.filter((t) => t.trim());
+  const pool = list.length ? list : DEFAULT_GROUP_WISHES;
+  return pool[hash(`${dateKey}|${userId}`) % pool.length].replaceAll("{name}", firstName);
+}
+
+export type GroupWishSettings = {
+  chatId: string | null;
+  groupName: string | null;
+  enabled: boolean;
+  templates: string[];
+  sent: string | null;
+};
+
+export async function getGroupWishSettings(): Promise<GroupWishSettings> {
+  const [row] = await db
+    .select({
+      chatId: siteSettings.birthdayGroupChatId,
+      groupName: siteSettings.birthdayGroupName,
+      enabled: siteSettings.birthdayGroupEnabled,
+      templates: siteSettings.birthdayGroupTemplates,
+      sent: siteSettings.birthdayGroupSent,
+    })
+    .from(siteSettings)
+    .where(eq(siteSettings.id, SINGLETON_ID))
+    .limit(1);
+  let templates = DEFAULT_GROUP_WISHES;
+  try {
+    const parsed = row?.templates ? JSON.parse(row.templates) : null;
+    if (Array.isArray(parsed) && parsed.some((t) => typeof t === "string" && t.trim())) templates = parsed;
+  } catch {
+    /* keep defaults */
+  }
+  return {
+    chatId: row?.chatId ?? null,
+    groupName: row?.groupName ?? null,
+    enabled: row?.enabled ?? false,
+    templates,
+    sent: row?.sent ?? null,
+  };
+}
+
+/** Today's planned wishes: who, when (SA time), which text, already sent? */
+export async function getTodaysGroupWishPlan(now = new Date()) {
+  const settings = await getGroupWishSettings();
+  const dateKey = saDateKey(now);
+  const start = groupWishStartMinute(dateKey);
+  const sentIds = settings.sent?.startsWith(`${dateKey}|`) ? settings.sent.slice(dateKey.length + 1).split(",").filter(Boolean) : [];
+  const todays = (await getUpcomingBirthdays(0, now)).filter((b) => b.inDays === 0);
+  return {
+    settings,
+    dateKey,
+    start,
+    items: todays.map((b, i) => ({
+      person: b,
+      minute: start + i * GROUP_GAP_MIN,
+      text: pickWish(settings.templates, dateKey, b.userId, b.firstName),
+      sent: sentIds.includes(b.userId),
+    })),
+    sentIds,
+  };
+}
+
+/** Called by the 5-minute scheduler. Posts each due wish once. */
+export async function runGroupBirthdayWishes(now = new Date()): Promise<{ sent: number; skipped?: string; failures: string[] }> {
+  const plan = await getTodaysGroupWishPlan(now);
+  const { settings, dateKey } = plan;
+  if (!settings.enabled) return { sent: 0, skipped: "Turned off.", failures: [] };
+  if (!settings.chatId) return { sent: 0, skipped: "No group chosen.", failures: [] };
+  if (!isWhatsAppConfigured()) return { sent: 0, skipped: "WhatsApp not configured.", failures: [] };
+  const t = saNow(now);
+  const minuteNow = t.getUTCHours() * 60 + t.getUTCMinutes();
+  if (t.getUTCHours() >= GROUP_LATEST_HOUR) return { sent: 0, skipped: "Too late in the day.", failures: [] };
+
+  const failures: string[] = [];
+  let sent = 0;
+  let sentIds = [...plan.sentIds];
+  let stored = settings.sent;
+  for (const item of plan.items) {
+    if (item.sent || sentIds.includes(item.person.userId) || item.minute > minuteNow) continue;
+    // Claim this person first (compare-and-set on the stored list) so two
+    // overlapping runs can't both post the same wish.
+    const next = `${dateKey}|${[...sentIds, item.person.userId].join(",")}`;
+    await db.insert(siteSettings).values({ id: SINGLETON_ID }).onConflictDoNothing();
+    const claimed = await db
+      .update(siteSettings)
+      .set({ birthdayGroupSent: next })
+      .where(
+        and(
+          eq(siteSettings.id, SINGLETON_ID),
+          stored === null ? isNull(siteSettings.birthdayGroupSent) : eq(siteSettings.birthdayGroupSent, stored)
+        )
+      )
+      .returning({ id: siteSettings.id });
+    if (claimed.length === 0) break; // another run got there first
+    stored = next;
+    sentIds = [...sentIds, item.person.userId];
+    const res = await sendWhatsAppToChat(settings.chatId, item.text);
+    if (res.ok) {
+      sent++;
+    } else {
+      failures.push(`${item.person.name}: ${res.error}`);
+      // Release this person so a later run tries again.
+      sentIds = sentIds.filter((id) => id !== item.person.userId);
+      const back = `${dateKey}|${sentIds.join(",")}`;
+      await db.update(siteSettings).set({ birthdayGroupSent: back }).where(eq(siteSettings.id, SINGLETON_ID));
+      stored = back;
+      break;
+    }
+  }
+  return { sent, failures };
 }

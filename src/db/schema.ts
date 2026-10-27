@@ -578,6 +578,16 @@ export const siteSettings = sqliteTable("site_settings", {
     .notNull()
     .default(true),
   birthdayLastSentOn: text("birthday_last_sent_on"),
+  // Batch 82 (Riaan, 22 Oct 2026): birthday wish posted in the Team Apex
+  // WhatsApp group ON THE DAY, at a random time between 08:00 and 10:00,
+  // one of several wishes. groupChatId is the Green-API group id (...@g.us);
+  // templates is a JSON array of strings with {name} (null = defaults);
+  // groupSent is "YYYY-MM-DD|userId,userId" for today's sends.
+  birthdayGroupChatId: text("birthday_group_chat_id"),
+  birthdayGroupName: text("birthday_group_name"),
+  birthdayGroupEnabled: integer("birthday_group_enabled", { mode: "boolean" }).notNull().default(false),
+  birthdayGroupTemplates: text("birthday_group_templates"),
+  birthdayGroupSent: text("birthday_group_sent"),
   updatedAt: integer("updated_at", { mode: "timestamp" })
     .notNull()
     .default(sql`(unixepoch())`),

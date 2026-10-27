@@ -1,10 +1,12 @@
 import { requireAdminOrCFI } from "@/lib/auth/dal";
 import { getFormsProcedures } from "@/lib/actions/forms-procedures";
 import FormsProceduresEditor from "./forms-procedures-editor";
+import { FORMS_SEND_NOTE, getSendRecipients } from "@/lib/forms-send";
+import { isWhatsAppConfigured } from "@/lib/whatsapp";
 
 export default async function FormsProceduresAdminPage() {
   await requireAdminOrCFI();
-  const slots = await getFormsProcedures();
+  const [slots, recipients] = await Promise.all([getFormsProcedures(), getSendRecipients()]);
 
   return (
     <div>
@@ -14,7 +16,12 @@ export default async function FormsProceduresAdminPage() {
         PowerPoint presentations or ZIP files, up to 50MB each. Starts with
         10 slots; add more as needed.
       </p>
-      <FormsProceduresEditor slots={slots} />
+      <FormsProceduresEditor
+        slots={slots}
+        recipients={recipients}
+        note={FORMS_SEND_NOTE}
+        whatsappReady={isWhatsAppConfigured()}
+      />
     </div>
   );
 }

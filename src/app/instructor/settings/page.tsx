@@ -3,17 +3,19 @@ import { getRadioCallScript, getStudentNotice } from "@/lib/settings";
 import RadioScriptForm from "./radio-script-form";
 import NoticeForm from "./notice-form";
 import BirthdayForm from "./birthday-form";
-import { getBirthdaySettings, getUpcomingBirthdays } from "@/lib/birthdays";
+import GroupWishForm from "./group-wish-form";
+import { fmtMinute, getBirthdaySettings, getTodaysGroupWishPlan, getUpcomingBirthdays } from "@/lib/birthdays";
 import { isWhatsAppConfigured } from "@/lib/whatsapp";
 
 export default async function InstructorSettingsPage() {
   await requireCFI();
 
-  const [radioCallScript, studentNotice, birthday, upcoming] = await Promise.all([
+  const [radioCallScript, studentNotice, birthday, upcoming, wishPlan] = await Promise.all([
     getRadioCallScript(),
     getStudentNotice(),
     getBirthdaySettings(),
     getUpcomingBirthdays(30),
+    getTodaysGroupWishPlan(),
   ]);
 
   return (
@@ -74,6 +76,40 @@ export default async function InstructorSettingsPage() {
           )}
           {birthday.lastSentOn && (
             <p className="mt-2 text-xs text-slate-400">Last daily check done: {birthday.lastSentOn}</p>
+          )}
+        </div>
+      </section>
+
+      <section className="rounded-xl border border-slate-200 bg-white p-4">
+        <h2 className="mb-1 text-sm font-semibold text-slate-900">Birthday wish in the Team Apex WhatsApp group</h2>
+        <p className="mb-3 text-sm text-slate-500">
+          On a student&apos;s or pilot&apos;s birthday the Hub posts one wish in the group, at a different random time
+          between 08:00 and 10:00 each day. One message per person (a few minutes apart if several share the day). The
+          list above for today and tomorrow carries on as before. The Hub&apos;s WhatsApp number must be a member of the
+          group.
+        </p>
+        <GroupWishForm
+          initial={{
+            chatId: wishPlan.settings.chatId,
+            groupName: wishPlan.settings.groupName,
+            enabled: wishPlan.settings.enabled,
+            templates: wishPlan.settings.templates,
+          }}
+        />
+        <div className="mt-4 border-t border-slate-100 pt-3 text-sm">
+          <h3 className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-500">Today</h3>
+          {wishPlan.items.length === 0 ? (
+            <p className="text-slate-500">No birthdays today.</p>
+          ) : (
+            <ul className="space-y-1">
+              {wishPlan.items.map((it) => (
+                <li key={it.person.userId} className="text-slate-700">
+                  <span className="font-medium">{it.person.name}</span> --{" "}
+                  {it.sent ? "wish sent" : wishPlan.settings.enabled && wishPlan.settings.chatId ? `wish at ${fmtMinute(it.minute)}` : "not sent (group wish is off)"}
+                  <span className="block text-xs text-slate-500">&ldquo;{it.text}&rdquo;</span>
+                </li>
+              ))}
+            </ul>
           )}
         </div>
       </section>

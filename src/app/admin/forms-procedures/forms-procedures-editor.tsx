@@ -5,9 +5,98 @@ import {
   saveFormsProcedureSlot,
   deleteFormsProcedureSlot,
   addFormsProcedureSlot,
+  sendFormsProcedureWhatsApp,
   type FormsProcedureSlot,
   type SaveSlotState,
+  type SendFormState,
 } from "@/lib/actions/forms-procedures";
+
+export type Recipient = { name: string; role: "Student" | "Pilot"; phone: string; display: string };
+
+/** Batch 82 (Riaan, 26 Oct 2026): WhatsApp this document to a student/pilot
+ * or any number -- the file itself, with the fixed reference note. */
+function SendPanel({
+  slot,
+  recipients,
+  note,
+  whatsappReady,
+  onClose,
+}: {
+  slot: FormsProcedureSlot;
+  recipients: Recipient[];
+  note: string;
+  whatsappReady: boolean;
+  onClose: () => void;
+}) {
+  const [state, action, pending] = useActionState<SendFormState, FormData>(sendFormsProcedureWhatsApp, undefined);
+  const [phone, setPhone] = useState("");
+  const [name, setName] = useState("");
+  const [pick, setPick] = useState("");
+
+  return (
+    <form action={action} className="mt-3 space-y-3 rounded-lg border border-green-200 bg-green-50/50 p-3">
+      <input type="hidden" name="slot" value={slot.slot} />
+      <input type="hidden" name="name" value={name} />
+      <div className="text-sm font-semibold text-slate-800">Send &ldquo;{slot.title}&rdquo; on WhatsApp</div>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <label className="block text-xs font-medium text-slate-600">
+          Student or pilot
+          <select
+            value={pick}
+            onChange={(e) => {
+              const r = recipients.find((x) => x.phone === e.target.value);
+              setPick(e.target.value);
+              setPhone(r ? r.display : "");
+              setName(r ? r.name : "");
+            }}
+            className="mt-1 w-full rounded-md border border-slate-300 bg-white px-2 py-1.5 text-sm"
+          >
+            <option value="">-- choose a person --</option>
+            {recipients.map((r) => (
+              <option key={r.phone + r.name} value={r.phone}>
+                {r.name} ({r.role}) {r.display}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="block text-xs font-medium text-slate-600">
+          or cell number
+          <input
+            name="phone"
+            value={phone}
+            onChange={(e) => {
+              setPhone(e.target.value);
+              setPick("");
+              setName("");
+            }}
+            placeholder="082 123 4567"
+            className="mt-1 w-full rounded-md border border-slate-300 bg-white px-2 py-1.5 text-sm"
+          />
+        </label>
+      </div>
+      <p className="rounded-md bg-white px-3 py-2 text-xs text-slate-600">
+        <span className="font-semibold">Message with the file:</span> {note}
+      </p>
+      <div className="flex flex-wrap items-center gap-3">
+        <button
+          type="submit"
+          disabled={pending || !phone.trim()}
+          className="rounded-md bg-green-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-green-700 disabled:opacity-60"
+        >
+          {pending ? "Sending..." : "Send on WhatsApp"}
+        </button>
+        <button type="button" onClick={onClose} className="text-sm text-slate-500 hover:text-slate-700">
+          Close
+        </button>
+        {!whatsappReady && (
+          <span className="text-xs text-amber-700">WhatsApp isn&apos;t set up on this server (Green-API variables missing).</span>
+        )}
+        {state?.ok && <span className="text-sm text-green-700">{state.ok}</span>}
+        {state?.error && <span className="text-sm text-red-700">{state.error}</span>}
+      </div>
+    </form>
+  );
+}
 
 function formatBytes(bytes: number | null): string {
   if (!bytes) return "";
@@ -79,8 +168,11 @@ function SlotForm({ slot, onDone }: { slot: FormsProcedureSlot; onDone: () => vo
   );
 }
 
-function SlotRow({ slot }: { slot: FormsProcedureSlot }) {
+type SendProps = { recipients: Recipient[]; note: string; whatsappReady: boolean };
+
+function SlotRow({ slot, send }: { slot: FormsProcedureSlot; send: SendProps }) {
   const [editing, setEditing] = useState(false);
+  const [sending, setSending] = useState(false);
   const [isDeleting, startDeleteTransition] = useTransition();
 
   function handleClear() {
@@ -108,7 +200,8 @@ function SlotRow({ slot }: { slot: FormsProcedureSlot }) {
   }
 
   return (
-    <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-white p-4">
+    <div className="rounded-xl border border-slate-200 bg-white p-4">
+    <div className="flex items-center justify-between">
       <div>
         <div className="text-sm font-medium text-slate-900">{slot.title}</div>
         <div className="text-xs text-slate-500">
@@ -138,18 +231,38 @@ function SlotRow({ slot }: { slot: FormsProcedureSlot }) {
         >
           {isDeleting ? "Clearing..." : "Clear"}
         </button>
+        <button
+          type="button"
+          onClick={() => setSending((v) => !v)}
+          className="rounded-md bg-green-600 px-2.5 py-1 text-sm font-semibold text-white hover:bg-green-700"
+          title="Send this document on WhatsApp"
+        >
+          Send (WhatsApp)
+        </button>
       </div>
+    </div>
+    {sending && <SendPanel slot={slot} {...send} onClose={() => setSending(false)} />}
     </div>
   );
 }
 
-export default function FormsProceduresEditor({ slots }: { slots: FormsProcedureSlot[] }) {
+export default function FormsProceduresEditor({
+  slots,
+  recipients,
+  note,
+  whatsappReady,
+}: {
+  slots: FormsProcedureSlot[];
+  recipients: Recipient[];
+  note: string;
+  whatsappReady: boolean;
+}) {
   const [isAdding, startAddTransition] = useTransition();
 
   return (
     <div className="space-y-3">
       {slots.map((slot) => (
-        <SlotRow key={slot.slot} slot={slot} />
+        <SlotRow key={slot.slot} slot={slot} send={{ recipients, note, whatsappReady }} />
       ))}
       <button
         type="button"

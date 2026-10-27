@@ -1,6 +1,6 @@
 import { timingSafeEqual } from "node:crypto";
 import { cronKey } from "@/lib/cron-key";
-import { runDailyBirthdayCheck } from "@/lib/birthdays";
+import { runDailyBirthdayCheck, runGroupBirthdayWishes } from "@/lib/birthdays";
 
 /** Called every few minutes by the scheduler in src/instrumentation-node.ts
  * (batch 78). Sends the daily birthday WhatsApp once a day at/after 08:00
@@ -22,5 +22,12 @@ export async function POST(req: Request) {
         (result.failures.length ? `; failures: ${result.failures.join("; ")}` : "")
     );
   }
-  return Response.json(result);
+  // Batch 82: birthday wishes in the Team Apex group, on the day only.
+  const group = await runGroupBirthdayWishes();
+  if (group.sent || group.failures.length) {
+    console.log(
+      `[birthdays] group wishes sent: ${group.sent}` + (group.failures.length ? `; failures: ${group.failures.join("; ")}` : "")
+    );
+  }
+  return Response.json({ ...result, group });
 }

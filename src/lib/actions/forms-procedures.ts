@@ -10,6 +10,11 @@ import {
   deleteFormsProcedureFile,
   FormsProcedureUploadError,
 } from "@/lib/forms-procedures-uploads";
+import { readFile } from "node:fs/promises";
+import path from "node:path";
+import { normalizePhone, formatPhone } from "@/lib/invite-message";
+import { sendWhatsAppFile } from "@/lib/whatsapp";
+import { FORMS_SEND_NOTE } from "@/lib/forms-send";
 
 const MIN_SLOTS = 10;
 
@@ -159,4 +164,42 @@ export async function deleteFormsProcedureSlot(slot: number) {
   revalidatePath("/admin/forms-procedures");
   revalidatePath("/student/forms-procedures");
   revalidatePath("/pilot/forms-procedures");
+}
+
+export type SendFormState = { ok?: string; error?: string } | undefined;
+
+/** CFI/Admin: WhatsApp a Forms & procedures document (as the file itself)
+ * to a student/pilot or any cell number, with the fixed reference note as
+ * the caption (batch 82, Riaan 26 Oct 2026). */
+export async function sendFormsProcedureWhatsApp(
+  _prev: SendFormState,
+  formData: FormData
+): Promise<SendFormState> {
+  await requireAdminOrCFI();
+
+  const slotNo = Number(formData.get("slot"));
+  const phone = normalizePhone(String(formData.get("phone") ?? ""));
+  const name = String(formData.get("name") ?? "").trim();
+  if (!phone) return { error: "Choose a person or enter a valid cell number, e.g. 082 123 4567." };
+
+  const [row] = await db.select().from(formsProcedures).where(eq(formsProcedures.slot, slotNo)).limit(1);
+  if (!row?.filename) return { error: "This slot has no document to send." };
+
+  let bytes: Buffer;
+  try {
+    bytes = await readFile(path.join(process.cwd(), "data", "uploads", "forms-procedures", path.basename(row.filename)));
+  } catch {
+    return { error: "The document file couldn't be found on the server. Upload it again with Edit." };
+  }
+  const ext = (row.filename.split(".").pop() ?? "").toLowerCase();
+  const MIME: Record<string, string> = {
+    pdf: "application/pdf", zip: "application/zip", ppt: "application/vnd.ms-powerpoint",
+    pptx: "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    jpg: "image/jpeg", jpeg: "image/jpeg", png: "image/png", gif: "image/gif", webp: "image/webp", heic: "image/heic",
+  };
+  const fileName = row.originalName || `${(row.title || "Document").replace(/[^\w .-]+/g, "")}.${ext}`;
+  const caption = `${row.title ? `*${row.title}*\n\n` : ""}${FORMS_SEND_NOTE}\n\n- Apex Adventures (Team Apex)`;
+  const res = await sendWhatsAppFile(phone, { bytes, fileName, mime: MIME[ext] }, caption);
+  if (!res.ok) return { error: res.error };
+  return { ok: `Sent "${row.title ?? fileName}" to ${name ? `${name} (${formatPhone(phone)})` : formatPhone(phone)}.` };
 }

@@ -113,8 +113,22 @@ export default async function StudentFolioPage(
         />
       )}
       <SignoffPanel student={student} profile={profile} staffId={staff.id} isCFI={isCFI} />
-      <div className="flex items-start gap-3">
-        <Avatar userId={student.id} filename={student.profilePictureFile} name={student.name} size={48} />
+      <div className="flex items-start gap-4">
+        {/* Batch 82 (Riaan, 22 Oct 2026): bigger picture on the CFI's student
+            page; click opens it full size in a new tab. */}
+        {student.profilePictureFile ? (
+          <a
+            href={`/api/uploads/${student.id}/${student.profilePictureFile}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Open the profile picture full size"
+            className="shrink-0 rounded-full ring-red-500 hover:ring-2"
+          >
+            <Avatar userId={student.id} filename={student.profilePictureFile} name={student.name} size={128} />
+          </a>
+        ) : (
+          <Avatar userId={student.id} filename={student.profilePictureFile} name={student.name} size={128} />
+        )}
         <div>
         <h1 className="text-xl font-semibold text-slate-900">{student.name}</h1>
         <p className="text-sm text-slate-500">

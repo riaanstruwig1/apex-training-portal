@@ -351,6 +351,13 @@
       "when": 1792493781247,
       "tag": "0049_birthday_whatsapp",
       "breakpoints": true
+    },
+    {
+      "idx": 50,
+      "version": "6",
+      "when": 1793025094966,
+      "tag": "0050_birthday_group_wishes",
+      "breakpoints": true
     }
   ]
 }

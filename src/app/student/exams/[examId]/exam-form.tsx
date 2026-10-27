@@ -73,7 +73,12 @@ function OptionButton({
 }
 
 function attemptLabel(a: AttemptSummary) {
-  if (a.status !== "verified") return `Attempt ${a.attemptNumber} — submitted, awaiting verification`;
+  if (a.status !== "verified") {
+    // Batch 82: online exams show the preliminary (calculated) result at once.
+    if (a.status === "submitted" && a.source !== "paper" && a.scorePercent !== null && a.passed !== null)
+      return `Attempt ${a.attemptNumber} — preliminary ${a.passed ? "PASS" : "FAIL"} (${a.scorePercent.toFixed(0)}%), awaiting CFI review`;
+    return `Attempt ${a.attemptNumber} — submitted, awaiting verification`;
+  }
   return `Attempt ${a.attemptNumber} — ${a.passed ? "PASS" : "FAIL"} (${a.scorePercent?.toFixed(0)}%)`;
 }
 
@@ -249,6 +254,32 @@ export default function ExamForm({
       {/* Status banner */}
       {attempt?.status === "submitted" && (
         <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+          {/* Batch 82 (Riaan, 26 Oct 2026): show the calculated result straight
+              away, clearly marked as preliminary until the CFI signs it off. */}
+          {attempt.scorePercent !== null && attempt.passed !== null && (
+            <div
+              className={`mb-2 rounded-lg border px-3 py-2 ${
+                attempt.passed ? "border-green-300 bg-green-50 text-green-800" : "border-red-300 bg-red-50 text-red-800"
+              }`}
+            >
+              <span className="text-base font-bold">
+                Preliminary result: {attempt.passed ? "PASS" : "FAIL"}
+              </span>
+              {" — "}
+              {formatMarks(attempt.scoreMarks ?? 0)} / {attempt.totalMarks} marks ({attempt.scorePercent.toFixed(1)}%)
+              {exam.passPercent ? `, pass mark ${exam.passPercent}%` : ""}.
+              {attempt.mustPassSectionsOk === false && (
+                <span className="block font-medium">
+                  Not every question in a must-pass section (Airlaw) was answered correctly — those must all be
+                  correct to pass, regardless of overall score.
+                </span>
+              )}
+              <span className="mt-1 block text-xs font-medium">
+                This is a preliminary mark only. Your final result is confirmed once your CFI has reviewed and
+                signed off your exam.
+              </span>
+            </div>
+          )}
           Submitted{attempt.submittedAt ? ` on ${attempt.submittedAt.toLocaleDateString()}` : ""} —
           awaiting instructor verification. You can no longer change your answers.
         </div>

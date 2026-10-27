@@ -84,7 +84,9 @@ function ExamCard({ e }: { e: ExamSummary }) {
         : e.status === "submitted"
           ? isPaper
             ? "Paper exam submitted — awaiting review"
-            : "Submitted — awaiting verification"
+            : e.scorePercent !== null && e.passed !== null
+              ? `Preliminary ${e.passed ? "PASS" : "FAIL"} (${e.scorePercent.toFixed(0)}%) — awaiting CFI sign-off`
+              : "Submitted — awaiting verification"
           : e.passed
             ? isPaper
               ? "Verified — PASS (paper)"
