@@ -15,6 +15,7 @@ import path from "node:path";
 import { normalizePhone, formatPhone } from "@/lib/invite-message";
 import { sendWhatsAppFile } from "@/lib/whatsapp";
 import { FORMS_SEND_NOTE } from "@/lib/forms-send";
+import { DEFAULT_FORMS_CATEGORY, isFormsCategory } from "@/lib/forms-categories";
 
 const MIN_SLOTS = 10;
 
@@ -26,6 +27,7 @@ export type FormsProcedureSlot = {
   originalName: string | null;
   fileSize: number | null;
   uploadedAt: Date | null;
+  category: string;
 };
 
 /** At least 10 slots, in order -- synthesizes an empty placeholder for any
@@ -51,6 +53,7 @@ export async function getFormsProcedures(): Promise<FormsProcedureSlot[]> {
       originalName: row?.originalName ?? null,
       fileSize: row?.fileSize ?? null,
       uploadedAt: row?.uploadedAt ?? null,
+      category: row?.category ?? DEFAULT_FORMS_CATEGORY,
     };
   });
 }
@@ -88,6 +91,8 @@ export async function saveFormsProcedureSlot(
     return { error: "Invalid slot." };
   }
   if (!title) return { error: "Give this item a title." };
+  const categoryRaw = formData.get("category");
+  const category = isFormsCategory(categoryRaw) ? categoryRaw : DEFAULT_FORMS_CATEGORY;
 
   const fileInput = formData.get("file");
 
@@ -119,12 +124,13 @@ export async function saveFormsProcedureSlot(
     if (existing) {
       await db
         .update(formsProcedures)
-        .set({ title, ...(fileFields ?? {}) })
+        .set({ title, category, ...(fileFields ?? {}) })
         .where(eq(formsProcedures.id, existing.id));
     } else {
       await db.insert(formsProcedures).values({
         slot,
         title,
+        category,
         filename: fileFields!.filename,
         originalName: fileFields!.originalName,
         fileSize: fileFields!.fileSize,

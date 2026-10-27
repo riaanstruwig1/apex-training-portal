@@ -1,0 +1,1 @@
+ALTER TABLE `forms_procedures` ADD `category` text DEFAULT 'apex_forms' NOT NULL;

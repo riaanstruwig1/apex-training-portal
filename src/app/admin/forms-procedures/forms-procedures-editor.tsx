@@ -1,10 +1,10 @@
 "use client";
 
-import { useActionState, useState, useTransition, useRef } from "react";
+import { useActionState, useEffect, useState, useTransition, useRef } from "react";
+import { FORMS_CATEGORIES, groupByCategory } from "@/lib/forms-categories";
 import {
   saveFormsProcedureSlot,
   deleteFormsProcedureSlot,
-  addFormsProcedureSlot,
   sendFormsProcedureWhatsApp,
   type FormsProcedureSlot,
   type SaveSlotState,
@@ -105,6 +105,7 @@ function formatBytes(bytes: number | null): string {
 }
 
 function SlotForm({ slot, onDone }: { slot: FormsProcedureSlot; onDone: () => void }) {
+  const [category, setCategory] = useState(slot.category);
   const [state, formAction, isPending] = useActionState<SaveSlotState, FormData>(
     saveFormsProcedureSlot,
     undefined
@@ -113,9 +114,9 @@ function SlotForm({ slot, onDone }: { slot: FormsProcedureSlot; onDone: () => vo
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // A successful save closes the form back to the read-only view.
-  if (state && "success" in state) {
-    onDone();
-  }
+  useEffect(() => {
+    if (state && "success" in state) onDone();
+  }, [state, onDone]);
 
   return (
     <form action={formAction} className="space-y-3 rounded-xl border border-slate-200 bg-white p-4">
@@ -129,6 +130,21 @@ function SlotForm({ slot, onDone }: { slot: FormsProcedureSlot; onDone: () => vo
           placeholder="e.g. Pre-flight checklist"
           className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
         />
+      </div>
+      <div>
+        <label className="mb-1 block text-xs font-medium text-slate-500">Category</label>
+        <select
+          name="category"
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+          className="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm"
+        >
+          {FORMS_CATEGORIES.map((c) => (
+            <option key={c.key} value={c.key}>
+              {c.label}
+            </option>
+          ))}
+        </select>
       </div>
       <div>
         <label className="mb-1 block text-xs font-medium text-slate-500">
@@ -257,21 +273,51 @@ export default function FormsProceduresEditor({
   note: string;
   whatsappReady: boolean;
 }) {
-  const [isAdding, startAddTransition] = useTransition();
+  // Batch 84 (Riaan, 27 Oct 2026): documents grouped under five categories,
+  // in a fixed order, each with its own "+ Add item". A new item takes the
+  // next free slot number (slot numbers are just a stable unique id now).
+  const filled = slots.filter((s) => s.filename);
+  const nextSlot = slots.reduce((m, s) => Math.max(m, s.slot), 0) + 1;
+  const [adding, setAdding] = useState<string | null>(null);
+  const groups = groupByCategory(filled);
 
   return (
-    <div className="space-y-3">
-      {slots.map((slot) => (
-        <SlotRow key={slot.slot} slot={slot} send={{ recipients, note, whatsappReady }} />
+    <div className="space-y-8">
+      {groups.map((g) => (
+        <section key={g.key}>
+          <h2 className="text-base font-semibold text-slate-900">{g.label}</h2>
+          {g.note && <p className="text-xs text-slate-500">{g.note}</p>}
+          <div className="mt-3 space-y-3">
+            {g.items.map((slot) => (
+              <SlotRow key={slot.slot} slot={slot} send={{ recipients, note, whatsappReady }} />
+            ))}
+            {adding === g.key ? (
+              <SlotForm
+                slot={{
+                  id: `new-${nextSlot}`,
+                  slot: nextSlot,
+                  title: null,
+                  filename: null,
+                  originalName: null,
+                  fileSize: null,
+                  uploadedAt: null,
+                  category: g.key,
+                }}
+                onDone={() => setAdding(null)}
+              />
+            ) : (
+              <button
+                type="button"
+                onClick={() => setAdding(g.key)}
+                className="flex w-full items-center justify-between rounded-xl border border-dashed border-slate-300 p-3 text-sm text-slate-500 hover:border-red-400 hover:text-red-600"
+              >
+                <span>{g.items.length === 0 ? "Nothing in this category yet" : `${g.items.length} item(s)`}</span>
+                <span>+ Add item</span>
+              </button>
+            )}
+          </div>
+        </section>
       ))}
-      <button
-        type="button"
-        disabled={isAdding}
-        onClick={() => startAddTransition(() => addFormsProcedureSlot())}
-        className="w-full rounded-xl border border-dashed border-slate-300 p-4 text-sm text-slate-500 hover:border-red-400 hover:text-red-600 disabled:opacity-60"
-      >
-        {isAdding ? "Adding slot..." : "+ Add another slot"}
-      </button>
     </div>
   );
 }

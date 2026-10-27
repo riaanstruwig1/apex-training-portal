@@ -801,6 +801,10 @@ export const formsProcedures = sqliteTable(
     fileSize: integer("file_size"),
     uploadedAt: integer("uploaded_at", { mode: "timestamp" }),
     uploadedByUserId: text("uploaded_by_user_id").references(() => users.id),
+    // Batch 84 (27 Oct 2026): which heading it shows under -- see
+    // src/lib/forms-categories.ts (apex_client_info, apex_forms, sacaa,
+    // sahpa, general). Existing documents start in apex_forms.
+    category: text("category").notNull().default("apex_forms"),
   },
   (table) => [uniqueIndex("forms_procedures_slot_unique").on(table.slot)]
 );
