@@ -75,6 +75,7 @@ export async function gatherExamCopies(studentId: string, signingInstructorId: s
     out.push({
       ...base,
       proof: null,
+      print: { exam: detail.exam, attempt: detail.attempt! },
       sections: detail.exam.sections.map((s) => ({
         code: s.code,
         name: s.name,

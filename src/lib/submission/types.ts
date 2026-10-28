@@ -1,3 +1,4 @@
+import type { ExamDetail, AttemptView } from "@/lib/exams";
 // Plain data (no database) the pack builder works from, so the whole pack can
 // be built and tested without a live database. gather-pack-data.ts fills this
 // from the student's portfolio.
@@ -65,6 +66,9 @@ export type ExamCopyData = {
   sections: { code: string; name: string; questions: ExamCopyQuestion[] }[];
   /** Student's scan for a paper exam / held radio licence. */
   proof: { bytes: Buffer; ext: string } | null;
+  /** Online exams: the full exam + attempt, drawn in the SAHPA paper format
+   * (exam-sahpa-pdf.ts) after the PASSED page (28 Oct 2026). */
+  print?: { exam: ExamDetail; attempt: AttemptView };
 };
 
 export type RadioCertData = {

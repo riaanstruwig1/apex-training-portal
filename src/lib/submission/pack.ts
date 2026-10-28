@@ -8,7 +8,8 @@ import { fillConsentForm, fillMedicalForm, fillCA6216, fillCA6215 } from "./form
 import { PackData } from "./types";
 import { buildDtoCertificate, buildRadioCertificate } from "./certificates";
 import { buildExamCopyPdf } from "./exam-copy-pdf";
-import { appendScanToExamPdf } from "./merge-scan";
+import { appendScanToExamPdf, concatPdfs } from "./merge-scan";
+import { buildSahpaExamPdf } from "./exam-sahpa-pdf";
 
 function slug(s: string): string {
   return s.replace(/[^A-Za-z0-9]+/g, "_").replace(/^_|_$/g, "") || "student";
@@ -49,6 +50,24 @@ export async function buildSubmissionPack(d: PackData): Promise<{ zip: Buffer; f
     const base = `${n++}_Exam_${slug(e.title)}`;
     const passed = await buildExamCopyPdf(e, { name: d.student.fullName, apexNumber: d.student.apexNumber });
     const what = `${e.title} - passed (${e.passPercent}% pass mark), verified by instructor`;
+    if (e.print) {
+      // Online exam: PASSED page, then the exam in the SAHPA paper format
+      // (logo, marks table, open-answer questions, student's answer only).
+      try {
+        const sahpa = await buildSahpaExamPdf({
+          studentName: d.student.fullName,
+          exam: e.print.exam,
+          attempt: e.print.attempt,
+          verifierSignature: e.verifierSignature,
+        });
+        const joined = await concatPdfs(passed, sahpa);
+        files.push({ name: `${base}_PASSED.pdf`, data: joined ?? passed, what: `${what}, followed by the exam in the SAHPA paper format` });
+      } catch (err) {
+        warnings.push(`${e.title}: the exam pages couldn't be drawn (${(err as Error).message}).`);
+        files.push({ name: `${base}_PASSED.pdf`, data: passed, what });
+      }
+      continue;
+    }
     if (!e.proof) {
       files.push({ name: `${base}_PASSED.pdf`, data: passed, what });
       continue;

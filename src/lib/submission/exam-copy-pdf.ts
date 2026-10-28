@@ -68,6 +68,13 @@ export async function buildExamCopyPdf(e: ExamCopyData, student: { name: string;
   }
   y -= 76;
 
+  if (e.print) {
+    // 28 Oct 2026: the exam itself follows in the SAHPA paper format
+    // (exam-sahpa-pdf.ts) -- no multiple-choice list here.
+    text("The exam follows on the next pages, in the original SAHPA paper format.", 9);
+    return doc.save();
+  }
+
   if (e.source === "paper") {
     text("Paper exam / held licence: the candidate's scan follows on the next page(s).", 9);
     return doc.save();

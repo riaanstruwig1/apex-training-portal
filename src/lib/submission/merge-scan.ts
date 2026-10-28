@@ -12,6 +12,19 @@ const A4W = 595.28;
 const A4H = 841.89;
 const M = 28;
 
+/** Joins two PDFs (first, then second) without adding page labels. Returns
+ * null if either can't be read. */
+export async function concatPdfs(first: Uint8Array, second: Uint8Array): Promise<Uint8Array | null> {
+  try {
+    const out = await PDFDocument.load(first);
+    const src = await PDFDocument.load(second);
+    (await out.copyPages(src, src.getPageIndices())).forEach((p) => out.addPage(p));
+    return await out.save();
+  } catch {
+    return null;
+  }
+}
+
 export async function appendScanToExamPdf(
   passedPdf: Uint8Array,
   scan: { bytes: Buffer | Uint8Array; ext: string },
