@@ -5,10 +5,17 @@ import { FORMS_SEND_NOTE, getSendRecipients } from "@/lib/forms-send";
 import { isWhatsAppConfigured } from "@/lib/whatsapp";
 import { getFormsSendTabs } from "@/lib/actions/forms-send-tabs";
 import SendTabs from "./send-tabs";
+import SendLog from "./send-log";
+import { getFormsSendLog } from "@/lib/forms-send-log";
 
 export default async function FormsProceduresAdminPage() {
   await requireAdminOrCFI();
-  const [slots, recipients, tabs] = await Promise.all([getFormsProcedures(), getSendRecipients(), getFormsSendTabs()]);
+  const [slots, recipients, tabs, log] = await Promise.all([
+    getFormsProcedures(),
+    getSendRecipients(),
+    getFormsSendTabs(),
+    getFormsSendLog(),
+  ]);
 
   return (
     <div>
@@ -25,6 +32,7 @@ export default async function FormsProceduresAdminPage() {
         note={FORMS_SEND_NOTE}
         whatsappReady={isWhatsAppConfigured()}
       />
+      <SendLog entries={log.entries} total={log.total} />
     </div>
   );
 }

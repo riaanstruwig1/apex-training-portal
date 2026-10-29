@@ -169,6 +169,18 @@ export async function buildSahpaExamPdf(opts: {
       y -= h + 14;
     }
   }
+  else {
+    // 28 Oct 2026 (Riaan): the radio exam is a DTO exam -- Apex DTO front
+    // page (Apex logo + Paramotor SA (Pty) Ltd, SACAA DTO 0012), no SAHPA logo.
+    const logo = await embedImage(doc, path.join(process.cwd(), "public", "apex-logo.png"));
+    if (logo) {
+      const w = 110;
+      const h = (logo.height / logo.width) * w;
+      page.drawImage(logo, { x: ML + (CW - w) / 2, y: y - h, width: w, height: h });
+      y -= h + 8;
+    }
+    para([{ text: "Paramotor SA (Pty) Ltd t/a Apex Adventures  -  SACAA DTO 0012", font: f.bold, size: 10 }], { align: "center", after: 14 });
+  }
   const field = (label: string, value: string) =>
     para([{ text: `${label}: `, font: f.bold, size: S }, { text: value, font: f.reg, size: S }], { after: 5 });
   field("Student Name", studentName);

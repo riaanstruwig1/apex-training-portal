@@ -829,6 +829,24 @@ export const formsSendTabs = sqliteTable(
   (table) => [uniqueIndex("forms_send_tabs_position_unique").on(table.position)]
 );
 
+// Batch 88 (Riaan, 29 Oct 2026): log of every Forms & procedures WhatsApp
+// send -- who it went to, which number, what was sent and when.
+export const formsSendLog = sqliteTable("forms_send_log", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  sentAt: integer("sent_at", { mode: "timestamp_ms" }).notNull(), // ms, so two sends in the same second keep their order
+  sentByUserId: text("sent_by_user_id").references(() => users.id, { onDelete: "set null" }),
+  sentByName: text("sent_by_name"),
+  recipientName: text("recipient_name"), // null when a number was typed that isn't on the Hub
+  phone: text("phone").notNull(), // normalized, e.g. 27821234567
+  kind: text("kind").notNull(), // "document" | "pack"
+  title: text("title").notNull(), // document title or send-pack tab name
+  documents: text("documents"), // pack: one document title per line
+  status: text("status").notNull(), // "sent" | "partial" | "failed"
+  detail: text("detail"), // error text when not fully sent
+});
+
 export const examAnswers = sqliteTable(
   "exam_answers",
   {

@@ -13,6 +13,7 @@ import {
 import { normalizePhone, formatPhone } from "@/lib/invite-message";
 import { sendWhatsAppFile } from "@/lib/whatsapp";
 import { FORMS_SEND_NOTE, FORMS_SEND_SIGNOFF, loadFormsDocument } from "@/lib/forms-send";
+import { logFormsSend } from "@/lib/forms-send-log";
 import { DEFAULT_FORMS_CATEGORY, isFormsCategory } from "@/lib/forms-categories";
 
 const MIN_SLOTS = 10;
@@ -195,7 +196,7 @@ export async function sendFormsProcedureWhatsApp(
   _prev: SendFormState,
   formData: FormData
 ): Promise<SendFormState> {
-  await requireAdminOrCFI();
+  const staff = await requireAdminOrCFI();
 
   const slotNo = Number(formData.get("slot"));
   const phone = normalizePhone(String(formData.get("phone") ?? ""));
@@ -209,6 +210,16 @@ export async function sendFormsProcedureWhatsApp(
   if (!file) return { error: "The document file couldn't be found on the server. Upload it again with Edit." };
   const caption = `${row.title ? `*${row.title}*\n\n` : ""}${FORMS_SEND_NOTE}\n\n${FORMS_SEND_SIGNOFF}`;
   const res = await sendWhatsAppFile(phone, file, caption);
+  await logFormsSend({
+    sentBy: { id: staff.id, name: staff.name ?? null },
+    recipientName: name || null,
+    phone,
+    kind: "document",
+    title: row.title ?? file.fileName,
+    status: res.ok ? "sent" : "failed",
+    detail: res.ok ? null : res.error,
+  });
+  revalidatePath("/admin/forms-procedures");
   if (!res.ok) return { error: res.error };
   return { ok: `Sent "${row.title ?? file.fileName}" to ${name ? `${name} (${formatPhone(phone)})` : formatPhone(phone)}.` };
 }

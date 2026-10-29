@@ -8,6 +8,7 @@ import { requireAdminOrCFI } from "@/lib/auth/dal";
 import { normalizePhone, formatPhone } from "@/lib/invite-message";
 import { sendWhatsAppFile } from "@/lib/whatsapp";
 import { FORMS_SEND_NOTE, FORMS_SEND_SIGNOFF, loadFormsDocument } from "@/lib/forms-send";
+import { logFormsSend } from "@/lib/forms-send-log";
 
 /** Batch 87 (Riaan, 29 Oct 2026): six "send pack" tabs on the Forms &
  * procedures page. Each tab has a name, an optional message and a chosen
@@ -82,7 +83,7 @@ export type SendTabState = { ok?: string; error?: string } | undefined;
  * first carries the tab name, the optional message, the list of documents
  * and the standard reference note. */
 export async function sendFormsSendTabWhatsApp(_prev: SendTabState, formData: FormData): Promise<SendTabState> {
-  await requireAdminOrCFI();
+  const staff = await requireAdminOrCFI();
   const position = Number(formData.get("position"));
   const phone = normalizePhone(String(formData.get("phone") ?? ""));
   const who = String(formData.get("name") ?? "").trim();
@@ -101,7 +102,7 @@ export async function sendFormsSendTabWhatsApp(_prev: SendTabState, formData: Fo
     .map((r) => ({ title: r.title ?? r.originalName ?? "Document", filename: r.filename!, originalName: r.originalName }));
   if (docs.length === 0) return { error: "None of this tab's documents are on the list any more. Use Edit to choose again." };
 
-  const files = [];
+  const files: ((typeof docs)[number] & { file: NonNullable<Awaited<ReturnType<typeof loadFormsDocument>>> })[] = [];
   for (const d of docs) {
     const f = await loadFormsDocument({ filename: d.filename, originalName: d.originalName, title: d.title });
     if (!f) return { error: `"${d.title}" couldn't be found on the server. Upload it again, then send.` };
@@ -114,19 +115,34 @@ export async function sendFormsSendTabWhatsApp(_prev: SendTabState, formData: Fo
     (tab.message ? `${tab.message}\n\n` : "") +
     `Documents (${files.length}):\n${list}\n\n${FORMS_SEND_NOTE}\n\n${FORMS_SEND_SIGNOFF}`;
 
+  const log = (status: "sent" | "partial" | "failed", detail: string | null) =>
+    logFormsSend({
+      sentBy: { id: staff.id, name: staff.name ?? null },
+      recipientName: who || null,
+      phone,
+      kind: "pack",
+      title: tab.name,
+      documents: files.map((f) => f.title),
+      status,
+      detail,
+    });
+
   let sent = 0;
   for (let i = 0; i < files.length; i++) {
     const caption = i === 0 ? first : `*${files[i].title}* (${i + 1} of ${files.length})`;
     const res = await sendWhatsAppFile(phone, files[i].file, caption);
     if (!res.ok) {
-      return {
-        error: `${sent > 0 ? `Sent ${sent} of ${files.length}, then stopped. ` : ""}${files[i].title}: ${res.error}`,
-      };
+      const error = `${sent > 0 ? `Sent ${sent} of ${files.length}, then stopped. ` : ""}${files[i].title}: ${res.error}`;
+      await log(sent > 0 ? "partial" : "failed", error);
+      revalidatePath("/admin/forms-procedures");
+      return { error };
     }
     sent++;
     // A short gap keeps the documents in order on the phone.
     if (i < files.length - 1) await new Promise((r) => setTimeout(r, 1200));
   }
+  await log("sent", null);
+  revalidatePath("/admin/forms-procedures");
   const to = who ? `${who} (${formatPhone(phone)})` : formatPhone(phone);
   return { ok: `Sent "${tab.name}" -- ${files.length} document${files.length === 1 ? "" : "s"} -- to ${to}.` };
 }

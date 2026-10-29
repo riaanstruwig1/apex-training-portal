@@ -43,6 +43,11 @@ async function loadImage(slug: string, filename: string) {
   );
 }
 
+/** Apex DTO logo for the radio exam's front page (28 Oct 2026). */
+async function loadApexLogo() {
+  return loadImageAt(path.join(process.cwd(), "public", "apex-logo.png"), 147);
+}
+
 async function loadLogo() {
   return loadImageAt(
     path.join(process.cwd(), "public", "exam-media", "_branding", "sahpa-logo.png"),
@@ -101,7 +106,27 @@ export async function buildExamDocx(
             ],
           })
       )
-    : null;
+    : [
+        await loadApexLogo().then(
+          (logo) =>
+            new Paragraph({
+              alignment: AlignmentType.CENTER,
+              spacing: { after: 80 },
+              children: [
+                new ImageRun({
+                  type: "png",
+                  data: logo.data,
+                  transformation: { width: logo.width, height: logo.height },
+                }),
+              ],
+            })
+        ),
+        new Paragraph({
+          alignment: AlignmentType.CENTER,
+          spacing: { after: 240 },
+          children: [new TextRun({ text: "Paramotor SA (Pty) Ltd t/a Apex Adventures  -  SACAA DTO 0012", bold: true, size: 20 })],
+        }),
+      ];
 
   const headerParas = [
     fieldLine("Student Name", studentName),
@@ -361,7 +386,7 @@ export async function buildExamDocx(
         : genericInstructionParas;
 
   const body: (Paragraph | Table)[] = [
-    ...(logoPara ? [logoPara] : []),
+    ...(Array.isArray(logoPara) ? logoPara : logoPara ? [logoPara] : []),
     ...headerParas,
     hr(),
     new Paragraph({
