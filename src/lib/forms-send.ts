@@ -4,6 +4,35 @@ import { db } from "@/db";
 import { studentProfiles, users } from "@/db/schema";
 import { formatPhone, normalizePhone } from "@/lib/invite-message";
 import { compareByName } from "@/lib/sort-by-name";
+import { readFile } from "node:fs/promises";
+import path from "node:path";
+
+const MIME: Record<string, string> = {
+  pdf: "application/pdf", zip: "application/zip", ppt: "application/vnd.ms-powerpoint",
+  pptx: "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+  jpg: "image/jpeg", jpeg: "image/jpeg", png: "image/png", gif: "image/gif", webp: "image/webp", heic: "image/heic",
+};
+
+/** Reads a Forms & procedures document from disk, ready for sendWhatsAppFile.
+ * Null when the file is missing on the server. */
+export async function loadFormsDocument(row: {
+  filename: string;
+  originalName: string | null;
+  title: string | null;
+}): Promise<{ bytes: Buffer; fileName: string; mime?: string } | null> {
+  let bytes: Buffer;
+  try {
+    bytes = await readFile(path.join(process.cwd(), "data", "uploads", "forms-procedures", path.basename(row.filename)));
+  } catch {
+    return null;
+  }
+  const ext = (row.filename.split(".").pop() ?? "").toLowerCase();
+  const fileName = row.originalName || `${(row.title || "Document").replace(/[^\w .-]+/g, "")}.${ext}`;
+  return { bytes, fileName, mime: MIME[ext] };
+}
+
+/** Sign-off line under every Forms & procedures WhatsApp. */
+export const FORMS_SEND_SIGNOFF = "- Apex Adventures (Team Apex)";
 
 /** The fixed note sent with every Forms & procedures document (Riaan, 26 Oct 2026). */
 export const FORMS_SEND_NOTE =

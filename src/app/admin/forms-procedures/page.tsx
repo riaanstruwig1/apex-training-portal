@@ -3,10 +3,12 @@ import { getFormsProcedures } from "@/lib/actions/forms-procedures";
 import FormsProceduresEditor from "./forms-procedures-editor";
 import { FORMS_SEND_NOTE, getSendRecipients } from "@/lib/forms-send";
 import { isWhatsAppConfigured } from "@/lib/whatsapp";
+import { getFormsSendTabs } from "@/lib/actions/forms-send-tabs";
+import SendTabs from "./send-tabs";
 
 export default async function FormsProceduresAdminPage() {
   await requireAdminOrCFI();
-  const [slots, recipients] = await Promise.all([getFormsProcedures(), getSendRecipients()]);
+  const [slots, recipients, tabs] = await Promise.all([getFormsProcedures(), getSendRecipients(), getFormsSendTabs()]);
 
   return (
     <div>
@@ -16,6 +18,7 @@ export default async function FormsProceduresAdminPage() {
         images, PDFs, PowerPoint presentations or ZIP files, up to 50MB each.
         Use <strong>+ Add item</strong> under a heading; <strong>Edit</strong> moves an item to another heading.
       </p>
+      <SendTabs tabs={tabs} slots={slots} recipients={recipients} whatsappReady={isWhatsAppConfigured()} />
       <FormsProceduresEditor
         slots={slots}
         recipients={recipients}

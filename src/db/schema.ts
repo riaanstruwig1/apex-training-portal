@@ -809,6 +809,26 @@ export const formsProcedures = sqliteTable(
   (table) => [uniqueIndex("forms_procedures_slot_unique").on(table.slot)]
 );
 
+// Batch 87 (Riaan, 29 Oct 2026): up to six "send packs" on the Forms &
+// procedures page -- a named tab with a chosen set of the documents already
+// loaded, sent together on WhatsApp in one go (e.g. "General notice to
+// student": sample quote, how to start, ...).
+export const formsSendTabs = sqliteTable(
+  "forms_send_tabs",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    position: integer("position").notNull(), // 1-6, the tab's place
+    name: text("name").notNull(),
+    message: text("message"), // optional extra text sent with the first document
+    // JSON array of forms_procedures.slot numbers, in send order
+    slots: text("slots").notNull().default("[]"),
+    updatedAt: integer("updated_at", { mode: "timestamp" }),
+  },
+  (table) => [uniqueIndex("forms_send_tabs_position_unique").on(table.position)]
+);
+
 export const examAnswers = sqliteTable(
   "exam_answers",
   {

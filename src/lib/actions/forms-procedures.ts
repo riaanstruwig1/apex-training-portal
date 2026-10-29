@@ -3,18 +3,16 @@
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { db } from "@/db";
-import { formsProcedures } from "@/db/schema";
+import { formsProcedures, formsSendTabs } from "@/db/schema";
 import { requireAdminOrCFI } from "@/lib/auth/dal";
 import {
   saveFormsProcedureFile,
   deleteFormsProcedureFile,
   FormsProcedureUploadError,
 } from "@/lib/forms-procedures-uploads";
-import { readFile } from "node:fs/promises";
-import path from "node:path";
 import { normalizePhone, formatPhone } from "@/lib/invite-message";
 import { sendWhatsAppFile } from "@/lib/whatsapp";
-import { FORMS_SEND_NOTE } from "@/lib/forms-send";
+import { FORMS_SEND_NOTE, FORMS_SEND_SIGNOFF, loadFormsDocument } from "@/lib/forms-send";
 import { DEFAULT_FORMS_CATEGORY, isFormsCategory } from "@/lib/forms-categories";
 
 const MIN_SLOTS = 10;
@@ -167,6 +165,22 @@ export async function deleteFormsProcedureSlot(slot: number) {
   if (existing.filename) await deleteFormsProcedureFile(existing.filename);
   await db.delete(formsProcedures).where(eq(formsProcedures.id, existing.id));
 
+  // Batch 87: drop the cleared document from any send-pack tab, so a new
+  // document that later takes this slot number isn't sent by mistake.
+  const tabs = await db.select().from(formsSendTabs);
+  for (const t of tabs) {
+    let list: number[] = [];
+    try {
+      list = JSON.parse(t.slots);
+    } catch {}
+    if (Array.isArray(list) && list.includes(slot)) {
+      await db
+        .update(formsSendTabs)
+        .set({ slots: JSON.stringify(list.filter((n) => n !== slot)) })
+        .where(eq(formsSendTabs.id, t.id));
+    }
+  }
+
   revalidatePath("/admin/forms-procedures");
   revalidatePath("/student/forms-procedures");
   revalidatePath("/pilot/forms-procedures");
@@ -191,21 +205,10 @@ export async function sendFormsProcedureWhatsApp(
   const [row] = await db.select().from(formsProcedures).where(eq(formsProcedures.slot, slotNo)).limit(1);
   if (!row?.filename) return { error: "This slot has no document to send." };
 
-  let bytes: Buffer;
-  try {
-    bytes = await readFile(path.join(process.cwd(), "data", "uploads", "forms-procedures", path.basename(row.filename)));
-  } catch {
-    return { error: "The document file couldn't be found on the server. Upload it again with Edit." };
-  }
-  const ext = (row.filename.split(".").pop() ?? "").toLowerCase();
-  const MIME: Record<string, string> = {
-    pdf: "application/pdf", zip: "application/zip", ppt: "application/vnd.ms-powerpoint",
-    pptx: "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-    jpg: "image/jpeg", jpeg: "image/jpeg", png: "image/png", gif: "image/gif", webp: "image/webp", heic: "image/heic",
-  };
-  const fileName = row.originalName || `${(row.title || "Document").replace(/[^\w .-]+/g, "")}.${ext}`;
-  const caption = `${row.title ? `*${row.title}*\n\n` : ""}${FORMS_SEND_NOTE}\n\n- Apex Adventures (Team Apex)`;
-  const res = await sendWhatsAppFile(phone, { bytes, fileName, mime: MIME[ext] }, caption);
+  const file = await loadFormsDocument({ filename: row.filename, originalName: row.originalName, title: row.title });
+  if (!file) return { error: "The document file couldn't be found on the server. Upload it again with Edit." };
+  const caption = `${row.title ? `*${row.title}*\n\n` : ""}${FORMS_SEND_NOTE}\n\n${FORMS_SEND_SIGNOFF}`;
+  const res = await sendWhatsAppFile(phone, file, caption);
   if (!res.ok) return { error: res.error };
-  return { ok: `Sent "${row.title ?? fileName}" to ${name ? `${name} (${formatPhone(phone)})` : formatPhone(phone)}.` };
+  return { ok: `Sent "${row.title ?? file.fileName}" to ${name ? `${name} (${formatPhone(phone)})` : formatPhone(phone)}.` };
 }
