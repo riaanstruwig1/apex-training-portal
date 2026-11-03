@@ -248,6 +248,22 @@ export default async function ExamReviewPage(
         )}
       </div>
 
+      {exam.category === "rt" && (
+        <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm">
+          <span className="font-semibold text-slate-900">Call sign choices (no marks):</span>{" "}
+          {attempt.callSignChoices.some(Boolean) ? (
+            attempt.callSignChoices.map((cs, i) => (
+              <span key={i} className="mr-3">
+                {i + 1}. <span className="font-semibold">{cs || "--"}</span>
+              </span>
+            ))
+          ) : (
+            <span className="text-slate-500">none given</span>
+          )}
+          <span className="block text-xs text-slate-500">Pre-filled into CA 62-16 section C (1st / 2nd / 3rd choice) at sign-off.</span>
+        </div>
+      )}
+
       {exam.sections.map((section) => {
         const earned = section.questions.reduce((sum, q) => sum + effectiveMarks(q), 0);
         return (

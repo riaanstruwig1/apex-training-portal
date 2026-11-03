@@ -19,6 +19,34 @@ import StudentRowActions from "./student-row-actions";
 import { getPendingInvites } from "@/lib/invites";
 import { isWhatsAppConfigured } from "@/lib/whatsapp";
 import InvitesBlock from "@/app/admin/pilots/invites-block";
+import { and, isNotNull, eq } from "drizzle-orm";
+import { db } from "@/db";
+import { studentSignoffs, pilotProfiles } from "@/db/schema";
+
+/** Batch 89 (Riaan, 30 Oct 2026): signed-off students (pack, Solo wings and
+ * certificate done) still waiting for their SACAA licence -- shown under
+ * "Needs attention" until the licence is added and they move to Pilots.
+ * Student id -> sign-off date. */
+async function getAwaitingLicence(): Promise<Map<string, Date>> {
+  const rows = await db
+    .select({ id: studentSignoffs.studentUserId, at: studentSignoffs.signedOffAt })
+    .from(studentSignoffs)
+    .innerJoin(pilotProfiles, eq(pilotProfiles.userId, studentSignoffs.studentUserId))
+    .where(and(isNotNull(pilotProfiles.awaitingCaaLicenceSince)));
+  return new Map(rows.map((r) => [r.id, r.at]));
+}
+
+function AwaitingLicenceChip({ id, since }: { id: string; since: Date }) {
+  return (
+    <Link
+      href={`/instructor/students/${id}#signoff`}
+      title={`Signed off ${since.toLocaleDateString()} -- pack printed, Solo wings and certificate given. Moves to Pilots when the SACAA licence is added.`}
+      className="inline-flex items-center gap-1 rounded-full bg-sky-100 px-2 py-0.5 text-xs font-medium text-sky-800 hover:bg-sky-200"
+    >
+      Awaiting SACAA Lic.
+    </Link>
+  );
+}
 
 const statusStyles: Record<string, string> = {
   invited: "bg-amber-100 text-amber-800",
@@ -130,15 +158,18 @@ function StudentCard({
   isCFI,
   pendingExamsByStudent,
   examStatusByStudent,
+  awaitingLicence,
 }: {
   s: StudentSummary;
   archived: boolean;
   isCFI: boolean;
   pendingExamsByStudent: Map<string, number>;
   examStatusByStudent: Map<string, Record<ExamCategory, ExamCategoryStatus>>;
+  awaitingLicence: Map<string, Date>;
 }) {
   const pendingLogbook = s.pendingLogbookCount > 0;
   const pendingExams = (pendingExamsByStudent.get(s.id) ?? 0) > 0;
+  const awaiting = awaitingLicence.get(s.id);
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-4">
       <div className="mb-2 flex items-start justify-between gap-2">
@@ -184,8 +215,9 @@ function StudentCard({
       <div className="mt-2">
         <ExamBadges statuses={examStatusByStudent.get(s.id)} trainingType={s.trainingType} />
       </div>
-      {!archived && (pendingLogbook || pendingExams) && (
+      {!archived && (pendingLogbook || pendingExams || awaiting) && (
         <div className="mt-2 flex flex-wrap gap-1">
+          {awaiting && <AwaitingLicenceChip id={s.id} since={awaiting} />}
           {pendingLogbook && (
             <Link
               href={`/instructor/students/${s.id}#logbook`}
@@ -220,12 +252,14 @@ function StudentTable({
   isCFI,
   pendingExamsByStudent,
   examStatusByStudent,
+  awaitingLicence,
 }: {
   students: StudentSummary[];
   archived: boolean;
   isCFI: boolean;
   pendingExamsByStudent: Map<string, number>;
   examStatusByStudent: Map<string, Record<ExamCategory, ExamCategoryStatus>>;
+  awaitingLicence: Map<string, Date>;
 }) {
   return (
     <>
@@ -239,6 +273,7 @@ function StudentTable({
             isCFI={isCFI}
             pendingExamsByStudent={pendingExamsByStudent}
             examStatusByStudent={examStatusByStudent}
+            awaitingLicence={awaitingLicence}
           />
         ))}
       </div>
@@ -315,6 +350,7 @@ function StudentTable({
               {!archived && (
                 <td className="px-4 py-3">
                   <div className="flex flex-col items-start gap-1">
+                    {awaitingLicence.get(s.id) && <AwaitingLicenceChip id={s.id} since={awaitingLicence.get(s.id)!} />}
                     {s.pendingLogbookCount > 0 && (
                       <Link
                         href={`/instructor/students/${s.id}#logbook`}
@@ -334,7 +370,8 @@ function StudentTable({
                       </Link>
                     )}
                     {s.pendingLogbookCount === 0 &&
-                      (pendingExamsByStudent.get(s.id) ?? 0) === 0 && (
+                      (pendingExamsByStudent.get(s.id) ?? 0) === 0 &&
+                      !awaitingLicence.get(s.id) && (
                         <span className="text-xs text-slate-300">—</span>
                       )}
                   </div>
@@ -363,7 +400,7 @@ export default async function InstructorDashboard() {
   const staff = await requireInstructor();
   const isCFI = staff.role === "cfi";
 
-  const [allStudents, pendingExamsByStudent, examStatusByStudent, pendingApplicants, studentInvites] =
+  const [allStudents, pendingExamsByStudent, examStatusByStudent, pendingApplicants, studentInvites, awaitingLicence] =
     await Promise.all([
       getAllStudentsWithSummary(),
       getPendingExamVerifications(),
@@ -373,6 +410,7 @@ export default async function InstructorDashboard() {
       // this roster is the CFI's own "Students" menu item, and Riaan looked
       // for them here first (30 Sep 2026). Same list as Admin -> Students.
       isCFI ? getPendingInvites("student") : Promise.resolve([]),
+      getAwaitingLicence(),
     ]);
   const activeStudents = allStudents.filter((s) => s.status !== "archived");
   const archivedStudents = allStudents.filter((s) => s.status === "archived");
@@ -429,6 +467,7 @@ export default async function InstructorDashboard() {
           isCFI={isCFI}
           pendingExamsByStudent={pendingExamsByStudent}
           examStatusByStudent={examStatusByStudent}
+          awaitingLicence={awaitingLicence}
         />
       )}
 
@@ -444,6 +483,7 @@ export default async function InstructorDashboard() {
               isCFI={isCFI}
               pendingExamsByStudent={pendingExamsByStudent}
               examStatusByStudent={examStatusByStudent}
+              awaitingLicence={awaitingLicence}
             />
           </div>
         </details>

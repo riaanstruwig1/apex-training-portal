@@ -1,5 +1,6 @@
 "use server";
 
+import { drawnSignatureFile } from "@/lib/signature-drawn";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 import * as z from "zod";
@@ -195,15 +196,18 @@ export async function submitSignup(
       "profile-picture",
       profilePictureFileInput instanceof File ? profilePictureFileInput : null
     );
+    // Batch 90: a signature drawn on the signature pad wins over an uploaded image.
+    const drawnSig = drawnSignatureFile(formData.get("signatureDrawn"));
     const signatureFile = await saveUpload(
       user.id,
       "signature",
-      signatureFileInput instanceof File ? signatureFileInput : null
+      drawnSig ?? (signatureFileInput instanceof File ? signatureFileInput : null)
     );
+    const signatureName = drawnSig ? String(formData.get("signatureName") ?? "").trim().slice(0, 120) || null : null;
 
     await db
       .update(users)
-      .set({ idPassportFile, profilePictureFile, signatureFile })
+      .set({ idPassportFile, profilePictureFile, signatureFile, signatureName })
       .where(eq(users.id, user.id));
 
     if (data.accountType === "student") {

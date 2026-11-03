@@ -546,6 +546,29 @@ export async function buildExamDocx(
     })
   );
 
+  // Batch 90 (Riaan, 3 Nov 2026): radio exam's last item -- the student's
+  // three call sign choices (no marks). Keep in step with exam-sahpa-pdf.ts.
+  if (exam.category === "rt") {
+    const cs = attempt.callSignChoices ?? ["", "", ""];
+    body.push(
+      hr(),
+      new Paragraph({
+        spacing: { before: 120, after: 60 },
+        children: [
+          new TextRun({ text: "Call sign of choice", bold: true, size: 24 }),
+          new TextRun({ text: "  (no marks - to confirm on the CA 62-16 application)", italics: true, size: 20 }),
+        ],
+      }),
+      new Paragraph({
+        children: cs.flatMap((c, i) => [
+          new TextRun({ text: `Choice ${i + 1}: `, size: 22 }),
+          new TextRun({ text: c || "-", bold: true, size: 22 }),
+          new TextRun({ text: i < 2 ? "        " : "", size: 22 }),
+        ]),
+      })
+    );
+  }
+
   const pageFooter = new Footer({
     children: [
       new Paragraph({

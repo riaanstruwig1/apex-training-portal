@@ -1,4 +1,5 @@
 import "server-only";
+import { parseCallSignChoices } from "@/lib/call-sign";
 import { eq, and, sql, inArray, desc } from "drizzle-orm";
 import { db } from "@/db";
 import {
@@ -265,6 +266,8 @@ export type AttemptView = {
   /** CFI's own final result, overriding the calculated one (or null). */
   resultOverride: "pass" | "fail" | null;
   resultOverrideNote: string | null;
+  /** Radio exam only (batch 90): the student's three call sign choices. */
+  callSignChoices: [string, string, string];
 };
 
 export type AttemptSummary = Pick<
@@ -450,6 +453,7 @@ export async function getExamDetail(
           externalLicenseNumber: attemptRow.externalLicenseNumber,
           resultOverride: (attemptRow.resultOverride as "pass" | "fail" | null) ?? null,
           resultOverrideNote: attemptRow.resultOverrideNote ?? null,
+          callSignChoices: parseCallSignChoices(attemptRow.callSignChoices),
           correctedCount: answerRows.filter(
             (a) => a.answerChanged || a.awardedMarks !== null || !!a.staffNote
           ).length,
@@ -517,4 +521,18 @@ export async function getExamCategoryStatusesForAllStudents(): Promise<
   }
 
   return result;
+}
+
+/** Batch 90: a student's radio-exam call sign choices -- from the latest radio
+ * attempt that has them (a passed one first). Three strings, empty if none. */
+export async function getRadioCallSignChoices(studentId: string): Promise<[string, string, string]> {
+  const rows = await db
+    .select({ choices: examAttempts.callSignChoices, passed: examAttempts.passed, n: examAttempts.attemptNumber })
+    .from(examAttempts)
+    .innerJoin(exams, eq(exams.id, examAttempts.examId))
+    .where(and(eq(examAttempts.studentId, studentId), eq(exams.category, "rt")))
+    .orderBy(desc(examAttempts.attemptNumber));
+  const withChoices = rows.filter((r) => r.choices && r.choices.replace(/\|/g, "").trim());
+  const best = withChoices.find((r) => r.passed) ?? withChoices[0];
+  return parseCallSignChoices(best?.choices);
 }

@@ -5,6 +5,7 @@ import SahpaSignupNote from "@/components/sahpa-signup-note";
 import { submitSignup, type SignupState } from "@/lib/actions/signup";
 import { ENDORSEMENT_OPTIONS } from "@/lib/pilot-endorsements";
 import PasswordInput from "@/components/password-input";
+import SignaturePad from "@/components/signature-pad";
 
 const inputClass =
   "mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500";
@@ -368,12 +369,14 @@ export default function SignupForm() {
         </Field>
         <Field id="signatureFile" label="Signature (optional)">
           <p className="mb-1 text-xs text-slate-500">
-            Upload an image of your signature and it&rsquo;s saved for next time -- offered back
+            Sign on the pad (or upload an image of your signature) and it&rsquo;s saved for next time -- offered back
             automatically when you need to sign something under your own login, so you don&rsquo;t
             have to type your name every time. Yours only: no one else, including CFIs and Admin,
             can view it, download it, or use it -- kept in a protected vault for your account
             alone. You can still type your name below to sign these two forms now either way.
           </p>
+          <SignaturePad compact />
+          <p className="mb-1 mt-3 text-xs text-slate-500">or upload an image instead:</p>
           <input
             id="signatureFile"
             name="signatureFile"

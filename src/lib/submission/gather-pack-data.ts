@@ -26,6 +26,8 @@ export type SignoffInput = {
   radioExaminerLicence: string;
   callSignChoices: [string, string, string];
   instructorRatingLine?: string;
+  /** Batch 90: leave the student's saved signature off (e.g. a bad image) -- he signs by hand. */
+  omitStudentSignature?: boolean;
 };
 
 async function readUpload(userId: string, file: string | null): Promise<Buffer | null> {
@@ -98,7 +100,9 @@ export async function gatherPackData(studentUserId: string, input: SignoffInput)
   // Signatures
   const consented = !!u.signatureFormsConsentAt;
   let studentSignature: Buffer | null = null;
-  if (u.signatureFile && consented) studentSignature = await readUpload(u.id, u.signatureFile);
+  if (input.omitStudentSignature) {
+    if (u.signatureFile) warnings.push("Student signature left off on request (pack regenerated without it) - the student signs the forms by hand.");
+  } else if (u.signatureFile && consented) studentSignature = await readUpload(u.id, u.signatureFile);
   else if (u.signatureFile && !consented) warnings.push(u.signatureFormsConsentDeclinedAt ? "The student answered NO to using his signature on the forms - sign by hand." : "The student has not answered the signature consent question yet - sign by hand, or ask him to answer on his profile and regenerate the pack.");
   else warnings.push("The student has not uploaded a signature - sign the forms by hand.");
   const instructorSignature = await readUpload(ins.id, ins.signatureFile);

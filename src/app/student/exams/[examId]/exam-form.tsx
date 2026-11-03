@@ -2,7 +2,13 @@
 
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { saveExamAnswer, submitExam, startNewAttempt } from "@/lib/actions/exams";
+import { saveExamAnswer, submitExam, startNewAttempt, saveCallSignChoices } from "@/lib/actions/exams";
+import {
+  CALL_SIGN_PREFIXES,
+  checkCallSignChoices,
+  isValidCallSign,
+  type CallSignPrefix,
+} from "@/lib/call-sign";
 import type { ExamDetail, AttemptView, AttemptSummary } from "@/lib/exams";
 import { formatMarks } from "@/lib/exam-marks";
 
@@ -133,17 +139,129 @@ function ExamClock({
   );
 }
 
+/** Batch 90 (Riaan, 3 Nov 2026): radio exam's last item -- three call sign
+ * choices, no marks. Each = prefix (PPG / PPT / PPC) + three letters/numbers. */
+function CallSignChoices({
+  examId,
+  initial,
+  locked,
+  defaultPrefix,
+  onChange,
+}: {
+  examId: string;
+  initial: [string, string, string];
+  locked: boolean;
+  defaultPrefix: CallSignPrefix;
+  onChange: (choices: string[]) => void;
+}) {
+  const split = (cs: string): [CallSignPrefix, string] => {
+    const m = cs.match(/^(PPG|PPT|PPC)-?([A-Z0-9]{0,3})$/);
+    return m ? [m[1] as CallSignPrefix, m[2]] : [defaultPrefix, ""];
+  };
+  const [rows, setRows] = useState<[CallSignPrefix, string][]>(() => initial.map(split));
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const joined = rows.map(([p, l]) => (l ? `${p}-${l}` : ""));
+
+  function update(i: number, prefix: CallSignPrefix, letters: string) {
+    const next = rows.map((r, j) => (j === i ? ([prefix, letters.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 3)] as [CallSignPrefix, string]) : r));
+    setRows(next);
+    const list = next.map(([p, l]) => (l ? `${p}-${l}` : ""));
+    onChange(list);
+    if (timer.current) clearTimeout(timer.current);
+    timer.current = setTimeout(() => {
+      void saveCallSignChoices(examId, list);
+    }, 500);
+  }
+
+  if (locked) {
+    return (
+      <section className="rounded-xl border border-slate-200 bg-white p-4">
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">Call sign of choice (no marks)</h2>
+        {initial.some(Boolean) ? (
+          <ol className="mt-2 grid gap-1 text-sm text-slate-800 sm:grid-cols-3">
+            {initial.map((cs, i) => (
+              <li key={i}>
+                <span className="text-slate-500">Choice {i + 1}:</span> <span className="font-semibold">{cs || "--"}</span>
+              </li>
+            ))}
+          </ol>
+        ) : (
+          <p className="mt-2 text-sm text-slate-500">No call signs were given.</p>
+        )}
+      </section>
+    );
+  }
+
+  const problem = checkCallSignChoices(joined);
+  return (
+    <section className="rounded-xl border-2 border-red-200 bg-white p-4">
+      <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-700">
+        Last question -- your call sign of choice <span className="font-normal text-slate-400">(no marks)</span>
+      </h2>
+      <p className="mt-1 text-sm text-slate-600">
+        To confirm, give <strong>three</strong> call signs you would like, in order of preference: PPG, PPT or PPC, then
+        three letters or numbers -- for example <strong>PPG-ABC</strong> or <strong>PPT-ACB</strong>. They go on your
+        CA 62-16 licence application.
+      </p>
+      <div className="mt-3 grid gap-3 sm:grid-cols-3">
+        {rows.map(([prefix, letters], i) => {
+          const full = letters ? `${prefix}-${letters}` : "";
+          const bad = letters.length > 0 && !isValidCallSign(full);
+          return (
+            <label key={i} className="block text-xs font-medium text-slate-600">
+              Call sign choice {i + 1}
+              <span className="mt-1 flex items-center gap-1">
+                <select
+                  aria-label={`Call sign choice ${i + 1} prefix`}
+                  value={prefix}
+                  onChange={(e) => update(i, e.target.value as CallSignPrefix, letters)}
+                  className="rounded-md border border-slate-300 bg-white px-2 py-2 text-sm font-semibold"
+                >
+                  {CALL_SIGN_PREFIXES.map((p) => (
+                    <option key={p} value={p}>
+                      {p}
+                    </option>
+                  ))}
+                </select>
+                <span className="font-semibold text-slate-500">-</span>
+                <input
+                  aria-label={`Call sign choice ${i + 1} letters`}
+                  value={letters}
+                  onChange={(e) => update(i, prefix, e.target.value)}
+                  maxLength={3}
+                  placeholder="ABC"
+                  className={`w-20 rounded-md border px-2 py-2 text-sm font-semibold uppercase tracking-widest ${
+                    bad ? "border-red-400" : "border-slate-300"
+                  }`}
+                />
+              </span>
+            </label>
+          );
+        })}
+      </div>
+      <p className={`mt-2 text-xs ${problem ? "text-amber-700" : "text-green-700"}`}>
+        {problem ?? `Call signs: ${joined.join(", ")}`}
+      </p>
+    </section>
+  );
+}
+
 export default function ExamForm({
   examId,
   exam,
   attempt,
   history,
+  defaultCallSignPrefix = "PPG",
 }: {
   examId: string;
   exam: ExamDetail;
   attempt: AttemptView | null;
   history: AttemptSummary[];
+  defaultCallSignPrefix?: CallSignPrefix;
 }) {
+  const isRadio = exam.category === "rt";
+  const [callSigns, setCallSigns] = useState<string[]>(() => attempt?.callSignChoices ?? ["", "", ""]);
+  const callSignProblem = isRadio ? checkCallSignChoices(callSigns) : null;
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [confirmingSubmit, setConfirmingSubmit] = useState(false);
@@ -202,6 +320,8 @@ export default function ExamForm({
 
   function handleSubmit() {
     startTransition(async () => {
+      // Save the latest call signs first (the card saves with a short delay).
+      if (isRadio) await saveCallSignChoices(examId, callSigns);
       const result = await submitExam(examId);
       if (result?.error) {
         setSubmitError(result.error);
@@ -215,6 +335,7 @@ export default function ExamForm({
   function handleClockExpire() {
     setAutoSubmitting(true);
     startTransition(async () => {
+      if (isRadio) await saveCallSignChoices(examId, callSigns);
       await submitExam(examId, { auto: true });
       router.refresh();
     });
@@ -444,6 +565,17 @@ export default function ExamForm({
         </section>
       ))}
 
+      {isRadio && attempt?.source !== "paper" && (
+        <CallSignChoices
+          key={attempt?.id ?? "none"}
+          examId={examId}
+          initial={attempt?.callSignChoices ?? ["", "", ""]}
+          locked={locked}
+          defaultPrefix={defaultCallSignPrefix}
+          onChange={setCallSigns}
+        />
+      )}
+
       {!locked && (
         <div className="fixed inset-x-0 bottom-0 border-t border-slate-200 bg-white/95 px-4 py-3 backdrop-blur">
           <div className="mx-auto flex max-w-3xl flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
@@ -451,7 +583,9 @@ export default function ExamForm({
             {!submitError && (
               <p className="text-sm text-slate-500">
                 {answeredCount === totalQuestions
-                  ? "All questions answered."
+                  ? callSignProblem
+                    ? "All questions answered -- now give your three call sign choices at the bottom."
+                    : "All questions answered."
                   : `Answer all ${totalQuestions} questions to submit.`}
               </p>
             )}
@@ -479,7 +613,7 @@ export default function ExamForm({
             ) : (
               <button
                 type="button"
-                disabled={answeredCount !== totalQuestions}
+                disabled={answeredCount !== totalQuestions || !!callSignProblem}
                 onClick={() => setConfirmingSubmit(true)}
                 className="rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 disabled:opacity-40"
               >

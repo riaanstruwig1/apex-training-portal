@@ -15,6 +15,7 @@ import {
 } from "@/db/schema";
 import { requireStudent, requireInstructor, requireCFI } from "@/lib/auth/dal";
 import { saveUpload, UploadError } from "@/lib/uploads";
+import { checkCallSignChoices, normalizeCallSign, parseCallSignChoices } from "@/lib/call-sign";
 
 async function latestAttempt(studentId: string, examId: string) {
   const [row] = await db
@@ -126,6 +127,25 @@ export type SubmitExamState = { error: string } | undefined;
  * -- whatever's answered gets scored, anything left blank counts as
  * wrong -- but only once the time limit has actually elapsed server-side
  * (never trusts the client's word that time is up). */
+/** Batch 90 (Riaan, 3 Nov 2026): radio exam's last "question" -- the
+ * student's three call sign choices (no marks). Saved as they type, onto the
+ * in-progress attempt; submitExam requires all three for the radio exam. */
+export async function saveCallSignChoices(examId: string, choices: string[]): Promise<SaveAnswerState> {
+  const { user, profile: studentProfile } = await requireStudent();
+  if (isIntroCourse(studentProfile?.courseLevel)) return { error: `${INTRO_LOCK_TEXT}.` };
+  const [exam] = await db.select({ category: exams.category }).from(exams).where(eq(exams.id, examId)).limit(1);
+  if (exam?.category !== "rt") return { error: "Call signs are only asked on the radio exam." };
+  const attempt = await latestAttempt(user.id, examId);
+  if (!attempt || attempt.status !== "in_progress") {
+    return { error: "This exam has already been submitted and can no longer be changed." };
+  }
+  const clean = [0, 1, 2].map((i) => normalizeCallSign(choices[i]).slice(0, 7));
+  await db
+    .update(examAttempts)
+    .set({ callSignChoices: clean.some(Boolean) ? clean.join("|") : null })
+    .where(eq(examAttempts.id, attempt.id));
+}
+
 export async function submitExam(
   examId: string,
   opts?: { auto?: boolean }
@@ -173,6 +193,13 @@ export async function submitExam(
 
   if (!opts?.auto && answerRows.length < questionRows.length) {
     return { error: "Answer every question before submitting." };
+  }
+
+  // Batch 90: the radio exam also needs the three call sign choices (no marks).
+  // A timed-out auto-submit goes through with whatever was entered.
+  if (exam.category === "rt" && !opts?.auto) {
+    const problem = checkCallSignChoices(parseCallSignChoices(attempt.callSignChoices));
+    if (problem) return { error: problem };
   }
 
   const optionIds = answerRows.map((a) => a.selectedOptionId).filter((id): id is string => !!id);

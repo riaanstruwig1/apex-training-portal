@@ -37,6 +37,8 @@ export function SignoffForm(props: {
   surname: string;
   firstNames: string;
   callSign: string;
+  /** Batch 90: the student's three choices from the radio exam. */
+  callSignChoices?: [string, string, string];
   unverifiedCount: number;
   hasSignature: boolean;
   signatureConsent: "yes" | "no" | null;
@@ -77,8 +79,12 @@ export function SignoffForm(props: {
         <label className="text-sm">Radio examiner (CA 62-16 C)<input name="radioExaminerName" defaultValue={props.examinerName} className={input} /></label>
         <label className="text-sm">Examiner licence no.<input name="radioExaminerLicence" defaultValue="RA-RTE013" className={input} /></label>
         {[1, 2, 3].map((n) => (
-          <label key={n} className="text-sm">Call sign choice {n}
-            <input name={`callSign${n}`} defaultValue={n === 1 ? props.callSign : ""} className={input} />
+          <label key={n} className="text-sm">Call sign choice {n}{props.callSignChoices?.[n - 1] ? " (student's choice, radio exam)" : ""}
+            <input
+              name={`callSign${n}`}
+              defaultValue={props.callSignChoices?.[n - 1] || (n === 1 && !props.callSignChoices?.some(Boolean) ? props.callSign : "")}
+              className={input}
+            />
           </label>
         ))}
       </div>
@@ -109,14 +115,30 @@ export function SignoffForm(props: {
   );
 }
 
-export function RegenerateForm({ studentId, trainingType }: { studentId: string; trainingType: string }) {
+export function RegenerateForm({
+  studentId,
+  trainingType,
+  withoutSignature = false,
+}: {
+  studentId: string;
+  trainingType: string;
+  /** Batch 90: rebuild the pack leaving the student's saved signature off. */
+  withoutSignature?: boolean;
+}) {
   const [state, action, pending] = useActionState(regenerateSubmissionPack, undefined);
   return (
-    <form action={action} className="space-y-2">
+    <form
+      action={action}
+      className="space-y-2"
+      onSubmit={(e) => {
+        if (withoutSignature && !confirm("Rebuild the pack WITHOUT the student's signature? The student then signs the forms by hand.")) e.preventDefault();
+      }}
+    >
       <input type="hidden" name="studentId" value={studentId} />
       <input type="hidden" name="trainingType" value={trainingType} />
+      {withoutSignature && <input type="hidden" name="withoutStudentSignature" value="1" />}
       <button disabled={pending} className="rounded-md border border-slate-300 bg-white px-3 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50">
-        {pending ? "Rebuilding..." : "Regenerate pack"}
+        {pending ? "Rebuilding..." : withoutSignature ? "Regenerate without student signature" : "Regenerate pack"}
       </button>
       <Messages state={state} />
     </form>

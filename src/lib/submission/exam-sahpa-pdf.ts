@@ -351,6 +351,28 @@ export async function buildSahpaExamPdf(opts: {
     before: 4,
   });
 
+  // Batch 90: radio exam's call sign choices (no marks) -- same as exam-print.ts.
+  if (exam.category === "rt") {
+    const cs = attempt.callSignChoices ?? ["", "", ""];
+    hr(10);
+    para(
+      [
+        { text: "Call sign of choice", font: f.bold, size: 12 },
+        { text: "  (no marks - to confirm on the CA 62-16 application)", font: f.ital, size: 10 },
+      ],
+      { before: 4, after: 4 }
+    );
+    cs.forEach((c, i) =>
+      para(
+        [
+          { text: `Choice ${i + 1}:`, font: f.reg, size: S },
+          { text: c || "-", font: f.bold, size: S },
+        ],
+        { after: 2 }
+      )
+    );
+  }
+
   // Footer on every page: dark red rule + "Page n" on the right, as in the Word copy.
   const pages = doc.getPages();
   pages.forEach((p, i) => {

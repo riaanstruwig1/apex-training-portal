@@ -10,6 +10,7 @@ import { users, studentProfiles, pilotProfiles } from "@/db/schema";
 import { getCurrentUser, requireAdminOrCFI } from "@/lib/auth/dal";
 import { saveUpload, UploadError } from "@/lib/uploads";
 import { promoteIfLicenceSubmitted } from "@/lib/promote";
+import { drawnSignatureFile } from "@/lib/signature-drawn";
 
 // Fields every role can edit about themselves (Notes3 items 2 & 4 -- pilot
 // and student self-editing). Deliberately excludes name/email/DOB/ID-
@@ -109,7 +110,11 @@ export async function updateOwnProfile(
   // same person's profile, can set or replace someone else's signature.
   // See src/app/api/signature/[userId]/route.ts for the matching
   // owner-only read side.
-  const signatureFile = await tryUpload("signature", formData.get("signatureFile"));
+  // Batch 90: a signature drawn on the signature pad wins over an uploaded image.
+  const drawn = drawnSignatureFile(formData.get("signatureDrawn"));
+  const signatureName = String(formData.get("signatureName") ?? "").trim().slice(0, 120);
+  if (drawn && !signatureName) return { error: "Type your full name below your signature." };
+  const signatureFile = (drawn ? await tryUpload("signature", drawn) : null) ?? (await tryUpload("signature", formData.get("signatureFile")));
 
   // Compulsory Yes/No (Riaan, 14 Oct 2026): the form always carries the question.
   const consentRaw = formData.get("signatureFormsConsent");
@@ -134,7 +139,7 @@ export async function updateOwnProfile(
       allergies: shared.data.allergies || null,
       ...(profilePictureFile ? { profilePictureFile } : {}),
       ...(flightMedicalCertFile ? { flightMedicalCertFile } : {}),
-      ...(signatureFile ? { signatureFile } : {}),
+      ...(signatureFile ? { signatureFile, signatureName: drawn ? signatureName : null } : {}),
       // Standing consent to place the saved signature on the SAHPA/CAA
       // submission forms at sign-off (Riaan, 14 Oct 2026). Only touched when
       // the form actually carried the tick-box.
@@ -500,14 +505,27 @@ export type CaaLicenceState = { error: string; success?: never } | { error?: nev
  * enters their SACAA licence number, uploads the licence and submits. Clears
  * the pending status. */
 export async function submitCaaLicence(_prev: CaaLicenceState, formData: FormData): Promise<CaaLicenceState> {
-  const user = await getCurrentUser();
-  if (!user) return { error: "Your session has expired -- please sign in again." };
+  const me = await getCurrentUser();
+  if (!me) return { error: "Your session has expired -- please sign in again." };
+  // Batch 89 (Riaan, 30 Oct 2026): staff can also add the licence for a
+  // signed-off student from the CFI student page ("studentId" in the form).
+  const forStudent = String(formData.get("studentId") ?? "").trim();
+  const byStaff = !!forStudent && forStudent !== me.id;
+  if (byStaff && me.role !== "cfi" && me.role !== "instructor" && me.role !== "admin") {
+    return { error: "Only a CFI, instructor or admin can add a licence for a student." };
+  }
+  const user = byStaff ? { id: forStudent } : me;
   const sacaa = String(formData.get("sacaaNumber") ?? "").trim();
   if (!sacaa) return { error: "Enter your SACAA licence number." };
   const file = formData.get("caaLicenceFile");
   if (!(file instanceof File) || file.size === 0) return { error: "Choose your CAA licence file (PDF or photo) to upload." };
-  const [pp] = await db.select({ id: pilotProfiles.id }).from(pilotProfiles).where(eq(pilotProfiles.userId, user.id)).limit(1);
-  if (!pp) return { error: "No pilot profile found for your account." };
+  const [pp] = await db
+    .select({ id: pilotProfiles.id, awaiting: pilotProfiles.awaitingCaaLicenceSince })
+    .from(pilotProfiles)
+    .where(eq(pilotProfiles.userId, user.id))
+    .limit(1);
+  if (!pp) return { error: byStaff ? "This student has no pilot profile yet -- sign him off first." : "No pilot profile found for your account." };
+  if (byStaff && !pp.awaiting) return { error: "This student isn't waiting for a SACAA licence." };
   let stored: string | null;
   try {
     stored = await saveUpload(user.id, "caa-licence", file);
@@ -525,9 +543,11 @@ export async function submitCaaLicence(_prev: CaaLicenceState, formData: FormDat
       ...(expiry ? { caaLicenceExpiryDate: new Date(expiry) } : {}),
     })
     .where(eq(pilotProfiles.id, pp.id));
-  await promoteIfLicenceSubmitted(user.id, true);
+  await promoteIfLicenceSubmitted(user.id, !byStaff);
   revalidatePath("/student");
   revalidatePath("/instructor");
+  revalidatePath(`/instructor/students/${user.id}`);
+  revalidatePath("/admin/pilots");
   revalidatePath("/pilot");
   revalidatePath("/pilot/profile");
   return { success: true };

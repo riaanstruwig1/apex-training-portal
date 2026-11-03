@@ -125,8 +125,9 @@ export default function MedicalDeclarationForm({
           </label>
           <input
             id="declaredName"
-            name="declaredName"
-            required
+            // Batch 90 fix: no name/required -- this box sits inside the profile
+            // form, and "required" stopped "Save changes" for anyone who hadn't
+            // signed the declaration yet. The Sign button sends it on its own.
             value={declaredName}
             onChange={(e) => setDeclaredName(e.target.value)}
             className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm"

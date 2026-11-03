@@ -6,6 +6,7 @@ import { requireStudent } from "@/lib/auth/dal";
 import { getExamDetail, getAttemptHistory, visibleExamCategories, type ExamCategory } from "@/lib/exams";
 import { ensureAttempt } from "@/lib/actions/exams";
 import ExamForm from "./exam-form";
+import { defaultCallSignPrefix } from "@/lib/call-sign";
 import StartExamGate from "./start-exam-gate";
 import { INTRO_LOCK_TEXT, isIntroCourse } from "@/lib/intro-course";
 
@@ -158,6 +159,7 @@ export default async function StudentExamPage(
         exam={finalDetail.exam}
         attempt={finalDetail.attempt}
         history={history}
+        defaultCallSignPrefix={defaultCallSignPrefix(studentProfile?.trainingType)}
       />
     </div>
   );

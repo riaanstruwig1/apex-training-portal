@@ -11,6 +11,7 @@ import { gatherPackData, SignoffInput } from "@/lib/submission/gather-pack-data"
 import { buildSubmissionPack } from "@/lib/submission/pack";
 import { sendWhatsAppText } from "@/lib/whatsapp";
 import { HUB_URL, normalizePhone } from "@/lib/invite-message";
+import { getRadioCallSignChoices } from "@/lib/exams";
 import { Grade, SignoffTrainingType, SkillGrades, TRAINING_LABEL } from "@/lib/submission/types";
 
 export type SignoffState = { error?: string; success?: string; warnings?: string[] } | undefined;
@@ -102,6 +103,8 @@ export async function signOffStudent(_prev: SignoffState, formData: FormData): P
 
   const input = parseInput(formData, staff.id, trainingType);
   if (typeof input === "string") return { error: input };
+  // Batch 90: call signs left blank -> the student's own choices from the radio exam.
+  if (!input.callSignChoices.some(Boolean)) input.callSignChoices = await getRadioCallSignChoices(studentId);
 
   let packFile: string;
   let data;
@@ -175,8 +178,11 @@ export async function regenerateSubmissionPack(_prev: SignoffState, formData: Fo
   const [so] = await db.select().from(studentSignoffs).where(and(eq(studentSignoffs.studentUserId, studentId), eq(studentSignoffs.trainingType, trainingType))).limit(1);
   if (!so) return { error: "No sign-off found." };
   if (staff.role !== "cfi" && so.signedOffByUserId !== staff.id) return { error: "Only the signing instructor or the CFI can regenerate the pack." };
+  // Batch 90 (Riaan, 3 Nov 2026): "Regenerate without student signature".
+  const withoutStudentSignature = str(formData, "withoutStudentSignature") === "1";
   try {
     const data = await gatherPackData(studentId, {
+      omitStudentSignature: withoutStudentSignature,
       trainingType,
       signedOffAt: so.signedOffAt,
       instructorUserId: so.signedOffByUserId,
@@ -186,7 +192,9 @@ export async function regenerateSubmissionPack(_prev: SignoffState, formData: Fo
       remedialAction: so.remedialAction ?? "",
       radioExaminerName: so.radioExaminerName ?? "",
       radioExaminerLicence: so.radioExaminerLicence ?? "",
-      callSignChoices: (so.callSignChoices ?? "||").split("|").slice(0, 3) as [string, string, string],
+      callSignChoices: (so.callSignChoices ?? "").replace(/\|/g, "").trim()
+        ? ((so.callSignChoices ?? "||").split("|").slice(0, 3) as [string, string, string])
+        : await getRadioCallSignChoices(studentId),
     });
     const built = await buildSubmissionPack(data);
     const packFile = await storePack(studentId, built.zip);
@@ -198,7 +206,12 @@ export async function regenerateSubmissionPack(_prev: SignoffState, formData: Fo
       medicalSignatureApplied: !!data.studentSignature && data.medicalSignatureAllowed,
     }).where(eq(studentSignoffs.id, so.id));
     revalidatePath(`/instructor/students/${studentId}`);
-    return { success: "Pack regenerated.", warnings: built.warnings };
+    return {
+      success: withoutStudentSignature
+        ? "Pack regenerated without the student's signature - he signs the forms by hand."
+        : "Pack regenerated.",
+      warnings: built.warnings,
+    };
   } catch (e) {
     return { error: `Could not rebuild the pack: ${(e as Error).message}` };
   }

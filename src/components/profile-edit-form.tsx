@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import Avatar from "@/components/avatar";
+import SignaturePad from "@/components/signature-pad";
 import PasswordInput from "@/components/password-input";
 import MedicalDeclarationForm from "@/components/medical-declaration-form";
 import {
@@ -280,7 +281,7 @@ export default function ProfileEditForm({
         <div className="border-t border-slate-100 pt-4">
           <h3 className="text-sm font-semibold text-slate-900">Saved signature</h3>
           <p className="mt-1 text-xs text-slate-500">
-            Upload an image of your signature once, and it&rsquo;s offered back to you automatically
+            Sign once on the pad below (or upload an image), and it&rsquo;s offered back to you automatically
             next time you need to sign a form under your own login -- no need to re-upload it every
             time. No one else, including CFIs and Admin, can view or download it, or sign on your
             behalf. The only exception is the box below: if you tick it, your signature is placed
@@ -302,7 +303,7 @@ export default function ProfileEditForm({
               </label>
             </div>
           </fieldset>
-          <div className="mt-2 flex items-center gap-4">
+          <div className="mt-2 flex items-start gap-4">
             {signatureFile && (
               <img
                 src={`/api/signature?v=${encodeURIComponent(signatureFile)}`}
@@ -311,8 +312,12 @@ export default function ProfileEditForm({
               />
             )}
             <div className="flex-1">
-              <label htmlFor="signatureFile" className={labelClass}>
-                {signatureFile ? "Replace signature" : "Upload signature"}
+              <p className="mb-2 text-xs font-medium text-slate-700">
+                {signatureFile ? "Replace your signature - sign below:" : "Sign below:"}
+              </p>
+              <SignaturePad defaultName={name} />
+              <label htmlFor="signatureFile" className={`${labelClass} mt-3`}>
+                or upload an image of your signature instead (PNG / JPG, signature on white paper)
               </label>
               <input
                 id="signatureFile"

@@ -155,6 +155,8 @@ export const users = sqliteTable("users", {
   // Kept out of every admin/CFI profile view and editor for the same
   // reason. Vault-like guarantee, not just "hidden in the UI."
   signatureFile: text("signature_file"),
+  // Batch 90 (3 Nov 2026): name typed under a signature drawn on the signature pad.
+  signatureName: text("signature_name"),
   // 14 Oct 2026 (student sign-off + SAHPA/CAA form pack, batch 61): the
   // vault promise above is kept -- nobody can view, download or apply this
   // signature on someone else's behalf. The ONE way it reaches a form is the
@@ -740,6 +742,10 @@ export const examAttempts = sqliteTable("exam_attempts", {
   resultOverrideNote: text("result_override_note"),
   resultOverrideByUserId: text("result_override_by_user_id").references(() => users.id),
   resultOverrideAt: integer("result_override_at", { mode: "timestamp" }),
+  // Batch 90 (Riaan, 3 Nov 2026): radio exam only -- the student's three
+  // call sign choices (no marks), "PPG-ABC|PPT-XYZ|PPG-QRS". Printed on the
+  // exam copy and pre-filled into CA 62-16 section C at sign-off.
+  callSignChoices: text("call_sign_choices"),
 });
 
 // ---------------------------------------------------------------------------
