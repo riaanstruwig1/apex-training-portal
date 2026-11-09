@@ -11,7 +11,9 @@ export type PaymentOption = {
   note?: string;
 };
 
-export const PHASE2_PRICE = 13900;
+// Batch 94 (Riaan, 9 Nov 2026): Phase 2 on school equipment is R21,900
+// (his sample quote QT-000032), so the full course is R27,900.
+export const PHASE2_PRICE = 21900;
 
 export const PAYMENT_OPTIONS: PaymentOption[] = [
   {
@@ -27,10 +29,10 @@ export const PAYMENT_OPTIONS: PaymentOption[] = [
   },
   {
     key: "ppg_full",
-    label: "Powered Paragliding (PPG) - Phase 1 and 2, full course (discount applies)",
+    label: "Powered Paragliding (PPG) - Full course on school equipment, Phase 1 and 2 (discount applies)",
     lines: [
       { label: "Phase 1", amount: 9900 },
-      { label: "Phase 2", amount: PHASE2_PRICE },
+      { label: "Phase 2 (school equipment)", amount: PHASE2_PRICE },
       { label: "Full course once-off payment discount", amount: -3900 },
     ],
   },
@@ -68,3 +70,47 @@ export function paymentSummary(key: string | null | undefined): string {
   const t = paymentTotal(o);
   return t === null ? o.label : `${o.label} - ${rand(t)}`;
 }
+
+/** Batch 94: the wording from Apex's sample quote, shown in the (i) info
+ * pop-ups on the sign-up payment options. */
+export const QUOTE_INFO = {
+  phase1: {
+    title: "Phase 1 - Paramotor and Paragliding Intro training (R9,900)",
+    points: [
+      "Phase one: all ground training, including 10 winch flights",
+      "GFC membership (6 months)",
+      "Access to all theory classes and material, intro to engine training and sim training",
+    ],
+    notes: [
+      "You need Phase 2 to complete the full course for the NPL licence.",
+      "Excludes the SAHPA sign-up fee of R440 (done via the SAHPA sign-up portal).",
+    ],
+  },
+  phase2: {
+    title: "Phase 2 - Engine training on school equipment (R21,900, after Phase 1)",
+    points: [
+      "Ground engine training and flight training - minimum 35 flights",
+      "Three theory classes, three exams and three exam corrections included",
+      "All Phase 2 training on school equipment (any breakage or damage for your account)",
+      "Must be a valid SAHPA and GFC member",
+    ],
+    notes: [
+      "Phase 1 is required before Phase 2 engine training.",
+      "Excludes the final SACAA licence fees, est. R2,000 on completion.",
+      "Yearly renewal applies for the first year, thereafter every two years.",
+    ],
+  },
+  discount: {
+    title: "Full upfront payment discount (-R3,900)",
+    points: [
+      "Only applies if Phase 1 and Phase 2 are paid in full upfront - you save around 13%.",
+      "If you pay Phase 1 first and Phase 2 later, the discount falls away.",
+    ],
+    notes: [],
+  },
+  general: [
+    "Additional 10% discount for family members signing up with you.",
+    "To ensure availability and booking, full payment (POP) must be sent before training.",
+    "T&C as per www.apexadventures.co.za",
+  ],
+};

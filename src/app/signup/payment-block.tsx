@@ -4,11 +4,63 @@ import { useState } from "react";
 import {
   BANK_DETAILS,
   PAYMENT_OPTIONS,
+  QUOTE_INFO,
   paymentOption,
   paymentTotal,
   rand,
   type PaymentOptionKey,
 } from "@/lib/payment-options";
+
+type InfoBlock = { title: string; points: string[]; notes: string[] };
+
+/** Batch 94 (Riaan, 9 Nov 2026): (i) button with the wording from Apex's
+ * sample quote -- opens on hover, or on tap/click (phones). */
+function InfoTip({ label, blocks }: { label: string; blocks: InfoBlock[] }) {
+  // Hover shows it; a click/tap pins it open (and a second click unpins).
+  const [hover, setHover] = useState(false);
+  const [pinned, setPinned] = useState(false);
+  const open = hover || pinned;
+  return (
+    <span className="inline-block align-middle" onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
+      <button
+        type="button"
+        aria-label={label}
+        aria-expanded={open}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setPinned((v) => !v);
+        }}
+        className="ml-1 inline-flex h-5 w-5 items-center justify-center rounded-full border border-green-600 bg-white text-xs font-bold italic text-green-700 hover:bg-green-600 hover:text-white"
+      >
+        i
+      </button>
+      {open && (
+        <span
+          role="tooltip"
+          className="absolute inset-x-2 top-10 z-20 block rounded-lg border border-green-300 bg-white p-3 text-left text-xs font-normal leading-relaxed text-slate-700 shadow-lg"
+        >
+          {blocks.map((b) => (
+            <span key={b.title} className="mb-2 block last:mb-0">
+              <span className="block font-semibold text-green-900">{b.title}</span>
+              {b.points.map((pt) => (
+                <span key={pt} className="block pl-3 -indent-3">&bull; {pt}</span>
+              ))}
+              {b.notes.map((n) => (
+                <span key={n} className="block italic text-slate-600">{n}</span>
+              ))}
+            </span>
+          ))}
+          <span className="block border-t border-slate-100 pt-1 text-slate-500">
+            {QUOTE_INFO.general.map((g) => (
+              <span key={g} className="block">{g}</span>
+            ))}
+          </span>
+        </span>
+      )}
+    </span>
+  );
+}
 
 /** Batch 92 (Riaan, 9 Nov 2026): green "Payment options" block just before
  * the student submits -- choose an option (invoice shown), who the invoice
@@ -45,7 +97,7 @@ export default function PaymentBlock({
   const full = PAYMENT_OPTIONS[2];
   const other = PAYMENT_OPTIONS[3];
   const box = (on: boolean) =>
-    `flex items-start gap-2 rounded-md border p-3 ${on ? "border-green-500 bg-white ring-1 ring-green-500" : "border-green-200 bg-white"}`;
+    `relative flex items-start gap-2 rounded-md border p-3 ${on ? "border-green-500 bg-white ring-1 ring-green-500" : "border-green-200 bg-white"}`;
 
   return (
     <div className="space-y-4 rounded-lg border-2 border-green-400 bg-green-50 p-4 text-sm text-slate-800">
@@ -58,6 +110,7 @@ export default function PaymentBlock({
         <input type="radio" name="paymentMain" value="1" checked={main === "1"} onChange={() => setPickedMain("1")} className="mt-1" />
         <span className="flex-1">
           <span className="font-semibold">1. {intro.label}</span>
+          <InfoTip label="What Phase 1 includes" blocks={[QUOTE_INFO.phase1]} />
           <span className="float-right font-semibold">{rand(paymentTotal(intro)!)}</span>
         </span>
       </label>
@@ -75,8 +128,12 @@ export default function PaymentBlock({
         />
         <div className="flex-1">
           <label htmlFor="paymentMain2" className="cursor-pointer font-semibold">
-            2. Powered Paragliding (PPG)
+            2. Powered Paragliding (PPG) - Full course on school equipment
           </label>
+          <InfoTip
+            label="What the PPG full course includes"
+            blocks={[QUOTE_INFO.phase1, QUOTE_INFO.phase2, QUOTE_INFO.discount]}
+          />
           <div className={`mt-2 space-y-2 ${main === "2" ? "" : "opacity-50"}`}>
             <label className="flex cursor-pointer items-start gap-2">
               <input
@@ -111,7 +168,7 @@ export default function PaymentBlock({
                 className="mt-1"
               />
               <span className="flex-1">
-                <span className="font-medium">b. PPG Phase 1 and 2 - full course (discount applies)</span>
+                <span className="font-medium">b. PPG Phase 1 and 2 - full course on school equipment (discount applies)</span>
                 <span className="mt-1 block text-xs text-slate-600">
                   {full.lines.map((l) => (
                     <span key={l.label} className="flex justify-between">
