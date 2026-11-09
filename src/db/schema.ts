@@ -227,6 +227,13 @@ export const studentProfiles = sqliteTable("student_profiles", {
   popFile: text("pop_file"),
   popUploadedAt: integer("pop_uploaded_at", { mode: "timestamp" }),
   invoiceRequestedAt: integer("invoice_requested_at", { mode: "timestamp" }),
+  // Batch 92 (Riaan, 9 Nov 2026): payment option chosen at sign-up (see
+  // lib/payment-options.ts) and who the invoice goes to.
+  paymentOption: text("payment_option"),
+  invoiceTo: text("invoice_to"), // "self" | "company"
+  invoiceCompanyName: text("invoice_company_name"),
+  invoiceCompanyVat: text("invoice_company_vat"),
+  invoiceCompanyAddress: text("invoice_company_address"),
   // 19 Oct 2026 (Riaan): "PG/PPG Intro training" -- a student who signs up
   // for Phase 1 only. "intro": Phase 1 folio + logbook only; Phase 2 and
   // theory sections, study notes and exams are shown but locked, until the
@@ -590,6 +597,9 @@ export const siteSettings = sqliteTable("site_settings", {
   birthdayGroupEnabled: integer("birthday_group_enabled", { mode: "boolean" }).notNull().default(false),
   birthdayGroupTemplates: text("birthday_group_templates"),
   birthdayGroupSent: text("birthday_group_sent"),
+  // Batch 92: WhatsApp to the accounts person (Henna) when a CFI/Admin
+  // verifies a new student -- "load him on both accounting systems" + details.
+  accountsWhatsappTo: text("accounts_whatsapp_to").default("0725614474"),
   updatedAt: integer("updated_at", { mode: "timestamp" })
     .notNull()
     .default(sql`(unixepoch())`),

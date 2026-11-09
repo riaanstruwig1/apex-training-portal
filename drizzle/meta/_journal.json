@@ -393,6 +393,13 @@
       "when": 1793689223268,
       "tag": "0055_radio_call_signs_signature_pad",
       "breakpoints": true
+    },
+    {
+      "idx": 56,
+      "version": "6",
+      "when": 1794211765439,
+      "tag": "0056_signup_payment",
+      "breakpoints": true
     }
   ]
 }

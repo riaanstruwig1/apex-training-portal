@@ -12,6 +12,7 @@ import { saveUpload, UploadError } from "@/lib/uploads";
 import { ENDORSEMENT_OPTIONS } from "@/lib/pilot-endorsements";
 import { formatTrainingTypes } from "@/lib/training-types";
 import { INTRO_TRAINING_TYPES } from "@/lib/intro-course";
+import { paymentOption } from "@/lib/payment-options";
 
 const SignupSchema = z
   .object({
@@ -143,6 +144,19 @@ export async function submitSignup(
   ) {
     return { error: "Upload a copy of your current CAA licence." };
   }
+  // Batch 92 (Riaan, 9 Nov 2026): students choose a payment option and upload
+  // the proof of payment before they can submit.
+  const popFileInput = formData.get("popFile");
+  const payOpt = paymentOption(String(formData.get("paymentOption") ?? ""));
+  const invoiceTo = formData.get("invoiceTo") === "company" ? "company" : "self";
+  const companyName = String(formData.get("invoiceCompanyName") ?? "").trim();
+  if (data.accountType === "student") {
+    if (!payOpt) return { error: "Choose a payment option." };
+    if (invoiceTo === "company" && !companyName) return { error: "Enter the company name for the invoice." };
+    if (!(popFileInput instanceof File) || popFileInput.size === 0) {
+      return { error: "Upload your proof of payment." };
+    }
+  }
   const validEndorsementKeys = new Set(ENDORSEMENT_OPTIONS.map((o) => o.key));
   const endorsements = (data.endorsements ?? []).filter((k) => validEndorsementKeys.has(k));
 
@@ -220,6 +234,15 @@ export async function submitSignup(
         sahpaNumber: data.sahpaNumber || null,
         sahpaExpiryDate: data.sahpaExpiryDate ? new Date(data.sahpaExpiryDate) : null,
         status: "active", // gating is via users.accountStatus, not this
+        // Batch 92: payment option, invoice details and proof of payment.
+        paymentOption: payOpt?.key ?? null,
+        invoiceTo,
+        invoiceCompanyName: invoiceTo === "company" ? companyName : null,
+        invoiceCompanyVat: invoiceTo === "company" ? String(formData.get("invoiceCompanyVat") ?? "").trim() || null : null,
+        invoiceCompanyAddress:
+          invoiceTo === "company" ? String(formData.get("invoiceCompanyAddress") ?? "").trim() || null : null,
+        popFile: await saveUpload(user.id, "pop", popFileInput as File),
+        popUploadedAt: new Date(),
       });
     } else {
       const caaLicenceFile = await saveUpload(user.id, "caa-licence", caaLicenceFileInput as File);

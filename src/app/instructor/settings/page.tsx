@@ -4,12 +4,17 @@ import RadioScriptForm from "./radio-script-form";
 import NoticeForm from "./notice-form";
 import BirthdayForm from "./birthday-form";
 import GroupWishForm from "./group-wish-form";
+import AccountsForm from "./accounts-form";
+import { db } from "@/db";
+import { siteSettings } from "@/db/schema";
 import { fmtMinute, getBirthdaySettings, getTodaysGroupWishPlan, getUpcomingBirthdays } from "@/lib/birthdays";
 import { isWhatsAppConfigured } from "@/lib/whatsapp";
 
 export default async function InstructorSettingsPage() {
   await requireCFI();
 
+  const [accRow] = await db.select({ to: siteSettings.accountsWhatsappTo }).from(siteSettings).limit(1);
+  const accountsTo = accRow ? (accRow.to ?? "") : "072 561 4474";
   const [radioCallScript, studentNotice, birthday, upcoming, wishPlan] = await Promise.all([
     getRadioCallScript(),
     getStudentNotice(),
@@ -36,6 +41,16 @@ export default async function InstructorSettingsPage() {
           message and, optionally, a renameable button linking to a document or a web address.
         </p>
         <NoticeForm initial={studentNotice} />
+      </section>
+
+      <section className="rounded-xl border border-slate-200 bg-white p-4">
+        <h2 className="mb-1 text-sm font-semibold text-slate-900">New student - accounts WhatsApp</h2>
+        <p className="mb-3 text-sm text-slate-500">
+          When you verify a new student, this number gets a WhatsApp: &ldquo;New student signed up - please load him on
+          both accounting systems&rdquo;, with his details, payment option, invoice lines, company details (if any) and
+          his proof of payment.
+        </p>
+        <AccountsForm initialTo={accountsTo} />
       </section>
 
       <section className="rounded-xl border border-slate-200 bg-white p-4">

@@ -2,6 +2,7 @@
 
 import { useActionState, useState } from "react";
 import SahpaSignupNote from "@/components/sahpa-signup-note";
+import PaymentBlock from "./payment-block";
 import { submitSignup, type SignupState } from "@/lib/actions/signup";
 import { ENDORSEMENT_OPTIONS } from "@/lib/pilot-endorsements";
 import PasswordInput from "@/components/password-input";
@@ -552,6 +553,10 @@ export default function SignupForm() {
           <input id="indemnityName" name="indemnityName" value={values.indemnityName} onChange={set("indemnityName")} required className={inputClass} />
         </Field>
       </div>
+
+      {accountType === "student" && (
+        <PaymentBlock introCourse={introCourse} fullName={`${values.firstName} ${values.surname}`} />
+      )}
 
       <div className="rounded-md border border-slate-200 bg-slate-50 p-3 text-xs text-slate-600">
         By submitting this application, you confirm the details above are accurate. Apex

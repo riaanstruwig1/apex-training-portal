@@ -28,6 +28,14 @@ const APPROVAL_BANNERS: Record<string, { text: string; className: string }> = {
   },
 };
 
+/** Batch 92: the "load him on both accounting systems" WhatsApp to Henna. */
+const ACCOUNTS_BANNERS: Record<string, string> = {
+  sent: "Accounts WhatsApp sent (student details, invoice and proof of payment) -- see Instructor -> Settings for the number.",
+  failed: "The accounts WhatsApp (student details for the invoice) didn't go through -- send the details yourself.",
+  no_number: "No accounts WhatsApp number is set (Instructor -> Settings), so the invoice details were not sent.",
+  not_configured: "WhatsApp isn't connected, so the accounts message with the invoice details was not sent.",
+};
+
 export default async function AdminVerificationQueue({
   searchParams,
 }: {
@@ -49,6 +57,9 @@ export default async function AdminVerificationQueue({
       {banner && (
         <div className={`mb-4 rounded-md px-3 py-2 text-sm font-medium ${banner.className}`}>
           {banner.text}
+          {typeof sp.acc === "string" && ACCOUNTS_BANNERS[sp.acc] && (
+            <span className="mt-1 block">{ACCOUNTS_BANNERS[sp.acc]}</span>
+          )}
         </div>
       )}
       <div className="mb-6">

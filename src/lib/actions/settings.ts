@@ -129,3 +129,21 @@ export async function updateStudentNotice(
 
   return { saved: true };
 }
+
+/** Batch 92: number(s) that get the "new student - load him on both
+ * accounting systems" WhatsApp when a student is verified. Comma-separated;
+ * empty = off. */
+export async function updateAccountsWhatsapp(_prev: SettingsState, formData: FormData): Promise<SettingsState> {
+  await requireCFI();
+  const raw = String(formData.get("accountsTo") ?? "").trim();
+  const { normalizePhone } = await import("@/lib/invite-message");
+  const parts = raw ? raw.split(/[,;]/).map((p) => p.trim()).filter(Boolean) : [];
+  const bad = parts.find((p) => !normalizePhone(p));
+  if (bad) return { error: `"${bad}" isn't a valid cell number.` };
+  await db
+    .insert(siteSettings)
+    .values({ id: "singleton", accountsWhatsappTo: parts.join(", ") })
+    .onConflictDoUpdate({ target: siteSettings.id, set: { accountsWhatsappTo: parts.join(", "), updatedAt: new Date() } });
+  revalidatePath("/instructor/settings");
+  return { saved: true };
+}

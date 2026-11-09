@@ -4,6 +4,7 @@ import { users } from "@/db/schema";
 import { requireStudent } from "@/lib/auth/dal";
 import ProfileEditForm from "@/components/profile-edit-form";
 import PopPaymentPanel from "@/components/pop-payment-panel";
+import PaymentSummaryCard from "@/components/payment-summary-card";
 
 export default async function StudentProfilePage() {
   const { user, profile } = await requireStudent();
@@ -20,6 +21,7 @@ export default async function StudentProfilePage() {
           of those.
         </p>
       </div>
+      <PaymentSummaryCard userId={user.id} profile={profile} showUploadHint />
       <ProfileEditForm
         role="student"
         userId={user.id}

@@ -71,7 +71,9 @@ export default function ApplicantReviewActions({
             onClick={() =>
               startTransition(async () => {
                 const result = await approveApplicant(userId, Array.from(checked));
-                router.push(`/admin?approved=1${result ? `&wa=${result.whatsapp}` : ""}`);
+                router.push(
+                  `/admin?approved=1${result ? `&wa=${result.whatsapp}` : ""}${result?.accounts ? `&acc=${result.accounts}` : ""}`
+                );
               })
             }
             className="rounded-md bg-green-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-green-700 disabled:opacity-60"

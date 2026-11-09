@@ -12,6 +12,7 @@ import { getBaseUrl } from "@/lib/base-url";
 import { formatTrainingTypes } from "@/lib/exams";
 import { sendWhatsAppText } from "@/lib/whatsapp";
 import { APPROVAL_TEMPLATES, fillInviteTemplate, normalizePhone } from "@/lib/invite-message";
+import { sendAccountsNotice, type AccountsNoticeResult } from "@/lib/accounts-notice";
 
 /** Outcome of the "you're approved, you can log in" WhatsApp sent on
  * approval (30 Sep 2026) -- surfaced as a banner on the verification queue. */
@@ -27,7 +28,7 @@ export type ApprovalWhatsApp = "sent" | "failed" | "no_phone" | "not_configured"
 export async function approveApplicant(
   userId: string,
   verifiedEndorsementKeys: string[] = []
-): Promise<{ whatsapp: ApprovalWhatsApp } | undefined> {
+): Promise<{ whatsapp: ApprovalWhatsApp; accounts?: AccountsNoticeResult } | undefined> {
   const reviewer = await requireAdminOrCFI();
 
   const [applicant] = await db.select().from(users).where(eq(users.id, userId)).limit(1);
@@ -72,6 +73,17 @@ export async function approveApplicant(
 
   revalidatePath("/admin");
 
+  // Batch 92 (Riaan, 9 Nov 2026): a verified student -> WhatsApp the accounts
+  // person (Henna) to load him on both accounting systems, with his invoice
+  // details and the proof of payment. Best-effort, like the message below.
+  const accounts =
+    applicant.role === "student"
+      ? await sendAccountsNotice(userId, reviewer.name).catch((e) => {
+          console.error("[accounts WhatsApp]", e);
+          return "failed" as const;
+        })
+      : undefined;
+
   // Tell them by WhatsApp that they can now log in (Riaan, 30 Sep 2026 --
   // the student invite message promises it). Best-effort: the approval
   // above has already happened; a failed send only shows in the banner.
@@ -84,16 +96,16 @@ export async function approveApplicant(
       .limit(1);
     phone = normalizePhone(sp?.phone);
   }
-  if (!phone) return { whatsapp: "no_phone" };
+  if (!phone) return { whatsapp: "no_phone", accounts };
   const audience = applicant.role === "student" ? "student" : "pilot";
   const result = await sendWhatsAppText(
     phone,
     fillInviteTemplate(applicant.name, APPROVAL_TEMPLATES[audience])
   );
-  if (result.ok) return { whatsapp: "sent" };
-  if (result.error.startsWith("WhatsApp isn't set up")) return { whatsapp: "not_configured" };
+  if (result.ok) return { whatsapp: "sent", accounts };
+  if (result.error.startsWith("WhatsApp isn't set up")) return { whatsapp: "not_configured", accounts };
   console.error("[approval WhatsApp]", result.error);
-  return { whatsapp: "failed" };
+  return { whatsapp: "failed", accounts };
 }
 
 export async function rejectApplicant(userId: string, reason: string) {

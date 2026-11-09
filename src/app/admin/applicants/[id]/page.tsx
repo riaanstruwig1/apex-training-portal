@@ -1,3 +1,4 @@
+import PaymentSummaryCard from "@/components/payment-summary-card";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getApplicantDetail } from "@/lib/verification";
@@ -159,6 +160,8 @@ export default async function ApplicantReviewPage({
           Print profile
         </Link>
       </div>
+
+      {applicant.role === "student" && <PaymentSummaryCard userId={applicant.id} profile={student?.profile} />}
 
       {applicant.role === "student" && !student?.profile.sahpaNumber?.trim() && (
         <div className="rounded-md border-2 border-red-500 bg-red-50 px-4 py-3 text-sm font-bold text-red-700">
