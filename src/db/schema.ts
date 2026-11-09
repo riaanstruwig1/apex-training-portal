@@ -234,6 +234,9 @@ export const studentProfiles = sqliteTable("student_profiles", {
   invoiceCompanyName: text("invoice_company_name"),
   invoiceCompanyVat: text("invoice_company_vat"),
   invoiceCompanyAddress: text("invoice_company_address"),
+  // Batch 95 (Riaan, 9 Nov 2026): ticked "I'd like to discuss payment first -
+  // please contact me" at sign-up, so he could submit without a POP.
+  paymentDiscussFirst: integer("payment_discuss_first", { mode: "boolean" }).notNull().default(false),
   // 19 Oct 2026 (Riaan): "PG/PPG Intro training" -- a student who signs up
   // for Phase 1 only. "intro": Phase 1 folio + logbook only; Phase 2 and
   // theory sections, study notes and exams are shown but locked, until the

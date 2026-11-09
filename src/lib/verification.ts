@@ -15,6 +15,10 @@ export type PendingApplicant = {
   sahpaMissing: boolean;
   /** 19 Oct 2026: signed up for PG/PPG Intro training (Phase 1 only). */
   introCourse: boolean;
+  /** Batch 95: student signed up without a proof of payment. */
+  popMissing: boolean;
+  /** Batch 95: ticked "discuss payment first - please contact me". */
+  paymentDiscuss: boolean;
 };
 
 export async function getPendingApplicants(): Promise<PendingApplicant[]> {
@@ -31,12 +35,22 @@ export async function getPendingApplicants(): Promise<PendingApplicant[]> {
     .from(users)
     .where(eq(users.accountStatus, "pending_verification"));
 
-  const sp = await db.select({ userId: studentProfiles.userId, sahpaNumber: studentProfiles.sahpaNumber, courseLevel: studentProfiles.courseLevel }).from(studentProfiles);
+  const sp = await db
+    .select({
+      userId: studentProfiles.userId,
+      sahpaNumber: studentProfiles.sahpaNumber,
+      courseLevel: studentProfiles.courseLevel,
+      popFile: studentProfiles.popFile,
+      discuss: studentProfiles.paymentDiscussFirst,
+    })
+    .from(studentProfiles);
+  const noPop = new Set(sp.filter((p) => !p.popFile).map((p) => p.userId));
+  const discussIds = new Set(sp.filter((p) => p.discuss).map((p) => p.userId));
   const sahpaOf = new Map(sp.map((p) => [p.userId, (p.sahpaNumber ?? "").trim()]));
   const introIds = new Set(sp.filter((p) => p.courseLevel === "intro").map((p) => p.userId));
   return rows
     .filter((r) => r.role === "student" || r.role === "pilot")
-    .map((r) => ({ ...r, role: r.role as "student" | "pilot", sahpaMissing: r.role === "student" && !sahpaOf.get(r.id), introCourse: r.role === "student" && introIds.has(r.id) }))
+    .map((r) => ({ ...r, role: r.role as "student" | "pilot", sahpaMissing: r.role === "student" && !sahpaOf.get(r.id), introCourse: r.role === "student" && introIds.has(r.id), popMissing: r.role === "student" && noPop.has(r.id), paymentDiscuss: r.role === "student" && discussIds.has(r.id) }))
     .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
 }
 

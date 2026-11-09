@@ -150,11 +150,13 @@ export async function submitSignup(
   const payOpt = paymentOption(String(formData.get("paymentOption") ?? ""));
   const invoiceTo = formData.get("invoiceTo") === "company" ? "company" : "self";
   const companyName = String(formData.get("invoiceCompanyName") ?? "").trim();
+  // Batch 95: he may submit without a POP if he wants to discuss payment first.
+  const discussFirst = formData.get("paymentDiscussFirst") === "1";
   if (data.accountType === "student") {
     if (!payOpt) return { error: "Choose a payment option." };
     if (invoiceTo === "company" && !companyName) return { error: "Enter the company name for the invoice." };
-    if (!(popFileInput instanceof File) || popFileInput.size === 0) {
-      return { error: "Upload your proof of payment." };
+    if (!discussFirst && (!(popFileInput instanceof File) || popFileInput.size === 0)) {
+      return { error: "Upload your proof of payment, or tick \"I'd like to discuss payment first - please contact me\"." };
     }
   }
   const validEndorsementKeys = new Set(ENDORSEMENT_OPTIONS.map((o) => o.key));
@@ -241,8 +243,10 @@ export async function submitSignup(
         invoiceCompanyVat: invoiceTo === "company" ? String(formData.get("invoiceCompanyVat") ?? "").trim() || null : null,
         invoiceCompanyAddress:
           invoiceTo === "company" ? String(formData.get("invoiceCompanyAddress") ?? "").trim() || null : null,
-        popFile: await saveUpload(user.id, "pop", popFileInput as File),
-        popUploadedAt: new Date(),
+        paymentDiscussFirst: discussFirst,
+        ...(popFileInput instanceof File && popFileInput.size > 0
+          ? { popFile: await saveUpload(user.id, "pop", popFileInput), popUploadedAt: new Date() }
+          : {}),
       });
     } else {
       const caaLicenceFile = await saveUpload(user.id, "caa-licence", caaLicenceFileInput as File);

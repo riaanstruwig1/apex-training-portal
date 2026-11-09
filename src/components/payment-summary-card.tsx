@@ -17,6 +17,7 @@ export default function PaymentSummaryCard({
     invoiceCompanyAddress: string | null;
     popFile: string | null;
     popUploadedAt: Date | null;
+    paymentDiscussFirst?: boolean;
   } | null | undefined;
   showUploadHint?: boolean;
 }) {
@@ -70,7 +71,14 @@ export default function PaymentSummaryCard({
               )}
             </>
           ) : (
-            <p className="mt-1 text-xs font-semibold text-red-700">Not uploaded yet</p>
+            <p className="mt-1 text-xs font-semibold text-red-700">
+              Not uploaded yet
+              {profile.paymentDiscussFirst && (
+                <span className="mt-1 block rounded bg-amber-100 px-2 py-1 font-semibold text-amber-900">
+                  Wants to discuss payment first - please contact
+                </span>
+              )}
+            </p>
           )}
           {showUploadHint && <p className="mt-1 text-xs text-slate-500">Upload a new one at the bottom of this page.</p>}
         </div>

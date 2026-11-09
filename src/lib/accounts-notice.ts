@@ -64,7 +64,10 @@ export async function buildAccountsMessage(studentId: string, verifiedBy: string
   } else {
     L.push("*Invoice to:* the student personally");
   }
-  L.push(`*Proof of payment:* ${sp?.popFile ? `uploaded ${d(sp.popUploadedAt)} (file follows)` : "not uploaded"}`);
+  L.push(`*Proof of payment:* ${sp?.popFile ? `uploaded ${d(sp.popUploadedAt)} (file follows)` : "*NOT received*"}`);
+  if (!sp?.popFile && sp?.paymentDiscussFirst) {
+    L.push("*The student wants to discuss payment first - please contact him/her.*");
+  }
   L.push("");
   L.push(`Profile: ${HUB_URL}/admin/applicants/${u.id}`);
   L.push("- Apex Flight Hub");

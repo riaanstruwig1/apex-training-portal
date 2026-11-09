@@ -400,6 +400,13 @@
       "when": 1794211765439,
       "tag": "0056_signup_payment",
       "breakpoints": true
+    },
+    {
+      "idx": 57,
+      "version": "6",
+      "when": 1794234410038,
+      "tag": "0057_payment_discuss_first",
+      "breakpoints": true
     }
   ]
 }

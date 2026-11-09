@@ -1,0 +1,1 @@
+ALTER TABLE `student_profiles` ADD `payment_discuss_first` integer DEFAULT false NOT NULL;

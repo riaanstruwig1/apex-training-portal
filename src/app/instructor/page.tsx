@@ -36,6 +36,19 @@ async function getAwaitingLicence(): Promise<Map<string, Date>> {
   return new Map(rows.map((r) => [r.id, r.at]));
 }
 
+/** Batch 95: signed up (with a payment option) but no proof of payment yet. */
+function NoPopChip({ s }: { s: StudentSummary }) {
+  return (
+    <Link
+      href={`/admin/applicants/${s.id}`}
+      title={s.paymentDiscussFirst ? "Ticked at sign-up: I'd like to discuss payment first - please contact me" : "No proof of payment uploaded yet"}
+      className="inline-flex items-center gap-1 rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700 hover:bg-red-200"
+    >
+      No POP received{s.paymentDiscussFirst ? " - contact re payment" : ""}
+    </Link>
+  );
+}
+
 function AwaitingLicenceChip({ id, since }: { id: string; since: Date }) {
   return (
     <Link
@@ -215,8 +228,9 @@ function StudentCard({
       <div className="mt-2">
         <ExamBadges statuses={examStatusByStudent.get(s.id)} trainingType={s.trainingType} />
       </div>
-      {!archived && (pendingLogbook || pendingExams || awaiting) && (
+      {!archived && (pendingLogbook || pendingExams || awaiting || s.popMissing) && (
         <div className="mt-2 flex flex-wrap gap-1">
+          {s.popMissing && <NoPopChip s={s} />}
           {awaiting && <AwaitingLicenceChip id={s.id} since={awaiting} />}
           {pendingLogbook && (
             <Link
@@ -350,6 +364,7 @@ function StudentTable({
               {!archived && (
                 <td className="px-4 py-3">
                   <div className="flex flex-col items-start gap-1">
+                    {s.popMissing && <NoPopChip s={s} />}
                     {awaitingLicence.get(s.id) && <AwaitingLicenceChip id={s.id} since={awaitingLicence.get(s.id)!} />}
                     {s.pendingLogbookCount > 0 && (
                       <Link
@@ -371,7 +386,8 @@ function StudentTable({
                     )}
                     {s.pendingLogbookCount === 0 &&
                       (pendingExamsByStudent.get(s.id) ?? 0) === 0 &&
-                      !awaitingLicence.get(s.id) && (
+                      !awaitingLicence.get(s.id) &&
+                      !s.popMissing && (
                         <span className="text-xs text-slate-300">—</span>
                       )}
                   </div>

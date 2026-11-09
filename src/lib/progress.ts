@@ -164,6 +164,9 @@ export type StudentSummary = {
   courseLevel: "intro" | "full";
   /** Set while the intro student's "Sign up for Phase 2" waits for a CFI. */
   phase2RequestedAt: Date | null;
+  /** Batch 95: signed up with a payment option (batch 92+) but no POP on file. */
+  popMissing: boolean;
+  paymentDiscussFirst: boolean;
 };
 
 /** Roster view for the instructor dashboard: one row per student, with a
@@ -193,6 +196,9 @@ export async function getAllStudentsWithSummary(): Promise<StudentSummary[]> {
       trainingType: studentProfiles.trainingType,
       courseLevel: studentProfiles.courseLevel,
       phase2RequestedAt: studentProfiles.phase2RequestedAt,
+      paymentOption: studentProfiles.paymentOption,
+      popFile: studentProfiles.popFile,
+      paymentDiscussFirst: studentProfiles.paymentDiscussFirst,
     })
     .from(users)
     .innerJoin(studentProfiles, eq(studentProfiles.userId, users.id))
@@ -252,6 +258,8 @@ export async function getAllStudentsWithSummary(): Promise<StudentSummary[]> {
     totalCount: ids.length,
     currentSectionName: null,
     pendingLogbookCount: pendingByStudent.get(s.id) ?? 0,
+    popMissing: !!s.paymentOption && !s.popFile,
+    paymentDiscussFirst: !!s.paymentDiscussFirst,
     };
   });
 }

@@ -125,6 +125,11 @@ export default async function AdminVerificationQueue({
                       <div className="font-medium text-slate-900">{a.name}</div>
                       <div className="text-xs text-slate-500">{a.email}</div>
                       {a.sahpaMissing && <div className="mt-0.5 text-xs font-bold text-red-600">SAHPA No. NOT LOADED</div>}
+                      {a.popMissing && (
+                        <div className="mt-0.5 text-xs font-bold text-red-600">
+                          NO PROOF OF PAYMENT{a.paymentDiscuss ? " -- wants to discuss payment, please contact" : ""}
+                        </div>
+                      )}
                     </div>
                   </div>
                   <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-700">
@@ -172,6 +177,14 @@ export default async function AdminVerificationQueue({
                         <span>
                           {a.name}
                           {a.sahpaMissing && <span className="ml-2 rounded bg-red-600 px-1.5 py-0.5 text-[10px] font-bold uppercase text-white">SAHPA No. not loaded</span>}
+                          {a.popMissing && (
+                            <span
+                              title={a.paymentDiscuss ? "Ticked: I'd like to discuss payment first - please contact me" : undefined}
+                              className="ml-2 rounded bg-red-600 px-1.5 py-0.5 text-[10px] font-bold uppercase text-white"
+                            >
+                              No POP{a.paymentDiscuss ? " - discuss payment" : ""}
+                            </span>
+                          )}
                         </span>
                       </div>
                     </td>

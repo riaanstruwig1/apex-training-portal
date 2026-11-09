@@ -89,6 +89,7 @@ export default function PaymentBlock({
   const [ppgPlan, setPpgPlan] = useState<"ppg_p1" | "ppg_full">("ppg_p1");
   const choice: PaymentOptionKey | null = main === "1" ? "intro" : main === "2" ? ppgPlan : main === "3" ? "other" : null;
   const [invoiceTo, setInvoiceTo] = useState<"self" | "company">("self");
+  const [discuss, setDiscuss] = useState(false);
   const opt = paymentOption(choice);
   const total = opt ? paymentTotal(opt) : null;
 
@@ -261,15 +262,32 @@ export default function PaymentBlock({
 
       {/* POP */}
       <label className="block font-semibold">
-        Upload your proof of payment <span className="text-red-600">*</span>
+        Upload your proof of payment {discuss ? <span className="font-normal text-slate-500">(optional)</span> : <span className="text-red-600">*</span>}
         <span className="block text-xs font-normal text-slate-600">PDF or photo of the payment. It is kept on your profile.</span>
         <input
           name="popFile"
           type="file"
-          required
+          required={!discuss}
           accept="application/pdf,image/jpeg,image/png,image/webp,image/heic"
           className="mt-1 block w-full text-sm file:mr-3 file:rounded file:border-0 file:bg-green-100 file:px-3 file:py-1.5 file:text-sm"
         />
+      </label>
+      {/* Batch 95: submit without a POP, Apex contacts him about payment. */}
+      <label className="flex cursor-pointer items-start gap-2 rounded-md border border-amber-300 bg-amber-50 p-3">
+        <input
+          type="checkbox"
+          name="paymentDiscussFirst"
+          value="1"
+          checked={discuss}
+          onChange={(e) => setDiscuss(e.target.checked)}
+          className="mt-0.5"
+        />
+        <span>
+          <span className="font-semibold">I&apos;d like to discuss payment first - please contact me</span>
+          <span className="block text-xs text-slate-600">
+            You can submit without a proof of payment. Apex will contact you; upload the POP later on your profile.
+          </span>
+        </span>
       </label>
     </div>
   );
