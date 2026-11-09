@@ -13,40 +13,49 @@ import {
 /** Batch 92 (Riaan, 9 Nov 2026): green "Payment options" block just before
  * the student submits -- choose an option (invoice shown), who the invoice
  * goes to, bank details, and the proof of payment upload (required). */
-export default function PaymentBlock({ introCourse, fullName }: { introCourse: boolean; fullName: string }) {
-  // Intro ticked at the top -> option 1 pre-selected (until he picks another).
-  const [picked, setPicked] = useState<PaymentOptionKey | null>(null);
-  const choice: PaymentOptionKey | null = picked ?? (introCourse ? "intro" : null);
-  const [ppgOpen, setPpgOpen] = useState(false);
-  const ppgOn = ppgOpen || choice === "ppg_p1" || choice === "ppg_full";
+export default function PaymentBlock({
+  introCourse,
+  trainingTypes,
+  fullName,
+}: {
+  introCourse: boolean;
+  trainingTypes: string[];
+  fullName: string;
+}) {
+  // Batch 93 (Riaan, 9 Nov 2026): three round options 1 / 2 / 3. The default
+  // follows what he ticked at the top (Intro -> 1, PPG -> 2, PG or PPT/PPC
+  // only -> 3) until he clicks another option himself.
+  const defaultMain: "1" | "2" | "3" | null = introCourse
+    ? "1"
+    : trainingTypes.includes("ppg")
+      ? "2"
+      : trainingTypes.length > 0
+        ? "3"
+        : null;
+  const [pickedMain, setPickedMain] = useState<"1" | "2" | "3" | null>(null);
+  const main = pickedMain ?? defaultMain;
+  const [ppgPlan, setPpgPlan] = useState<"ppg_p1" | "ppg_full">("ppg_p1");
+  const choice: PaymentOptionKey | null = main === "1" ? "intro" : main === "2" ? ppgPlan : main === "3" ? "other" : null;
   const [invoiceTo, setInvoiceTo] = useState<"self" | "company">("self");
   const opt = paymentOption(choice);
   const total = opt ? paymentTotal(opt) : null;
 
-  const radio = (key: PaymentOptionKey, disabled = false) => (
-    <input
-      type="radio"
-      name="paymentOption"
-      value={key}
-      checked={choice === key}
-      disabled={disabled}
-      required
-      onChange={() => setPicked(key)}
-      className="mt-1"
-    />
-  );
   const intro = PAYMENT_OPTIONS[0];
   const p1 = PAYMENT_OPTIONS[1];
   const full = PAYMENT_OPTIONS[2];
   const other = PAYMENT_OPTIONS[3];
+  const box = (on: boolean) =>
+    `flex items-start gap-2 rounded-md border p-3 ${on ? "border-green-500 bg-white ring-1 ring-green-500" : "border-green-200 bg-white"}`;
 
   return (
     <div className="space-y-4 rounded-lg border-2 border-green-400 bg-green-50 p-4 text-sm text-slate-800">
       <p className="text-base font-semibold text-green-900">Payment options</p>
+      {/* What the server reads */}
+      <input type="hidden" name="paymentOption" value={choice ?? ""} />
 
       {/* 1. Intro */}
-      <label className="flex items-start gap-2 rounded-md border border-green-200 bg-white p-3">
-        {radio("intro")}
+      <label className={`cursor-pointer ${box(main === "1")}`}>
+        <input type="radio" name="paymentMain" value="1" checked={main === "1"} onChange={() => setPickedMain("1")} className="mt-1" />
         <span className="flex-1">
           <span className="font-semibold">1. {intro.label}</span>
           <span className="float-right font-semibold">{rand(paymentTotal(intro)!)}</span>
@@ -54,49 +63,76 @@ export default function PaymentBlock({ introCourse, fullName }: { introCourse: b
       </label>
 
       {/* 2. PPG */}
-      <div className={`rounded-md border p-3 ${ppgOn ? "border-green-200 bg-white" : "border-slate-200 bg-white/60"}`}>
-        <label className="flex items-center gap-2 font-semibold">
-          <input
-            type="checkbox"
-            checked={ppgOn}
-            onChange={(e) => {
-              setPpgOpen(e.target.checked);
-              if (!e.target.checked && (choice === "ppg_p1" || choice === "ppg_full")) setPicked(null);
-            }}
-          />
-          2. Powered Paragliding (PPG)
-        </label>
-        <div className={`mt-2 space-y-2 pl-6 ${ppgOn ? "" : "opacity-50"}`}>
-          <label className="flex items-start gap-2">
-            {radio("ppg_p1", !ppgOn)}
-            <span className="flex-1">
-              <span className="font-medium">a. PPG Phase 1 - PG/PPG</span>
-              <span className="float-right font-semibold">{rand(paymentTotal(p1)!)}</span>
-              <span className="block text-xs text-slate-600">{p1.note}</span>
-            </span>
+      <div className={box(main === "2")}>
+        <input
+          id="paymentMain2"
+          type="radio"
+          name="paymentMain"
+          value="2"
+          checked={main === "2"}
+          onChange={() => setPickedMain("2")}
+          className="mt-1"
+        />
+        <div className="flex-1">
+          <label htmlFor="paymentMain2" className="cursor-pointer font-semibold">
+            2. Powered Paragliding (PPG)
           </label>
-          <label className="flex items-start gap-2">
-            {radio("ppg_full", !ppgOn)}
-            <span className="flex-1">
-              <span className="font-medium">b. PPG Phase 1 and 2 - full course (discount applies)</span>
-              <span className="mt-1 block text-xs text-slate-600">
-                {full.lines.map((l) => (
-                  <span key={l.label} className="flex justify-between">
-                    <span>{l.label}</span>
-                    <span>{rand(l.amount)}</span>
-                  </span>
-                ))}
+          <div className={`mt-2 space-y-2 ${main === "2" ? "" : "opacity-50"}`}>
+            <label className="flex cursor-pointer items-start gap-2">
+              <input
+                type="radio"
+                name="ppgPlan"
+                value="ppg_p1"
+                checked={ppgPlan === "ppg_p1"}
+                onClick={() => setPickedMain("2")}
+                onChange={() => {
+                  setPpgPlan("ppg_p1");
+                  setPickedMain("2");
+                }}
+                className="mt-1"
+              />
+              <span className="flex-1">
+                <span className="font-medium">a. PPG Phase 1 - PG/PPG</span>
+                <span className="float-right font-semibold">{rand(paymentTotal(p1)!)}</span>
+                <span className="block text-xs text-slate-600">{p1.note}</span>
               </span>
-            </span>
-          </label>
+            </label>
+            <label className="flex cursor-pointer items-start gap-2">
+              <input
+                type="radio"
+                name="ppgPlan"
+                value="ppg_full"
+                checked={ppgPlan === "ppg_full"}
+                onClick={() => setPickedMain("2")}
+                onChange={() => {
+                  setPpgPlan("ppg_full");
+                  setPickedMain("2");
+                }}
+                className="mt-1"
+              />
+              <span className="flex-1">
+                <span className="font-medium">b. PPG Phase 1 and 2 - full course (discount applies)</span>
+                <span className="mt-1 block text-xs text-slate-600">
+                  {full.lines.map((l) => (
+                    <span key={l.label} className="flex justify-between">
+                      <span>{l.label}</span>
+                      <span>{rand(l.amount)}</span>
+                    </span>
+                  ))}
+                </span>
+              </span>
+            </label>
+          </div>
         </div>
       </div>
 
       {/* 3. Other */}
-      <label className="flex items-start gap-2 rounded-md border border-green-200 bg-white p-3">
-        {radio("other")}
+      <label className={`cursor-pointer ${box(main === "3")}`}>
+        <input type="radio" name="paymentMain" value="3" checked={main === "3"} onChange={() => setPickedMain("3")} className="mt-1" />
         <span className="font-semibold">3. {other.label}</span>
       </label>
+
+      {!choice && <p className="text-xs font-semibold text-amber-800">Choose option 1, 2 or 3.</p>}
 
       {/* Invoice */}
       {opt && (

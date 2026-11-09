@@ -555,7 +555,11 @@ export default function SignupForm() {
       </div>
 
       {accountType === "student" && (
-        <PaymentBlock introCourse={introCourse} fullName={`${values.firstName} ${values.surname}`} />
+        <PaymentBlock
+          introCourse={introCourse}
+          trainingTypes={[...trainingTypes]}
+          fullName={`${values.firstName} ${values.surname}`}
+        />
       )}
 
       <div className="rounded-md border border-slate-200 bg-slate-50 p-3 text-xs text-slate-600">
