@@ -1,4 +1,5 @@
 import PaymentSummaryCard from "@/components/payment-summary-card";
+import StaffPopButton from "@/components/staff-pop-button";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getApplicantDetail } from "@/lib/verification";
@@ -162,6 +163,14 @@ export default async function ApplicantReviewPage({
       </div>
 
       {applicant.role === "student" && <PaymentSummaryCard userId={applicant.id} profile={student?.profile} />}
+      {applicant.role === "student" && student && (
+        <StaffPopButton
+          studentId={applicant.id}
+          popFile={student.profile.popFile ?? null}
+          popUploadedAt={student.profile.popUploadedAt ?? null}
+          canUpload
+        />
+      )}
 
       {applicant.role === "student" && !student?.profile.sahpaNumber?.trim() && (
         <div className="rounded-md border-2 border-red-500 bg-red-50 px-4 py-3 text-sm font-bold text-red-700">

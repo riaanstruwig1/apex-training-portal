@@ -26,6 +26,7 @@ import CallSignEditor from "./call-sign-editor";
 import StudentEndorsementToggle from "./student-endorsement-toggle";
 import StaffPaperUpload from "./staff-paper-upload";
 import SignoffPanel from "./signoff-panel";
+import StaffPopButton from "@/components/staff-pop-button";
 import Phase2ApprovalPanel from "./phase2-approval-panel";
 import { INTRO_LABEL, isIntroCourse } from "@/lib/intro-course";
 import { studentSignoffs } from "@/db/schema";
@@ -152,6 +153,14 @@ export default async function StudentFolioPage(
           Signed up {(profile?.signUpDate ?? student.createdAt).toLocaleDateString()}
           {!profile?.signUpDate && " (account creation date -- not yet confirmed)"}
         </p>
+        {profile && (
+          <StaffPopButton
+            studentId={id}
+            popFile={profile.popFile ?? null}
+            popUploadedAt={profile.popUploadedAt ?? null}
+            canUpload={isCFI}
+          />
+        )}
         {/* 30 Sep 2026 (Riaan: CFI/Admin couldn't view, edit or print a
             student's full profile from here) -- the full profile page lives
             under /admin (CFI + Admin only), so regular instructors don't get

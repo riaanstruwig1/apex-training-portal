@@ -80,3 +80,51 @@ export async function requestOwnInvoice(): Promise<PopFormState> {
   revalidatePath(`/admin/applicants/${user.id}`);
   return { success: true };
 }
+
+/**
+ * Batch 96 (Riaan, 9 Nov 2026): "for all the current students, add a button
+ * under his name -- Course paid / POP upload, or if they uploaded it, it will
+ * show. Then I can upload the previous POP on the system." CFI or Admin
+ * uploads (or replaces) the student's proof of payment from the student's
+ * page; a POP on file shows as "Course paid".
+ */
+export async function staffUploadPop(
+  studentId: string,
+  _prevState: PopFormState,
+  formData: FormData
+): Promise<PopFormState> {
+  const user = await getCurrentUser();
+  if (!user || (user.role !== "cfi" && user.role !== "admin")) {
+    return { error: "Only the CFI or Admin can upload a proof of payment." };
+  }
+  const [sp] = await db
+    .select({ id: studentProfiles.id })
+    .from(studentProfiles)
+    .where(eq(studentProfiles.userId, studentId))
+    .limit(1);
+  if (!sp) return { error: "Student not found." };
+
+  const fileInput = formData.get("popFile");
+  if (!(fileInput instanceof File) || fileInput.size === 0) {
+    return { error: "Choose a file to upload." };
+  }
+  let filename: string | null;
+  try {
+    filename = await saveUpload(studentId, "pop", fileInput);
+  } catch (err) {
+    if (err instanceof UploadError) return { error: err.message };
+    throw err;
+  }
+  if (!filename) return { error: "Choose a file to upload." };
+
+  await db
+    .update(studentProfiles)
+    .set({ popFile: filename, popUploadedAt: new Date(), invoiceRequestedAt: null })
+    .where(eq(studentProfiles.userId, studentId));
+
+  revalidatePath(`/instructor/students/${studentId}`);
+  revalidatePath(`/admin/applicants/${studentId}`);
+  revalidatePath("/instructor");
+  revalidatePath("/admin");
+  return { success: true };
+}
