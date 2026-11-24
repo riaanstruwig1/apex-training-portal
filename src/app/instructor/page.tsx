@@ -489,7 +489,8 @@ export default async function InstructorDashboard() {
         />
       )}
 
-      {isCFI && archivedStudents.length > 0 && (
+      {/* Batch 104: instructors see the archived section too (Restore/Delete stay CFI). */}
+      {archivedStudents.length > 0 && (
         <details className="mt-8">
           <summary className="cursor-pointer text-sm font-semibold uppercase tracking-wide text-slate-500">
             Archived students ({archivedStudents.length})

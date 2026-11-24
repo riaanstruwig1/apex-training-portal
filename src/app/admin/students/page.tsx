@@ -63,6 +63,108 @@ function Actions({ id }: { id: string }) {
  * view and edit student profiles -- and print them). Each row opens the
  * same profile page the verification queue and Pilots list use
  * (/admin/applicants/[id]), which has the edit form, or its print view. */
+function StudentList({ list }: { list: AdminStudentRow[] }) {
+  return (
+        <>
+      {/* Mobile: one card per student */}
+      <div className="space-y-3 sm:hidden">
+        {list.map((s) => (
+          <div key={s.id} className="rounded-xl border border-slate-200 bg-white p-4">
+            <div className="mb-2 flex items-start justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <Avatar userId={s.id} filename={s.profilePictureFile} name={s.name} size={32} />
+                <div>
+                  <div className="font-medium text-slate-900">{s.name}</div>
+                  <div className="text-xs text-slate-500">{trainingLabel(s.trainingType)}</div>
+                </div>
+              </div>
+              <StatusBadge s={s} />
+            </div>
+            <dl className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-sm">
+              <div>
+                <dt className="text-xs text-slate-400">Apex No.</dt>
+                <dd className="text-slate-700">{s.apexNumber ?? "—"}</dd>
+              </div>
+              <div>
+                <dt className="text-xs text-slate-400">Cell</dt>
+                <dd className="text-slate-700">{s.phone ?? "—"}</dd>
+              </div>
+              <div>
+                <dt className="text-xs text-slate-400">Signed up</dt>
+                <dd className="text-slate-700">
+                  {fmt(s.signUpDate)}
+                  {!s.signUpDateConfirmed && <span className="text-slate-400"> *</span>}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-xs text-slate-400">SAHPA expiry</dt>
+                <dd>
+                  <SahpaExpiry date={s.sahpaExpiryDate} />
+                </dd>
+              </div>
+            </dl>
+            <div className="mt-3">
+              <Actions id={s.id} />
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="hidden overflow-x-auto rounded-xl border border-slate-200 bg-white sm:block">
+        <table className="w-full text-left text-sm">
+          <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+            <tr>
+              <th className="px-4 py-3">Name</th>
+              <th className="px-4 py-3">Training</th>
+              <th className="px-4 py-3">Apex No.</th>
+              <th className="px-4 py-3">Cell</th>
+              <th className="px-4 py-3">Signed up</th>
+              <th className="px-4 py-3">SAHPA expiry</th>
+              <th className="px-4 py-3">Status</th>
+              <th className="px-4 py-3"></th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100">
+            {list.map((s) => (
+              <tr key={s.id} className="hover:bg-slate-50">
+                <td className="px-4 py-3">
+                  <div className="flex items-center gap-2">
+                    <Avatar userId={s.id} filename={s.profilePictureFile} name={s.name} size={28} />
+                    <div>
+                      <div className="font-medium text-slate-900">{s.name}</div>
+                      <div className="text-xs text-slate-500">{s.email}</div>
+                    </div>
+                  </div>
+                </td>
+                <td className="px-4 py-3 text-slate-600">{trainingLabel(s.trainingType)}</td>
+                <td className="px-4 py-3 text-slate-600">{s.apexNumber ?? "—"}</td>
+                <td className="px-4 py-3 text-slate-600">{s.phone ?? "—"}</td>
+                <td className="px-4 py-3 text-slate-600">
+                  {fmt(s.signUpDate)}
+                  {!s.signUpDateConfirmed && <span className="text-slate-400"> *</span>}
+                </td>
+                <td className="px-4 py-3">
+                  <SahpaExpiry date={s.sahpaExpiryDate} />
+                </td>
+                <td className="px-4 py-3">
+                  <StatusBadge s={s} />
+                </td>
+                <td className="px-4 py-3">
+                  <Actions id={s.id} />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p className="mt-2 text-xs text-slate-400">
+        * account creation date -- the real sign-up date hasn&apos;t been set yet (set it on the
+        student&apos;s profile).
+      </p>
+    </>
+  );
+}
+
 export default async function AdminStudentsPage() {
   // Batch 97: instructors open student profiles from here too (no invites).
   const viewer = await requireStudentReviewer();
@@ -70,6 +172,8 @@ export default async function AdminStudentsPage() {
     getAdminStudentList(),
     getPendingInvites("student"),
   ]);
+  const active = students.filter((st) => st.status !== "archived");
+  const archived = students.filter((st) => st.status === "archived");
 
   return (
     <div>
@@ -81,108 +185,25 @@ export default async function AdminStudentsPage() {
         </p>
       </div>
 
-      {students.length === 0 ? (
+      {active.length === 0 ? (
         <div className="rounded-xl border border-dashed border-slate-300 bg-white p-8 text-center text-sm text-slate-500">
           No approved students yet.
         </div>
       ) : (
-        <>
-          {/* Mobile: one card per student */}
-          <div className="space-y-3 sm:hidden">
-            {students.map((s) => (
-              <div key={s.id} className="rounded-xl border border-slate-200 bg-white p-4">
-                <div className="mb-2 flex items-start justify-between gap-2">
-                  <div className="flex items-center gap-2">
-                    <Avatar userId={s.id} filename={s.profilePictureFile} name={s.name} size={32} />
-                    <div>
-                      <div className="font-medium text-slate-900">{s.name}</div>
-                      <div className="text-xs text-slate-500">{trainingLabel(s.trainingType)}</div>
-                    </div>
-                  </div>
-                  <StatusBadge s={s} />
-                </div>
-                <dl className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-sm">
-                  <div>
-                    <dt className="text-xs text-slate-400">Apex No.</dt>
-                    <dd className="text-slate-700">{s.apexNumber ?? "—"}</dd>
-                  </div>
-                  <div>
-                    <dt className="text-xs text-slate-400">Cell</dt>
-                    <dd className="text-slate-700">{s.phone ?? "—"}</dd>
-                  </div>
-                  <div>
-                    <dt className="text-xs text-slate-400">Signed up</dt>
-                    <dd className="text-slate-700">
-                      {fmt(s.signUpDate)}
-                      {!s.signUpDateConfirmed && <span className="text-slate-400"> *</span>}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt className="text-xs text-slate-400">SAHPA expiry</dt>
-                    <dd>
-                      <SahpaExpiry date={s.sahpaExpiryDate} />
-                    </dd>
-                  </div>
-                </dl>
-                <div className="mt-3">
-                  <Actions id={s.id} />
-                </div>
-              </div>
-            ))}
-          </div>
+        <StudentList list={active} />
+      )}
 
-          <div className="hidden overflow-x-auto rounded-xl border border-slate-200 bg-white sm:block">
-            <table className="w-full text-left text-sm">
-              <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
-                <tr>
-                  <th className="px-4 py-3">Name</th>
-                  <th className="px-4 py-3">Training</th>
-                  <th className="px-4 py-3">Apex No.</th>
-                  <th className="px-4 py-3">Cell</th>
-                  <th className="px-4 py-3">Signed up</th>
-                  <th className="px-4 py-3">SAHPA expiry</th>
-                  <th className="px-4 py-3">Status</th>
-                  <th className="px-4 py-3"></th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {students.map((s) => (
-                  <tr key={s.id} className="hover:bg-slate-50">
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-2">
-                        <Avatar userId={s.id} filename={s.profilePictureFile} name={s.name} size={28} />
-                        <div>
-                          <div className="font-medium text-slate-900">{s.name}</div>
-                          <div className="text-xs text-slate-500">{s.email}</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3 text-slate-600">{trainingLabel(s.trainingType)}</td>
-                    <td className="px-4 py-3 text-slate-600">{s.apexNumber ?? "—"}</td>
-                    <td className="px-4 py-3 text-slate-600">{s.phone ?? "—"}</td>
-                    <td className="px-4 py-3 text-slate-600">
-                      {fmt(s.signUpDate)}
-                      {!s.signUpDateConfirmed && <span className="text-slate-400"> *</span>}
-                    </td>
-                    <td className="px-4 py-3">
-                      <SahpaExpiry date={s.sahpaExpiryDate} />
-                    </td>
-                    <td className="px-4 py-3">
-                      <StatusBadge s={s} />
-                    </td>
-                    <td className="px-4 py-3">
-                      <Actions id={s.id} />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+      {/* Batch 104 (Riaan, 24 Nov 2026): archived students out of the main
+          list, in their own section at the bottom. */}
+      {archived.length > 0 && (
+        <details className="mt-8">
+          <summary className="cursor-pointer text-sm font-semibold uppercase tracking-wide text-slate-500">
+            Archived students ({archived.length})
+          </summary>
+          <div className="mt-3 opacity-80">
+            <StudentList list={archived} />
           </div>
-          <p className="mt-2 text-xs text-slate-400">
-            * account creation date -- the real sign-up date hasn&apos;t been set yet (set it on the
-            student&apos;s profile).
-          </p>
-        </>
+        </details>
       )}
 
       {viewer.role !== "instructor" && (
