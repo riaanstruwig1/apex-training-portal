@@ -1,9 +1,11 @@
-import { requireCFI } from "@/lib/auth/dal";
+import { requireInstructor } from "@/lib/auth/dal";
 import { getStudyMaterials } from "@/lib/actions/study-materials";
 import StudyMaterialEditor from "./study-material-editor";
 
 export default async function StudyMaterialAdminPage() {
-  await requireCFI();
+  // Batch 105: instructors see the list too (Download + Copy link only).
+  const staff = await requireInstructor();
+  const canEdit = staff.role === "cfi";
   const slots = await getStudyMaterials();
 
   return (
@@ -16,7 +18,11 @@ export default async function StudyMaterialAdminPage() {
         on the student dashboard next to the matching exam: 1 Basic Licence (PG),
         2 PPG, 3 DTO Radio, 4 PPT/PPC.
       </p>
-      <StudyMaterialEditor slots={slots} />
+      <p className="mb-4 max-w-2xl text-sm text-slate-500">
+        🔗 <strong>Copy link</strong> next to a note copies a link you can paste in a WhatsApp or email. It opens
+        after the student logs in.
+      </p>
+      <StudyMaterialEditor slots={slots} canEdit={canEdit} />
     </div>
   );
 }

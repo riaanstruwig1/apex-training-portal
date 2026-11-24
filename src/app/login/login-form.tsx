@@ -5,7 +5,7 @@ import Link from "next/link";
 import { login, type LoginState } from "@/lib/actions/auth";
 import PasswordInput from "@/components/password-input";
 
-export default function LoginForm() {
+export default function LoginForm({ next }: { next?: string }) {
   const [state, action, pending] = useActionState<LoginState, FormData>(
     login,
     undefined
@@ -13,6 +13,7 @@ export default function LoginForm() {
 
   return (
     <form action={action} className="space-y-4">
+      {next && <input type="hidden" name="next" value={next} />}
       <div>
         <label
           htmlFor="email"

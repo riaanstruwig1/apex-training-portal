@@ -161,7 +161,33 @@ function SlotForm({ slot, onDone }: { slot: StudyMaterialSlot; onDone: () => voi
   );
 }
 
-function SlotRow({ slot }: { slot: StudyMaterialSlot }) {
+/** Batch 105 (Riaan, 24 Nov 2026): copy a link to this study note to paste in
+ * a WhatsApp / email. It opens after the student logs in (/study/<slot>). */
+function CopyLinkButton({ slot }: { slot: number }) {
+  const [copied, setCopied] = useState<"" | "ok" | "fail">("");
+  return (
+    <button
+      type="button"
+      title="Copy a link to this study note -- students open it after logging in"
+      onClick={async () => {
+        const url = `${window.location.origin}/study/${slot}`;
+        try {
+          await navigator.clipboard.writeText(url);
+          setCopied("ok");
+        } catch {
+          window.prompt("Copy this link:", url);
+          setCopied("fail");
+        }
+        setTimeout(() => setCopied(""), 2500);
+      }}
+      className="rounded-md border border-slate-300 px-2.5 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+    >
+      {copied === "ok" ? "✓ Link copied" : "🔗 Copy link"}
+    </button>
+  );
+}
+
+function SlotRow({ slot, canEdit }: { slot: StudyMaterialSlot; canEdit: boolean }) {
   const [editing, setEditing] = useState(false);
   const [isDeleting, startDeleteTransition] = useTransition();
 
@@ -177,6 +203,7 @@ function SlotRow({ slot }: { slot: StudyMaterialSlot }) {
   }
 
   if (!slot.filename && !slot.linkUrl) {
+    if (!canEdit) return null;
     return (
       <button
         type="button"
@@ -208,6 +235,7 @@ function SlotRow({ slot }: { slot: StudyMaterialSlot }) {
         </div>
       </div>
       <div className="flex items-center gap-3">
+        <CopyLinkButton slot={slot.slot} />
         <a
           href={slot.filename ? `/api/study-material/${slot.filename}` : slot.linkUrl!}
           target={slot.filename ? undefined : "_blank"}
@@ -216,31 +244,35 @@ function SlotRow({ slot }: { slot: StudyMaterialSlot }) {
         >
           {slot.filename ? "Download" : "Open link"}
         </a>
-        <button
-          type="button"
-          onClick={() => setEditing(true)}
-          className="text-sm text-red-600 hover:text-red-700"
-        >
-          Edit
-        </button>
-        <button
-          type="button"
-          disabled={isDeleting}
-          onClick={handleClear}
-          className="text-sm text-slate-400 hover:text-red-600 disabled:opacity-60"
-        >
-          {isDeleting ? "Clearing..." : "Clear"}
-        </button>
+        {canEdit && (
+          <>
+            <button
+              type="button"
+              onClick={() => setEditing(true)}
+              className="text-sm text-red-600 hover:text-red-700"
+            >
+              Edit
+            </button>
+            <button
+              type="button"
+              disabled={isDeleting}
+              onClick={handleClear}
+              className="text-sm text-slate-400 hover:text-red-600 disabled:opacity-60"
+            >
+              {isDeleting ? "Clearing..." : "Clear"}
+            </button>
+          </>
+        )}
       </div>
     </div>
   );
 }
 
-export default function StudyMaterialEditor({ slots }: { slots: StudyMaterialSlot[] }) {
+export default function StudyMaterialEditor({ slots, canEdit = true }: { slots: StudyMaterialSlot[]; canEdit?: boolean }) {
   return (
     <div className="space-y-3">
       {slots.map((slot) => (
-        <SlotRow key={slot.slot} slot={slot} />
+        <SlotRow key={slot.slot} slot={slot} canEdit={canEdit} />
       ))}
     </div>
   );

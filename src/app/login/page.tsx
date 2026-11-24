@@ -1,9 +1,13 @@
 import Link from "next/link";
 import Image from "next/image";
 import LoginForm from "./login-form";
+import { safeNext } from "@/lib/safe-next";
 import { BuildBadge } from "@/components/build-badge";
 
-export default function LoginPage() {
+export default async function LoginPage(props: PageProps<"/login">) {
+  // Batch 105: a shared study-note link brings the student back after login.
+  const sp = await props.searchParams;
+  const next = safeNext(sp.next) ?? undefined;
   return (
     <main className="flex min-h-screen flex-1 items-center justify-center px-4">
       <div className="w-full max-w-sm">
@@ -24,7 +28,7 @@ export default function LoginPage() {
           </p>
         </div>
         <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-          <LoginForm />
+          <LoginForm next={next} />
         </div>
         <p className="mt-4 text-center text-sm text-slate-500">
           New student or pilot?{" "}

@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { logActivity } from "@/lib/activity-log";
+import { safeNext } from "@/lib/safe-next";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 import * as z from "zod";
@@ -73,6 +74,10 @@ export async function login(
     user.id,
     user.role as "cfi" | "instructor" | "student" | "pilot" | "admin"
   );
+
+  // Batch 105: back to a shared study-note link after logging in.
+  const next = safeNext(formData.get("next"));
+  if (next) redirect(next);
 
   redirect(
     user.role === "student"

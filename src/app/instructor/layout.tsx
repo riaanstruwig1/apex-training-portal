@@ -46,6 +46,7 @@ export default async function InstructorLayout({
     { href: "/admin/pilots", label: "Pilots" },
     { href: "/admin", label: "Verification queue", badge: pendingCount + phase2Count },
     { href: "/admin/students", label: "Student profiles" },
+    { href: "/instructor/study-material", label: "Study material" },
   ];
   const pilotLinks = [{ href: "/pilot", label: "My Portfolio" }];
   const links = [...staffLinks, ...pilotLinks, ...(isCFI ? cfiOnlyLinks : instructorReviewLinks)];
