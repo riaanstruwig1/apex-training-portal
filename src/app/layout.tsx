@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Apex Flight Hub",
-  description: "Student & instructor training folio for Apex Adventures / EPIC Aviation",
+  description: "Student & instructor training folio for Apex Adventures", // batch 106: Apex only (Riaan, 24 Nov 2026)
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

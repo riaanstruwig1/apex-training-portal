@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { redirect, notFound } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth/dal";
 import { getStudyMaterials } from "@/lib/actions/study-materials";
@@ -12,6 +13,12 @@ import { INTRO_LOCK_TEXT } from "@/lib/intro-course";
  * The link follows the slot (1-8), so it keeps working when the file in that
  * slot is replaced.
  */
+// Batch 106: the WhatsApp link preview says what it is (Apex only).
+export const metadata: Metadata = {
+  title: "Apex Flight Hub - Study note",
+  description: "Apex Adventures study note - log in to the Apex Flight Hub to open it.",
+};
+
 export default async function StudyLinkPage(props: PageProps<"/study/[slot]">) {
   const { slot } = await props.params;
   const n = Number(slot);
