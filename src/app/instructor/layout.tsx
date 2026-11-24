@@ -43,6 +43,7 @@ export default async function InstructorLayout({
   // Batch 97 (Riaan, 24 Nov 2026): instructors review sign-ups and open
   // student profiles the same as the CFI.
   const instructorReviewLinks = [
+    { href: "/admin/pilots", label: "Pilots" },
     { href: "/admin", label: "Verification queue", badge: pendingCount + phase2Count },
     { href: "/admin/students", label: "Student profiles" },
   ];

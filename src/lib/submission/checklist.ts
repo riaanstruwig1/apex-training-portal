@@ -23,9 +23,9 @@ export async function buildChecklistPdf(d: PackData, files: PackFileInfo[], sign
   for (const f of files) line(`[ ]  ${f.name}  -  ${f.what}`, 9);
   y -= 8;
   line("Signatures applied automatically", 11, true);
-  line(`Student signature (consent given in profile): ${signed.student ? "YES, with 'Digitally signed' note" : "NO - sign by hand"}`, 9);
+  line(`Student signature (consent given in profile): ${signed.student ? "YES (tiny 'Digitally signed' note behind the signature)" : "NO - sign by hand"}`, 9);
   line(`Pilot declaration on medical form: ${signed.medical ? "YES" : "NO - sign by hand (needs a valid Hub medical declaration and age under 60)"}`, 9);
-  line(`Instructor signature: ${signed.instructor ? "YES, with 'Digitally signed' note" : "NO - no signature uploaded; sign by hand"}`, 9);
+  line(`Instructor signature: ${signed.instructor ? "YES (tiny 'Digitally signed' note behind the signature)" : "NO - no signature uploaded; sign by hand"}`, 9);
   y -= 8;
   line("Check by eye before submitting", 11, true);
   for (const t of [

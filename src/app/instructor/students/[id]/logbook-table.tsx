@@ -42,16 +42,22 @@ function EditForm({
   aircraftOptions: { wings: string[]; motors: string[] };
   onDone: () => void;
 }) {
-  const boundAction = adminUpdateLogbookEntry.bind(null, entry.id, studentId);
-  const [state, action, pending] = useActionState<LogEntryState, FormData>(boundAction, undefined);
   const router = useRouter();
+  // Batch 100 (Riaan, 24 Nov 2026): the edit box stayed open after Save and
+  // redrew the old values (e.g. flight type back to PG) until a page refresh.
+  // Now a successful save closes the box and refreshes the row.
+  const [state, action, pending] = useActionState<LogEntryState, FormData>(async (prev, formData) => {
+    const r = await adminUpdateLogbookEntry(entry.id, studentId, prev, formData);
+    if (!r?.error) {
+      onDone();
+      router.refresh();
+    }
+    return r;
+  }, undefined);
 
   return (
     <form
-      action={async (formData) => {
-        await action(formData);
-        router.refresh();
-      }}
+      action={action}
       className="grid grid-cols-1 gap-3 rounded-xl border border-red-200 bg-red-50/30 p-4 sm:grid-cols-2"
     >
       <LogEntryFields

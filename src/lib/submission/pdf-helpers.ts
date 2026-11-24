@@ -150,18 +150,51 @@ export function circleCell(page: PDFPage, cell: Cell) {
 /** Normalises any uploaded signature/photo (png/jpg/webp/heic-converted jpg)
  * to a size-limited PNG that pdf-lib can embed. */
 export async function signatureToPng(bytes: Buffer): Promise<Buffer> {
-  return sharp(bytes)
-    .rotate()
-    .resize({ width: 700, height: 300, fit: "inside", withoutEnlargement: true })
-    .png()
-    .toBuffer();
+  // Batch 101 (Riaan, 24 Nov 2026): signatures came out tiny because most
+  // uploads have wide empty margins. Make the white/paper background
+  // transparent and crop to the ink, so the signature fills its box.
+  const { data, info } = await sharp(bytes).rotate().ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+  const { width, height } = info;
+  let x0 = width, y0 = height, x1 = -1, y1 = -1;
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      const i = (y * width + x) * 4;
+      const r = data[i], g = data[i + 1], b = data[i + 2];
+      if (r > 225 && g > 225 && b > 225) data[i + 3] = 0; // paper -> transparent
+      if (data[i + 3] > 40) {
+        if (x < x0) x0 = x;
+        if (x > x1) x1 = x;
+        if (y < y0) y0 = y;
+        if (y > y1) y1 = y;
+      }
+    }
+  }
+  let img = sharp(data, { raw: { width, height, channels: 4 } });
+  if (x1 > x0 && y1 > y0) {
+    const pad = Math.round(Math.max(x1 - x0, y1 - y0) * 0.03);
+    const left = Math.max(0, x0 - pad);
+    const top = Math.max(0, y0 - pad);
+    img = sharp(await img.png().toBuffer()).extract({
+      left,
+      top,
+      width: Math.min(width - left, x1 - x0 + 1 + pad * 2),
+      height: Math.min(height - top, y1 - y0 + 1 + pad * 2),
+    });
+  }
+  return img.resize({ width: 700, height: 300, fit: "inside", withoutEnlargement: true }).png().toBuffer();
 }
 
 /**
- * Places a signature image in a box, plus the small "Digitally signed" note
- * underneath. The note is ALWAYS drawn with a signature (Riaan, 14 Oct 2026:
- * "added to form with small note, digitally signed").
+ * Places a signature image in a box.
+ * Batch 101 (Riaan, 24 Nov 2026): the "Digitally signed" note is now tiny and
+ * faint, drawn BEHIND the signature (it was a visible line under it), and the
+ * signature is much bigger: in a small form cell it may grow over two lines
+ * (about 34 pt tall, centred on the cell). Signature PNGs are transparent, so
+ * the form's ruled lines still show through.
  */
+const MIN_SIG_H = 34;
+const NOTE_FAINT = rgb(0.78, 0.78, 0.78);
+
 export async function placeSignature(
   doc: PDFDocument,
   page: PDFPage,
@@ -173,26 +206,29 @@ export async function placeSignature(
   const img = await doc.embedPng(pngBytes);
   const boxW = box.x1 - box.x0;
   const boxH = box.y1 - box.y0;
-  const noteSize = Math.min(5.5, Math.max(4, boxH * 0.28));
-  const reserve = noteSize + 2;
-  const availH = Math.max(6, boxH - reserve - 2);
-  const availW = boxW - 6;
-  const scale = Math.min(availW / img.width, availH / img.height);
+  // Grow small cells: centre a taller area on the cell (overlapping the lines above/below).
+  const areaH = Math.max(boxH, MIN_SIG_H);
+  const midY = (box.y0 + box.y1) / 2;
+  const top = midY - areaH / 2;
+  const availW = boxW + Math.min(16, boxW * 0.15); // may run slightly past the cell sides
+  const scale = Math.min(availW / img.width, areaH / img.height);
   const w = img.width * scale;
   const h = img.height * scale;
   const x = box.x0 + (boxW - w) / 2;
-  const yTopOfImg = box.y0 + 1 + (availH - h) / 2;
-  page.drawImage(img, { x, y: page.getHeight() - (yTopOfImg + h), width: w, height: h });
+  const yTopOfImg = top + (areaH - h) / 2;
+
+  // Tiny faint note first, so the signature is drawn over it.
   const text = safeText(note);
-  const size = fitSize(fonts.regular, text, boxW - 4, noteSize, 3.5);
+  const size = fitSize(fonts.regular, text, boxW - 2, 3.2, 2.5);
   const tw = fonts.regular.widthOfTextAtSize(text, size);
   page.drawText(text, {
     x: box.x0 + (boxW - tw) / 2,
-    y: page.getHeight() - (box.y1 - 1.5),
+    y: page.getHeight() - (yTopOfImg + h * 0.62),
     size,
     font: fonts.regular,
-    color: NOTE_GREY,
+    color: NOTE_FAINT,
   });
+  page.drawImage(img, { x, y: page.getHeight() - (yTopOfImg + h), width: w, height: h });
 }
 
 export function drawFooterNote(page: PDFPage, fonts: Fonts, text: string, y = 14) {

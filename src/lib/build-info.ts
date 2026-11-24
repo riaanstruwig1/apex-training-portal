@@ -14,7 +14,7 @@ export const VERSION = "v21";
 
 /** Batch 97 (Riaan, 13 Nov 2026): the batch number shown under the header.
  * Bump it in every batch. */
-export const BATCH = 99;
+export const BATCH = 102;
 
 export const DEPLOYED_AT = new Date();
 

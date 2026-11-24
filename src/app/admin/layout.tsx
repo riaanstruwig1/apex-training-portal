@@ -26,6 +26,7 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
   // student profiles here too; pilots, forms and password resets stay CFI/Admin.
   const instructorLinks = [
     { href: "/instructor", label: "Instructor Portal" },
+    { href: "/admin/pilots", label: "Pilots" },
     { href: "/admin", label: "Verification queue", badge: pendingCount + phase2Count },
     { href: "/admin/students", label: "Student profiles" },
   ];

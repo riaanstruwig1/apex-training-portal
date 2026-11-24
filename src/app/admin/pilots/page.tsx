@@ -5,7 +5,7 @@ import { isWhatsAppConfigured } from "@/lib/whatsapp";
 import InvitesBlock from "./invites-block";
 import PilotRowActions from "./pilot-row-actions";
 import ResetPasswordButton from "@/components/reset-password-button";
-import { getCurrentUser, requireAdminOrCFI } from "@/lib/auth/dal";
+import { getCurrentUser, requireStudentReviewer } from "@/lib/auth/dal";
 
 const roleLabel: Record<string, string> = {
   pilot: "Pilot",
@@ -53,7 +53,9 @@ function licenceStatus(
 }
 
 export default async function PilotsPage() {
-  await requireAdminOrCFI(); // batch 97: instructors can reach /admin, pilots stay CFI/Admin
+  // Batch 102 (Riaan, 24 Nov 2026): all instructors see the Pilots list
+  // (view and open only; edit/archive/delete/reset/invite stay CFI).
+  await requireStudentReviewer();
   const [pilots, invites, archivedPilots, me] = await Promise.all([
     getAllPilotsWithSummary(),
     getPendingInvites("pilot"),
@@ -228,7 +230,9 @@ export default async function PilotsPage() {
         </details>
       )}
 
-      <InvitesBlock audience="pilot" invites={invites} configured={isWhatsAppConfigured()} />
+      {me?.role !== "instructor" && (
+        <InvitesBlock audience="pilot" invites={invites} configured={isWhatsAppConfigured()} />
+      )}
     </div>
   );
 }

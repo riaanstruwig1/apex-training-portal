@@ -93,16 +93,21 @@ function EditForm({
   aircraftOptions: { wings: string[]; motors: string[] };
   onDone: () => void;
 }) {
-  const boundAction = updateLogbookEntry.bind(null, entry.id);
-  const [state, action, pending] = useActionState<LogEntryState, FormData>(boundAction, undefined);
   const router = useRouter();
+  // Batch 100: close the edit box on a successful save (it stayed open and
+  // redrew the old values until a page refresh).
+  const [state, action, pending] = useActionState<LogEntryState, FormData>(async (prev, formData) => {
+    const r = await updateLogbookEntry(entry.id, prev, formData);
+    if (!r?.error) {
+      onDone();
+      router.refresh();
+    }
+    return r;
+  }, undefined);
 
   return (
     <form
-      action={async (formData) => {
-        await action(formData);
-        router.refresh();
-      }}
+      action={action}
       className="grid grid-cols-1 gap-3 rounded-xl border border-red-200 bg-red-50/30 p-4 sm:grid-cols-2"
     >
       <LogEntryFields

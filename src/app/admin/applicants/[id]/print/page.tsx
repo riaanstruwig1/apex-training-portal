@@ -57,7 +57,7 @@ export default async function PrintProfilePage({
   const detail = await getApplicantDetail(id);
   if (!detail) notFound();
   const { applicant: a, pilot, student } = detail;
-  if (viewer.role === "instructor" && a.role !== "student") notFound();
+  void viewer; // batch 102: instructors may print any profile on the Pilots list (read only)
   const isStudent = a.role === "student";
 
   const [sections, logEntries] = await Promise.all([

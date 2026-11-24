@@ -89,9 +89,10 @@ export default async function ApplicantReviewPage({
   // uploaded application documents.
   const viewer = await getCurrentUser();
   const viewerIsCFI = viewer?.role === "cfi";
-  // Batch 97: instructors see and edit STUDENT profiles only.
+  // Batch 97: instructors edit STUDENT profiles. Batch 102 (Riaan, 24 Nov
+  // 2026): instructors may also OPEN a pilot's profile -- read only.
   const viewerIsInstructor = viewer?.role === "instructor";
-  if (viewerIsInstructor && detail.applicant.role !== "student") notFound();
+  const readOnly = viewerIsInstructor && detail.applicant.role !== "student";
   const [ratingCounts, ratingDocCounts, applicationDocs] = pilot
     ? await Promise.all([
         getRatingContentCounts(),
@@ -288,7 +289,7 @@ export default async function ApplicantReviewPage({
             {student.profile.invoiceRequestedAt.toLocaleDateString()}.
           </p>
         )}
-        <div className="mt-4">
+        <div className={`mt-4 ${readOnly ? "hidden" : ""}`}>
           <AdminProfileEditor
             userId={applicant.id}
             isPilot={applicant.role === "pilot"}
@@ -469,7 +470,7 @@ export default async function ApplicantReviewPage({
                   actionFor={(t) => {
                     const row = pilot.endorsements.find((e) => e.key === t.key);
                     const info = ratingInfo(t.key, `${EQUIPMENT_LABELS[eq]} ${t.label}`);
-                    if (!row) return info;
+                    if (!row || readOnly) return info;
                     return (
                       <div className="space-y-1">
                         <PilotEndorsementToggle
@@ -498,11 +499,11 @@ export default async function ApplicantReviewPage({
              pilot to instructor. */}
           <div className="mt-4 border-t border-slate-100 pt-3">
             <h3 className="mb-1 text-sm font-medium text-slate-700">Instructor ratings</h3>
-            <InstructorRatingsGrid
+            {!readOnly && <InstructorRatingsGrid
               pilotProfileId={pilot.profile.id}
               applicantUserId={applicant.id}
               endorsements={pilot.endorsements.filter((e) => isInstructorRatingKey(e.key))}
-            />
+            />}
             <p className="mt-2 text-[11px] text-slate-400">{INSTRUCTOR_RATING_REFERENCE_TEXT}</p>
           </div>
 
@@ -541,11 +542,11 @@ export default async function ApplicantReviewPage({
                         title={e.declined && e.declineReason ? `Declined: ${e.declineReason}` : undefined}
                       >
                         {e.label} {e.verified ? "✓" : e.declined ? "✕" : ""}
-                        <PilotEndorsementToggle
+                        {!readOnly && <PilotEndorsementToggle
                           endorsementId={e.id}
                           verified={e.verified}
                           declined={e.declined}
-                        />
+                        />}
                         {ratingInfo(e.key, e.label)}
                       </span>
                     ))}
@@ -582,7 +583,7 @@ export default async function ApplicantReviewPage({
                           {group}
                         </p>
                         <div className="mt-1 flex flex-wrap gap-1.5">
-                          {items.map((item) => (
+                          {!readOnly && items.map((item) => (
                             <AdminGrantEndorsement
                               key={item.key}
                               pilotProfileId={pilot.profile.id}
@@ -602,7 +603,7 @@ export default async function ApplicantReviewPage({
         </div>
       )}
 
-      {applicant.accountStatus === "pending_verification" && (
+      {applicant.accountStatus === "pending_verification" && !readOnly && (
         <ApplicantReviewActions
           userId={applicant.id}
           endorsementKeys={pilot?.endorsements.map((e) => e.key) ?? []}
