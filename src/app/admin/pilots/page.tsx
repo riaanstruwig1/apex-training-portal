@@ -1,4 +1,7 @@
 import Link from "next/link";
+import { desc } from "drizzle-orm";
+import { db } from "@/db";
+import { studentSignoffs } from "@/db/schema";
 import { getAllPilotsWithSummary } from "@/lib/pilots";
 import { getPendingInvites } from "@/lib/invites";
 import { isWhatsAppConfigured } from "@/lib/whatsapp";
@@ -63,6 +66,16 @@ export default async function PilotsPage() {
     getCurrentUser(),
   ]);
   const isCFI = me?.role === "cfi";
+  const isInstructor = me?.role === "instructor";
+  // Batch 103: who has a sign-off pack (latest one per person) -> "Pack" link.
+  const packKind = new Map<string, string>();
+  if (me?.role === "cfi" || me?.role === "instructor") {
+    const rows = await db
+      .select({ id: studentSignoffs.studentUserId, kind: studentSignoffs.kind, file: studentSignoffs.packFile })
+      .from(studentSignoffs)
+      .orderBy(desc(studentSignoffs.signedOffAt));
+    for (const r of rows) if (r.file && !packKind.has(r.id)) packKind.set(r.id, r.kind);
+  }
   const pendingTotal = pilots.reduce((sum, p) => sum + p.pendingCount, 0);
   const renewalPending = pilots.filter((p) => p.caaLicenceRenewalSubmittedAt).length;
 
@@ -146,9 +159,22 @@ export default async function PilotsPage() {
                 >
                   Open
                 </Link>
+                {packKind.has(p.id) && (
+                  <a
+                    href={`/api/signoff-pack/${p.id}`}
+                    className={`ml-2 mt-3 inline-block rounded-md px-2.5 py-1.5 text-xs font-semibold ${packKind.get(p.id) === "renewal" ? "bg-amber-400 text-amber-950" : "border border-blue-300 text-blue-800"}`}
+                  >
+                    {packKind.get(p.id) === "renewal" ? "Renewal pack" : "Pack"}
+                  </a>
+                )}
+                {isInstructor && p.role === "pilot" && (
+                  <div className="mt-3">
+                    <PilotRowActions pilotId={p.id} archived={false} editOnly details={{ callSign: p.callSign, sacaaNumber: p.sacaaNumber, sahpaNumber: p.sahpaNumber, sahpaExpiryDate: p.sahpaExpiryDate ? p.sahpaExpiryDate.toISOString().slice(0, 10) : null, caaLicenceExpiryDate: p.caaLicenceExpiryDate ? p.caaLicenceExpiryDate.toISOString().slice(0, 10) : null }} />
+                  </div>
+                )}
                 {isCFI && p.role === "pilot" && (
                   <div className="mt-3">
-                    <PilotRowActions pilotId={p.id} archived={false} details={{ callSign: p.callSign, sacaaNumber: p.sacaaNumber, sahpaNumber: p.sahpaNumber, sahpaExpiryDate: p.sahpaExpiryDate ? p.sahpaExpiryDate.toISOString().slice(0, 10) : null }} />
+                    <PilotRowActions pilotId={p.id} archived={false} details={{ callSign: p.callSign, sacaaNumber: p.sacaaNumber, sahpaNumber: p.sahpaNumber, sahpaExpiryDate: p.sahpaExpiryDate ? p.sahpaExpiryDate.toISOString().slice(0, 10) : null, caaLicenceExpiryDate: p.caaLicenceExpiryDate ? p.caaLicenceExpiryDate.toISOString().slice(0, 10) : null }} />
                     <div className="mt-2 text-xs"><ResetPasswordButton userId={p.id} name={p.name} compact /></div>
                   </div>
                 )}
@@ -168,7 +194,7 @@ export default async function PilotsPage() {
                   <th className="px-4 py-3">Pending</th>
                   <th className="px-4 py-3">Licence</th>
                   <th className="px-4 py-3"></th>
-                  {isCFI && <th className="px-4 py-3"></th>}
+                  {(isCFI || isInstructor) && <th className="px-4 py-3"></th>}
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -198,10 +224,24 @@ export default async function PilotsPage() {
                       >
                         Open
                       </Link>
+                      {packKind.has(p.id) && (
+                        <a
+                          href={`/api/signoff-pack/${p.id}`}
+                          title="Download / reprint the last sign-off pack"
+                          className={`ml-2 rounded-md px-2.5 py-1.5 text-xs font-semibold ${packKind.get(p.id) === "renewal" ? "bg-amber-400 text-amber-950 hover:bg-amber-500" : "border border-blue-300 text-blue-800 hover:bg-blue-50"}`}
+                        >
+                          {packKind.get(p.id) === "renewal" ? "Renewal pack" : "Pack"}
+                        </a>
+                      )}
                     </td>
+                    {isInstructor && (
+                      <td className="px-4 py-3">
+                        {p.role === "pilot" && <PilotRowActions pilotId={p.id} archived={false} editOnly details={{ callSign: p.callSign, sacaaNumber: p.sacaaNumber, sahpaNumber: p.sahpaNumber, sahpaExpiryDate: p.sahpaExpiryDate ? p.sahpaExpiryDate.toISOString().slice(0, 10) : null, caaLicenceExpiryDate: p.caaLicenceExpiryDate ? p.caaLicenceExpiryDate.toISOString().slice(0, 10) : null }} />}
+                      </td>
+                    )}
                     {isCFI && (
                       <td className="px-4 py-3">
-                        {p.role === "pilot" && <PilotRowActions pilotId={p.id} archived={false} details={{ callSign: p.callSign, sacaaNumber: p.sacaaNumber, sahpaNumber: p.sahpaNumber, sahpaExpiryDate: p.sahpaExpiryDate ? p.sahpaExpiryDate.toISOString().slice(0, 10) : null }} />}
+                        {p.role === "pilot" && <PilotRowActions pilotId={p.id} archived={false} details={{ callSign: p.callSign, sacaaNumber: p.sacaaNumber, sahpaNumber: p.sahpaNumber, sahpaExpiryDate: p.sahpaExpiryDate ? p.sahpaExpiryDate.toISOString().slice(0, 10) : null, caaLicenceExpiryDate: p.caaLicenceExpiryDate ? p.caaLicenceExpiryDate.toISOString().slice(0, 10) : null }} />}
                         {/* Batch 98: CFI resets a pilot's password, new one by WhatsApp. */}
                         <div className="mt-1 text-xs"><ResetPasswordButton userId={p.id} name={p.name} compact /></div>
                       </td>

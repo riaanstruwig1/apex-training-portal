@@ -10,10 +10,13 @@ export default function PilotRowActions({
   pilotId,
   archived,
   details,
+  editOnly = false,
 }: {
   pilotId: string;
   archived: boolean;
-  details?: { callSign: string | null; sacaaNumber: string | null; sahpaNumber: string | null; sahpaExpiryDate: string | null };
+  details?: { callSign: string | null; sacaaNumber: string | null; sahpaNumber: string | null; sahpaExpiryDate: string | null; caaLicenceExpiryDate?: string | null };
+  /** Batch 103: instructors get Edit only (no archive / delete). */
+  editOnly?: boolean;
 }) {
   const [confirming, setConfirming] = useState(false);
   const [editing, setEditing] = useState(false);
@@ -21,6 +24,7 @@ export default function PilotRowActions({
   const [sacaa, setSacaa] = useState(details?.sacaaNumber ?? "");
   const [sahpa, setSahpa] = useState(details?.sahpaNumber ?? "");
   const [exp, setExp] = useState(details?.sahpaExpiryDate ?? "");
+  const [caaExp, setCaaExp] = useState(details?.caaLicenceExpiryDate ?? "");
   const [pending, start] = useTransition();
   const router = useRouter();
 
@@ -31,11 +35,12 @@ export default function PilotRowActions({
         <label className="text-slate-500">Call sign<input value={cs} onChange={(e) => setCs(e.target.value)} className={`${inp} block w-24 uppercase`} /></label>
         <label className="text-slate-500">SACAA No<input value={sacaa} onChange={(e) => setSacaa(e.target.value)} className={`${inp} block w-28`} /></label>
         <label className="text-slate-500">SAHPA No<input value={sahpa} onChange={(e) => setSahpa(e.target.value)} className={`${inp} block w-24`} /></label>
+        <label className="text-slate-500">SACAA licence expiry<input type="date" value={caaExp} onChange={(e) => setCaaExp(e.target.value)} className={`${inp} block`} /></label>
         <label className="text-slate-500">SAHPA expiry<input type="date" value={exp} onChange={(e) => setExp(e.target.value)} className={`${inp} block`} /></label>
         <button
           type="button"
           disabled={pending}
-          onClick={() => start(async () => { await updatePilotDetails(pilotId, { callSign: cs, sacaaNumber: sacaa, sahpaNumber: sahpa, sahpaExpiryDate: exp }); setEditing(false); router.refresh(); })}
+          onClick={() => start(async () => { await updatePilotDetails(pilotId, { callSign: cs, sacaaNumber: sacaa, sahpaNumber: sahpa, sahpaExpiryDate: exp, caaLicenceExpiryDate: caaExp }); setEditing(false); router.refresh(); })}
           className="rounded-md bg-slate-900 px-2.5 py-1.5 font-medium text-white disabled:opacity-50"
         >
           {pending ? "..." : "Save"}
@@ -61,6 +66,13 @@ export default function PilotRowActions({
         </button>
       </div>
     );
+  }
+  if (editOnly) {
+    return details && !archived ? (
+      <button type="button" onClick={() => setEditing(true)} className="text-xs font-medium text-slate-700 hover:underline">
+        Edit
+      </button>
+    ) : null;
   }
   return (
     <div className="flex items-center gap-3 text-xs">

@@ -16,6 +16,7 @@ export const ACTIVITY_LABELS: Record<string, string> = {
   reject_signup: "Rejected sign-up",
   edit_training_type: "Changed training type",
   edit_profile: "Edited profile",
+  edit_pilot_details: "Edited pilot details",
   edit_student_details: "Edited student details",
   edit_signup_date: "Changed sign-up date",
   reset_password: "Reset password",

@@ -20,7 +20,7 @@ export async function GET(_req: Request, ctx: RouteContext<"/api/signoff-pack/[s
   if (!p) return new Response("Not found", { status: 404 });
   try {
     const bytes = await readFile(p);
-    const fname = `Apex_Submission_${(stu?.name ?? "student").replace(/[^A-Za-z0-9]+/g, "_")}.zip`;
+    const fname = `Apex_${so.kind === "renewal" ? "Renewal" : "Submission"}_${(stu?.name ?? "student").replace(/[^A-Za-z0-9]+/g, "_")}.zip`;
     return new Response(new Uint8Array(bytes), {
       headers: { "Content-Type": "application/zip", "Content-Disposition": `attachment; filename="${fname}"`, "Cache-Control": "private, no-store" },
     });

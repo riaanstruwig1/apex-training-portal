@@ -18,6 +18,7 @@ import InstructorRatingsGrid from "./instructor-ratings-grid";
 import ConsentBadge from "@/components/consent-badge";
 import MedicalDeclarationStatus from "@/components/medical-declaration-status";
 import RatingInfoButton from "@/components/rating-info-button";
+import SignoffPackCard from "@/components/signoff-pack-card";
 import { getCurrentUser } from "@/lib/auth/dal";
 import { getRatingContentCounts, getRatingDocumentCounts } from "@/lib/content-counts";
 import { db } from "@/db";
@@ -165,6 +166,11 @@ export default async function ApplicantReviewPage({
           Print profile
         </Link>
       </div>
+
+      {/* Batch 103: reprint the last renewal / sign-off pack (CFI + instructors). */}
+      {(viewer?.role === "cfi" || viewer?.role === "instructor") && (
+        <SignoffPackCard userId={applicant.id} canRegenerate />
+      )}
 
       {applicant.role === "student" && <PaymentSummaryCard userId={applicant.id} profile={student?.profile} />}
       {applicant.role === "student" && student && (
