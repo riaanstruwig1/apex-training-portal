@@ -1,9 +1,13 @@
 import Link from "next/link";
+import { connection } from "next/server";
 import SignupForm from "./signup-form";
 import { getSignupInstructors } from "@/lib/signup-instructors";
 
 export default async function SignupPage() {
   // Batch 97: the student picks his instructor at sign-up.
+  // Batch 99: read the list when the page is opened, not at build time
+  // (Railway's build has no database -- batch 98 build failed on this).
+  await connection();
   const instructors = await getSignupInstructors();
   return (
     <main className="flex min-h-screen flex-1 justify-center px-4 py-10">
