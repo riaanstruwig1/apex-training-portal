@@ -14,6 +14,7 @@ import {
   examAnswers,
 } from "@/db/schema";
 import { requireStudent, requireInstructor, requireCFI } from "@/lib/auth/dal";
+import { logActivity } from "@/lib/activity-log";
 import { saveUpload, UploadError } from "@/lib/uploads";
 import { checkCallSignChoices, normalizeCallSign, parseCallSignChoices } from "@/lib/call-sign";
 
@@ -283,11 +284,17 @@ export async function verifyExamAttempt(attemptId: string) {
       verifiedByUserId: instructor.id,
     })
     .where(eq(examAttempts.id, attemptId));
+  await logActivity(instructor, "exam_marked", attempt.studentId, `${await examTitle(attempt.examId)}: verified (${attempt.passed ? "PASS" : "FAIL"})`);
 
   revalidatePath(`/instructor/students/${attempt.studentId}`);
   revalidatePath(`/instructor/students/${attempt.studentId}/exams/${attempt.examId}`);
   revalidatePath("/instructor");
   revalidatePath("/student");
+}
+
+async function examTitle(examId: string): Promise<string> {
+  const [e] = await db.select({ title: exams.title }).from(exams).where(eq(exams.id, examId)).limit(1);
+  return e?.title ?? "Exam";
 }
 
 export type SubmitPaperExamState = { error: string } | undefined;
@@ -471,7 +478,7 @@ export async function adjustExamAnswer(
   _prev: AdjustAnswerState,
   formData: FormData
 ): Promise<AdjustAnswerState> {
-  const cfi = await requireCFI();
+  const cfi = await requireInstructor(); // batch 97: instructors too (logged)
 
   const [attempt] = await db
     .select()
@@ -488,6 +495,7 @@ export async function adjustExamAnswer(
     .where(eq(examQuestions.id, questionId))
     .limit(1);
   if (!question) return { error: "Question not found." };
+  await logActivity(cfi, "exam_marked", attempt.studentId, `${await examTitle(attempt.examId)}: marks adjusted on a question`);
   const options = await db.select().from(examOptions).where(eq(examOptions.questionId, questionId));
 
   const [existing] = await db
@@ -573,7 +581,7 @@ export async function setExamResultOverride(
   _prev: ResultOverrideState,
   formData: FormData
 ): Promise<ResultOverrideState> {
-  const cfi = await requireCFI();
+  const cfi = await requireInstructor(); // batch 97: instructors too (logged)
   const [attempt] = await db
     .select()
     .from(examAttempts)
@@ -584,6 +592,7 @@ export async function setExamResultOverride(
 
   const result = String(formData.get("result") ?? "");
   const note = String(formData.get("note") ?? "").trim();
+  await logActivity(cfi, "exam_marked", attempt.studentId, `${await examTitle(attempt.examId)}: result override ${formData.get("clear") === "1" ? "cleared" : result.toUpperCase()}${note ? ` (${note})` : ""}`);
   const now = new Date();
 
   // "Back to calculated result" posts clear=1 (its own field: the PASS/FAIL
@@ -650,6 +659,7 @@ export async function staffSubmitPaperExam(
 
   const [exam] = await db.select().from(exams).where(eq(exams.id, examId)).limit(1);
   if (!exam) return { error: "Exam not found." };
+  await logActivity(staff, "paper_exam", studentId, exam.title);
 
   const current = await latestAttempt(studentId, examId);
   let replaceEmptyAttemptId: string | null = null;
@@ -743,6 +753,7 @@ export async function verifyPaperExam(attemptId: string, passed: boolean) {
       verifiedByUserId: instructor.id,
     })
     .where(eq(examAttempts.id, attemptId));
+  await logActivity(instructor, "exam_marked", attempt.studentId, `${await examTitle(attempt.examId)} (paper): ${passed ? "PASS" : "FAIL"}`);
 
   revalidatePath(`/instructor/students/${attempt.studentId}`);
   revalidatePath(`/instructor/students/${attempt.studentId}/exams/${attempt.examId}`);

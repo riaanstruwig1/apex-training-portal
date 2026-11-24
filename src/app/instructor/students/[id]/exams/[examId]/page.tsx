@@ -38,6 +38,8 @@ export default async function ExamReviewPage(
 ) {
   const staff = await requireInstructor();
   const isCFI = staff.role === "cfi";
+  // Batch 97: instructors adjust marks / override results too (logged).
+  const canMark = isCFI || staff.role === "instructor";
   const { id, examId } = await props.params;
   const sp = await props.searchParams;
   const requestedAttemptId = typeof sp.attempt === "string" ? sp.attempt : undefined;
@@ -171,7 +173,7 @@ export default async function ExamReviewPage(
           </p>
         </div>
         <div className="flex flex-wrap items-start justify-end gap-3">
-          {isCFI && (
+          {canMark && (
             <ResultOverrideForm
               attemptId={attempt.id}
               current={attempt.resultOverride}
@@ -343,7 +345,7 @@ export default async function ExamReviewPage(
                       <p className="whitespace-pre-wrap">{q.staffNote}</p>
                     </div>
                   )}
-                  {isCFI && (
+                  {canMark && (
                     <AdjustMarkForm
                       attemptId={attempt.id}
                       questionId={q.id}

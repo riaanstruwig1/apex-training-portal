@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { requireAdminOrCFI } from "@/lib/auth/dal";
+import { requireStudentReviewer } from "@/lib/auth/dal";
 import { getApplicantDetail } from "@/lib/verification";
 import { getStudentProgress } from "@/lib/progress";
 import { getLogbookEntries, summarizeLogbook } from "@/lib/logbook";
@@ -52,11 +52,12 @@ export default async function PrintProfilePage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  await requireAdminOrCFI();
+  const viewer = await requireStudentReviewer();
   const { id } = await params;
   const detail = await getApplicantDetail(id);
   if (!detail) notFound();
   const { applicant: a, pilot, student } = detail;
+  if (viewer.role === "instructor" && a.role !== "student") notFound();
   const isStudent = a.role === "student";
 
   const [sections, logEntries] = await Promise.all([

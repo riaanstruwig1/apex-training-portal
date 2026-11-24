@@ -89,6 +89,9 @@ export default async function ApplicantReviewPage({
   // uploaded application documents.
   const viewer = await getCurrentUser();
   const viewerIsCFI = viewer?.role === "cfi";
+  // Batch 97: instructors see and edit STUDENT profiles only.
+  const viewerIsInstructor = viewer?.role === "instructor";
+  if (viewerIsInstructor && detail.applicant.role !== "student") notFound();
   const [ratingCounts, ratingDocCounts, applicationDocs] = pilot
     ? await Promise.all([
         getRatingContentCounts(),
@@ -289,6 +292,7 @@ export default async function ApplicantReviewPage({
           <AdminProfileEditor
             userId={applicant.id}
             isPilot={applicant.role === "pilot"}
+            canResetPassword={!viewerIsInstructor}
             name={applicant.name}
             idPassportNumber={applicant.idPassportNumber}
             phone={applicant.phone}

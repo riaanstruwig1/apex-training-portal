@@ -81,10 +81,17 @@ export type RadioCertData = {
   issuerCaaNo: string | null;
   issuerSignature: Buffer | null;
   heldLicenceOnFile: boolean;
+  /** Batch 98: renewal/refresher pack -- "Refresher radio course done". */
+  refresher?: boolean;
 };
 
 export type PackData = {
   trainingType: SignoffTrainingType;
+  /** Batch 98 (Riaan, 24 Nov 2026): renewal/refresher course sign-off --
+   * CA 62-16 marked Renewal (no flights/hours, licence type blank), CA 62-15
+   * "Revalidation or renewal", refresher radio certificate, renewal skill
+   * test on the DTO certificate, no Solo wings certificate. */
+  renewal: boolean;
   signedOffAt: Date;
   dtoName: string;
   dtoNumber: string;

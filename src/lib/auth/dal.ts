@@ -145,6 +145,18 @@ export async function requireAdminOrCFI() {
   return user;
 }
 
+/** Batch 97 (Riaan, 24 Nov 2026): instructors review, approve and sign off
+ * STUDENTS the same as the CFI (sign-ups, full student profile, student
+ * details, POP, Phase 2). High-level settings stay CFI only. */
+export async function requireStudentReviewer() {
+  const user = await getCurrentUser();
+  if (!user) redirect("/api/session-expired");
+  if (user.role !== "admin" && user.role !== "cfi" && user.role !== "instructor") {
+    redirect(user.role === "student" ? "/student" : user.role === "pilot" ? "/pilot" : "/instructor");
+  }
+  return user;
+}
+
 export async function requirePilot() {
   const user = await getCurrentUser();
   if (!user || (user.role !== "pilot" && user.role !== "cfi" && user.role !== "instructor")) {

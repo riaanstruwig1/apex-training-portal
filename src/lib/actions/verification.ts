@@ -5,7 +5,8 @@ import { revalidatePath } from "next/cache";
 import * as z from "zod";
 import { db } from "@/db";
 import { users, pilotProfiles, pilotEndorsements, studentProfiles } from "@/db/schema";
-import { requireAdminOrCFI } from "@/lib/auth/dal";
+import { requireAdminOrCFI, requireStudentReviewer } from "@/lib/auth/dal";
+import { logActivity } from "@/lib/activity-log";
 import { ENDORSEMENT_OPTIONS, endorsementLabel, isBasicTierKey } from "@/lib/pilot-endorsements";
 import { sendEmail } from "@/lib/email";
 import { getBaseUrl } from "@/lib/base-url";
@@ -29,12 +30,15 @@ export async function approveApplicant(
   userId: string,
   verifiedEndorsementKeys: string[] = []
 ): Promise<{ whatsapp: ApprovalWhatsApp; accounts?: AccountsNoticeResult } | undefined> {
-  const reviewer = await requireAdminOrCFI();
+  const reviewer = await requireStudentReviewer();
 
   const [applicant] = await db.select().from(users).where(eq(users.id, userId)).limit(1);
   if (!applicant || applicant.accountStatus !== "pending_verification") {
     return;
   }
+  // Batch 97: instructors approve STUDENT sign-ups; pilots stay CFI/Admin.
+  if (reviewer.role === "instructor" && applicant.role !== "student") return;
+  await logActivity(reviewer, "approve_signup", userId, applicant.role === "pilot" ? "Pilot sign-up" : "Student sign-up");
 
   await db
     .update(users)
@@ -109,7 +113,10 @@ export async function approveApplicant(
 }
 
 export async function rejectApplicant(userId: string, reason: string) {
-  await requireAdminOrCFI();
+  const reviewer = await requireStudentReviewer();
+  const [target] = await db.select({ role: users.role }).from(users).where(eq(users.id, userId)).limit(1);
+  if (!target || (reviewer.role === "instructor" && target.role !== "student")) return;
+  await logActivity(reviewer, "reject_signup", userId, reason || null);
 
   await db
     .update(users)
@@ -126,7 +133,8 @@ export async function updateApplicantTrainingType(
   studentUserId: string,
   trainingType: ("pg" | "ppg" | "ppt")[]
 ) {
-  await requireAdminOrCFI();
+  const reviewer = await requireStudentReviewer();
+  await logActivity(reviewer, "edit_training_type", studentUserId, trainingType.join(", ").toUpperCase());
 
   await db
     .update(studentProfiles)

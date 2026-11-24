@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { logActivity } from "@/lib/activity-log";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 import * as z from "zod";
@@ -64,6 +65,9 @@ export async function login(
   if (user.accountStatus === "suspended") {
     return { error: "This account is suspended. Contact Apex Adventures." };
   }
+
+  // Batch 97: every login goes into the Activity log (CFI -> Activity log).
+  await logActivity({ id: user.id, name: user.name, role: user.role }, "login");
 
   await createSession(
     user.id,

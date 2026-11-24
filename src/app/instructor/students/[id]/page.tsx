@@ -42,6 +42,9 @@ export default async function StudentFolioPage(
 ) {
   const staff = await requireInstructor();
   const isCFI = staff.role === "cfi";
+  // Batch 97 (Riaan, 24 Nov 2026): instructors review, edit and sign off
+  // students the same as the CFI (logged in the Activity log).
+  const canManageStudent = staff.role === "cfi" || staff.role === "instructor";
   const infoCounts = await getExerciseContentCounts();
   const { id } = await props.params;
 
@@ -108,12 +111,12 @@ export default async function StudentFolioPage(
           requestedAt={profile?.phase2RequestedAt ?? null}
           requestedTypes={profile?.phase2RequestedTypes ?? null}
           declineReason={profile?.phase2DeclineReason ?? null}
-          canApprove={isCFI}
+          canApprove={canManageStudent}
           isIntro={intro}
           approvedAt={profile?.phase2ApprovedAt ?? null}
         />
       )}
-      <SignoffPanel student={student} profile={profile} staffId={staff.id} isCFI={isCFI} />
+      <SignoffPanel student={student} profile={profile} staffId={staff.id} isCFI={canManageStudent} />
       <div className="flex items-start gap-4">
         {/* Batch 82 (Riaan, 22 Oct 2026): bigger picture on the CFI's student
             page; click opens it full size in a new tab. */}
@@ -158,14 +161,15 @@ export default async function StudentFolioPage(
             studentId={id}
             popFile={profile.popFile ?? null}
             popUploadedAt={profile.popUploadedAt ?? null}
-            canUpload={isCFI}
+            canUpload={canManageStudent}
           />
         )}
         {/* 30 Sep 2026 (Riaan: CFI/Admin couldn't view, edit or print a
             student's full profile from here) -- the full profile page lives
             under /admin (CFI + Admin only), so regular instructors don't get
             these links. */}
-        {isCFI && (
+        {/* Batch 97: instructors open/edit the student's full profile too. */}
+        {canManageStudent && (
           <div className="mt-2 flex flex-wrap gap-2">
             <Link
               href={`/admin/applicants/${id}`}
@@ -181,7 +185,7 @@ export default async function StudentFolioPage(
             </Link>
           </div>
         )}
-        {isCFI ? (
+        {canManageStudent ? (
           <CallSignEditor
             studentUserId={id}
             callSign={profile?.callSign ?? null}
@@ -312,7 +316,7 @@ export default async function StudentFolioPage(
                 </h3>
                 <div className="flex flex-wrap gap-1.5">
                   {items.map((o) =>
-                    isCFI ? (
+                    canManageStudent ? (
                       <StudentEndorsementToggle
                         key={o.key}
                         studentUserId={id}

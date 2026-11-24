@@ -43,8 +43,17 @@ export async function buildSubmissionPack(d: PackData): Promise<{ zip: Buffer; f
   files.push({ name: "6_Logbook_Copy.pdf", data: await buildLogbookPdf(d, photoJpeg), what: "certified logbook copy" });
   if (d.idCopy) files.push({ name: `7_ID_Copy.${d.idCopy.ext}`, data: d.idCopy.bytes, what: "copy of ID / passport" });
   if (d.radioCertificate) files.push({ name: `8_Radio_Licence_Copy.${d.radioCertificate.ext}`, data: d.radioCertificate.bytes, what: "radio certificate" });
-  if (d.radioCert) files.push({ name: "8_Radio_Endorsement_Certificate.pdf", data: await buildRadioCertificate(d.radioCert, d.dtoName), what: "restricted radio endorsement certificate" });
-  files.push({ name: "9_DTO_Certificate_of_Completion.pdf", data: await buildDtoCertificate(d), what: `DTO certificate of completion (${d.dtoCertRef})` });
+  if (d.radioCert)
+    files.push(
+      d.radioCert.refresher
+        ? { name: "8_Refresher_Radio_Course_Certificate.pdf", data: await buildRadioCertificate(d.radioCert, d.dtoName), what: "refresher radio course done" }
+        : { name: "8_Radio_Endorsement_Certificate.pdf", data: await buildRadioCertificate(d.radioCert, d.dtoName), what: "restricted radio endorsement certificate" }
+    );
+  files.push({
+    name: d.renewal ? "9_DTO_Certificate_Renewal_Skill_Test.pdf" : "9_DTO_Certificate_of_Completion.pdf",
+    data: await buildDtoCertificate(d),
+    what: d.renewal ? `DTO certificate - renewal skill test signed off (${d.dtoCertRef})` : `DTO certificate of completion (${d.dtoCertRef})`,
+  });
   let n = 10;
   for (const e of d.examCopies) {
     const base = `${n++}_Exam_${slug(e.title)}`;
@@ -82,7 +91,8 @@ export async function buildSubmissionPack(d: PackData): Promise<{ zip: Buffer; f
       files.push({ name: `${base}_Scan.${e.proof.ext}`, data: e.proof.bytes, what: `${e.title} - candidate's scan` });
     }
   }
-  files.push({ name: "Solo_Wings_Certificate.pdf", data: await buildWingsCertificate(d), what: "student's Solo Wings certificate (keep, not submitted)" });
+  // Batch 98: no Solo wings for a renewal / refresher course.
+  if (!d.renewal) files.push({ name: "Solo_Wings_Certificate.pdf", data: await buildWingsCertificate(d), what: "student's Solo Wings certificate (keep, not submitted)" });
 
   const info: PackFileInfo[] = files.map((f) => ({ name: f.name, what: f.what }));
   info.push({ name: "0_Checklist.pdf", what: "this sheet" });
@@ -105,5 +115,5 @@ export async function buildSubmissionPack(d: PackData): Promise<{ zip: Buffer; f
   for (const f of files) zip.append(Buffer.from(f.data), { name: f.name });
   await zip.finalize();
   await done;
-  return { zip: Buffer.concat(chunks), fileName: `Apex_Submission_${slug(d.student.fullName)}.zip`, warnings };
+  return { zip: Buffer.concat(chunks), fileName: `Apex_${d.renewal ? "Renewal" : "Submission"}_${slug(d.student.fullName)}.zip`, warnings };
 }

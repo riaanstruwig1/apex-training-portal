@@ -19,6 +19,8 @@ export type PendingApplicant = {
   popMissing: boolean;
   /** Batch 95: ticked "discuss payment first - please contact me". */
   paymentDiscuss: boolean;
+  /** Batch 97: the instructor the student picked at sign-up. */
+  chosenInstructorName: string | null;
 };
 
 export async function getPendingApplicants(): Promise<PendingApplicant[]> {
@@ -42,15 +44,20 @@ export async function getPendingApplicants(): Promise<PendingApplicant[]> {
       courseLevel: studentProfiles.courseLevel,
       popFile: studentProfiles.popFile,
       discuss: studentProfiles.paymentDiscussFirst,
+      chosenInstructorId: studentProfiles.chosenInstructorId,
     })
     .from(studentProfiles);
+  const staffNames = new Map(
+    (await db.select({ id: users.id, name: users.name }).from(users)).map((u) => [u.id, u.name])
+  );
+  const chosenOf = new Map(sp.map((p) => [p.userId, p.chosenInstructorId ? staffNames.get(p.chosenInstructorId) ?? null : null]));
   const noPop = new Set(sp.filter((p) => !p.popFile).map((p) => p.userId));
   const discussIds = new Set(sp.filter((p) => p.discuss).map((p) => p.userId));
   const sahpaOf = new Map(sp.map((p) => [p.userId, (p.sahpaNumber ?? "").trim()]));
   const introIds = new Set(sp.filter((p) => p.courseLevel === "intro").map((p) => p.userId));
   return rows
     .filter((r) => r.role === "student" || r.role === "pilot")
-    .map((r) => ({ ...r, role: r.role as "student" | "pilot", sahpaMissing: r.role === "student" && !sahpaOf.get(r.id), introCourse: r.role === "student" && introIds.has(r.id), popMissing: r.role === "student" && noPop.has(r.id), paymentDiscuss: r.role === "student" && discussIds.has(r.id) }))
+    .map((r) => ({ ...r, role: r.role as "student" | "pilot", sahpaMissing: r.role === "student" && !sahpaOf.get(r.id), introCourse: r.role === "student" && introIds.has(r.id), popMissing: r.role === "student" && noPop.has(r.id), paymentDiscuss: r.role === "student" && discussIds.has(r.id), chosenInstructorName: chosenOf.get(r.id) ?? null }))
     .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
 }
 
@@ -92,13 +99,14 @@ export async function getApplicantDetail(userId: string) {
 }
 
 /** Small helper for "still needs review" counts elsewhere, e.g. a nav badge. */
-export async function countPendingApplicants(): Promise<number> {
+export async function countPendingApplicants(studentsOnly = false): Promise<number> {
   const rows = await db
     .select({ id: users.id })
     .from(users)
     .where(
       and(
-        eq(users.accountStatus, "pending_verification")
+        eq(users.accountStatus, "pending_verification"),
+        studentsOnly ? eq(users.role, "student") : undefined
       )
     );
   return rows.length;

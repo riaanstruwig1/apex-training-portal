@@ -87,11 +87,11 @@ export async function fillConsentForm(d: PackData): Promise<Uint8Array> {
   cellParagraph(
     p,
     fonts,
-    `Initial ${TRAINING_LABEL[d.trainingType]} licence application`,
+    `${d.renewal ? "Renewal of" : "Initial"} ${TRAINING_LABEL[d.trainingType]} licence${d.renewal ? "" : " application"}`,
     c(143.4, 339.7, 397.6, 432.1),
     { size: 9, maxLines: 2 }
   );
-  cellText(p, fonts, s.licenceNumber ? s.licenceNumber : "None - initial application", c(340.1, 543.8, 411, 431), {
+  cellText(p, fonts, s.licenceNumber ? s.licenceNumber : d.renewal ? "" : "None - initial application", c(340.1, 543.8, 411, 431), {
     size: 9,
   });
 
@@ -174,7 +174,8 @@ export async function fillCA6216(d: PackData): Promise<Uint8Array> {
   cellText(p1, fonts, s.sahpaNumber, c(285, 366, 369, 390), sz);
   cellText(p1, fonts, fmtDate(s.sahpaExpiry), c(447, 544, 369, 390), sz);
 
-  tick(p1, fonts, c(173, 292, 400, 415)); // Initial
+  if (d.renewal) tick(p1, fonts, c(173, 292, 415, 430)); // Renewal (batch 98)
+  else tick(p1, fonts, c(173, 292, 400, 415)); // Initial
   tick(p1, fonts, isPG ? c(413, 544, 400, 415) : c(490, 544, 415, 430)); // Paragliding | Powered Paragliding PPG/PPC/PPT
 
   cellText(p1, fonts, s.surname, c(180, 324, 488, 503), sz);
@@ -200,7 +201,8 @@ export async function fillCA6216(d: PackData): Promise<Uint8Array> {
   cellText(p1, fonts, post.postalCode, c(474, 539, 640, 655), sz);
   // Section B (Riaan's notes, 14 Oct 2026): current licence = "Student", glider by course,
   // flights/hours for the course type -- past 12 months and since commencing.
-  cellText(p1, fonts, "Student", c(201.2, 321.2, 681.2, 695.5), sz);
+  // Batch 98: renewal -- current licence type left blank (Riaan).
+  if (!d.renewal) cellText(p1, fonts, "Student", c(201.2, 321.2, 681.2, 695.5), sz);
   cellText(p1, fonts, d.trainingType === "pg" ? "PG" : d.trainingType === "ppg" ? "PPG" : "PPT/PPC", c(415.3, 538.6, 681.2, 695.5), sz);
   const st = courseStats(d);
   const rowsB = isPG
@@ -209,14 +211,20 @@ export async function fillCA6216(d: PackData): Promise<Uint8Array> {
       ? { page: p2, f: [229.0, 243.3], h: [244.2, 258.5] }
       : { page: p2, f: [274.6, 288.9], h: [289.8, 304.1] };
   const num = { size: 8.5, align: "center" as const };
-  cellText(rowsB.page, fonts, String(st.yearFlights), c(201.5, 282.3, rowsB.f[0], rowsB.f[1]), num);
-  cellText(rowsB.page, fonts, st.yearHours, c(201.5, 282.3, rowsB.h[0], rowsB.h[1]), num);
-  cellText(rowsB.page, fonts, String(st.totalFlights), c(449, 538.7, rowsB.f[0], rowsB.f[1]), num);
-  cellText(rowsB.page, fonts, st.totalHours, c(449, 538.7, rowsB.h[0], rowsB.h[1]), num);
+  // Batch 98: renewal -- flights and hours left out (Riaan).
+  if (!d.renewal) {
+    cellText(rowsB.page, fonts, String(st.yearFlights), c(201.5, 282.3, rowsB.f[0], rowsB.f[1]), num);
+    cellText(rowsB.page, fonts, st.yearHours, c(201.5, 282.3, rowsB.h[0], rowsB.h[1]), num);
+    cellText(rowsB.page, fonts, String(st.totalFlights), c(449, 538.7, rowsB.f[0], rowsB.f[1]), num);
+    cellText(rowsB.page, fonts, st.totalHours, c(449, 538.7, rowsB.h[0], rowsB.h[1]), num);
+  }
 
   // ---- Page 2: C radio licence, D licence/rating ----
-  cellText(p2, fonts, "SAHPA Cert", c(182.9, 300.8, 392.0, 406.1), { size: 8 });
-  cellText(p2, fonts, "Attach on Application", c(325.8, 538.7, 422.3, 436.6), { size: 8 });
+  // Section C is for first-time applicants only -- blank on a renewal (batch 98).
+  if (!d.renewal) {
+    cellText(p2, fonts, "SAHPA Cert", c(182.9, 300.8, 392.0, 406.1), { size: 8 });
+    cellText(p2, fonts, "Attach on Application", c(325.8, 538.7, 422.3, 436.6), { size: 8 });
+  }
   cellText(p2, fonts, d.radioExaminerName, c(189, 291, 448, 463), { size: 8 });
   cellText(p2, fonts, d.radioExaminerLicence, c(412, 544, 448, 463), sz);
   const [cs1, cs2, cs3] = d.callSignChoices;
@@ -224,14 +232,17 @@ export async function fillCA6216(d: PackData): Promise<Uint8Array> {
   cellText(p2, fonts, cs2, c(341, 403, 473, 488), { size: 8, align: "center" });
   cellText(p2, fonts, cs3, c(463, 544, 473, 488), { size: 8, align: "center" });
 
-  cellText(p2, fonts, "None - initial application", c(193, 544, 621, 636), sz);
-  tick(p2, fonts, c(476, 538, 692, 702), 9); // checklist: Ab Initio/Basic
+  // Batch 98: renewal -- licence type / rating to be issued left blank (Riaan).
+  if (!d.renewal) {
+    cellText(p2, fonts, "None - initial application", c(193, 544, 621, 636), sz);
+    tick(p2, fonts, c(476, 538, 692, 702), 9); // checklist: Ab Initio/Basic
+  }
 
   const instrNote = digitalNote(d.instructor.fullName, d.signedOffAt);
   const rows = isPG
     ? { page: p2, rating: c(193, 275, 680, 695), sig: c(193, 275, 695, 710), name: c(193, 275, 710, 724), lic: c(193, 275, 724, 739), date: c(193, 275, 739, 754) }
     : { page: p3, rating: c(193, 275, 40, 54), sig: c(193, 275, 54, 69), name: c(193, 275, 69, 84), lic: c(193, 275, 84, 99), date: c(193, 275, 99, 113) };
-  cellText(rows.page, fonts, rating, rows.rating, { size: 7.5 });
+  if (!d.renewal) cellText(rows.page, fonts, rating, rows.rating, { size: 7.5 });
   cellText(rows.page, fonts, d.instructor.fullName, rows.name, { size: 7.5 });
   cellText(rows.page, fonts, d.instructor.licenceNumber, rows.lic, { size: 7.5 });
   if (sig.instructorPng) {
@@ -271,7 +282,8 @@ export async function fillCA6215(d: PackData): Promise<Uint8Array> {
   const sz = { size: 9 };
 
   tick(p1, fonts, isPG ? c(187, 238, 400, 415) : c(432, 538, 400, 415));
-  tick(p1, fonts, c(248, 295, 425, 448)); // Initial issue
+  if (d.renewal) tick(p1, fonts, c(490, 536, 425, 448)); // Revalidation or renewal (batch 98)
+  else tick(p1, fonts, c(248, 295, 425, 448)); // Initial issue
 
   cellText(p1, fonts, s.surname, c(150, 289, 474, 489), sz);
   cellText(p1, fonts, s.firstNames, c(370, 538, 474, 489), sz);

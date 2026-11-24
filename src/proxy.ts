@@ -71,7 +71,9 @@ export default async function proxy(req: NextRequest) {
     // A CFI can also work the Admin verification queue (see
     // requireAdminOrCFI in the DAL), so only bounce a plain
     // instructor/student/pilot away.
-    if (isAdminRoute && role !== "admin" && role !== "cfi") {
+    // Batch 97: instructors review student sign-ups/profiles under /admin too
+    // (page-level guards keep pilots, forms and password resets CFI/Admin).
+    if (isAdminRoute && role !== "admin" && role !== "cfi" && role !== "instructor") {
       return NextResponse.redirect(new URL(homeFor(role), req.nextUrl));
     }
 

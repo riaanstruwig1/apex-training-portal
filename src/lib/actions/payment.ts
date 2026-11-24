@@ -6,6 +6,7 @@ import { db } from "@/db";
 import { studentProfiles } from "@/db/schema";
 import { getCurrentUser } from "@/lib/auth/dal";
 import { saveUpload, UploadError } from "@/lib/uploads";
+import { logActivity } from "@/lib/activity-log";
 
 /**
  * Proof-of-Payment upload + "request an invoice" for students (chat
@@ -57,6 +58,7 @@ export async function uploadOwnPop(
       invoiceRequestedAt: null,
     })
     .where(eq(studentProfiles.userId, user.id));
+  await logActivity(user, "pop_upload", user.id, "Uploaded by the student");
 
   revalidatePath("/student");
   revalidatePath("/student/profile");
@@ -94,8 +96,8 @@ export async function staffUploadPop(
   formData: FormData
 ): Promise<PopFormState> {
   const user = await getCurrentUser();
-  if (!user || (user.role !== "cfi" && user.role !== "admin")) {
-    return { error: "Only the CFI or Admin can upload a proof of payment." };
+  if (!user || (user.role !== "cfi" && user.role !== "admin" && user.role !== "instructor")) {
+    return { error: "Only staff can upload a proof of payment." };
   }
   const [sp] = await db
     .select({ id: studentProfiles.id })
@@ -121,6 +123,7 @@ export async function staffUploadPop(
     .update(studentProfiles)
     .set({ popFile: filename, popUploadedAt: new Date(), invoiceRequestedAt: null })
     .where(eq(studentProfiles.userId, studentId));
+  await logActivity(user, "pop_upload", studentId, "Uploaded by staff");
 
   revalidatePath(`/instructor/students/${studentId}`);
   revalidatePath(`/admin/applicants/${studentId}`);

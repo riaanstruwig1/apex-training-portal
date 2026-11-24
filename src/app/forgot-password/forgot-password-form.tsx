@@ -9,9 +9,9 @@ export default function ForgotPasswordForm() {
   if (state?.success) {
     return (
       <p className="rounded-md bg-green-50 px-3 py-2 text-sm text-green-800">
-        Thanks -- if that email matches an account here, a reset link is on its way. It&rsquo;s
-        good for 1 hour. If it doesn&rsquo;t arrive, check spam, or ask your CFI/Admin to reset it
-        for you directly.
+        Thanks -- if that email matches an account here, a new password is on its way to the
+        WhatsApp number on your profile (or a reset link to your email if we have no number). If
+        nothing arrives, ask your CFI/Admin to reset it for you.
       </p>
     );
   }

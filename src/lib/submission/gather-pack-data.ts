@@ -28,6 +28,8 @@ export type SignoffInput = {
   instructorRatingLine?: string;
   /** Batch 90: leave the student's saved signature off (e.g. a bad image) -- he signs by hand. */
   omitStudentSignature?: boolean;
+  /** Batch 98: renewal/refresher sign-off. */
+  renewal?: boolean;
 };
 
 async function readUpload(userId: string, file: string | null): Promise<Buffer | null> {
@@ -95,7 +97,8 @@ export async function gatherPackData(studentUserId: string, input: SignoffInput)
   }));
   const unverified = logbook.filter((e) => !e.verified).length;
   if (unverified) warnings.push(`${unverified} logbook flight(s) are not countersigned by an instructor.`);
-  if (!logbook.length) warnings.push("The student has no logbook entries.");
+  const renewal = !!input.renewal;
+  if (!logbook.length && !renewal) warnings.push("The student has no logbook entries.");
 
   // Signatures
   const consented = !!u.signatureFormsConsentAt;
@@ -123,8 +126,23 @@ export async function gatherPackData(studentUserId: string, input: SignoffInput)
   const examCopies = await gatherExamCopies(studentUserId, ins.id, instructorSignature);
   const passedCats = new Set(examCopies.map((e) => e.category));
   const wantMain = input.trainingType === "pg" ? "pg" : input.trainingType;
-  if (!passedCats.has(wantMain)) warnings.push(`No passed and verified ${wantMain.toUpperCase()} exam found for this student - the exam copy is missing from the pack.`);
-  const radioCert = await gatherRadioCert(studentUserId);
+  if (!passedCats.has(wantMain) && !renewal) warnings.push(`No passed and verified ${wantMain.toUpperCase()} exam found for this student - the exam copy is missing from the pack.`);
+  // Batch 98: a renewal always gets a "refresher radio course done" certificate,
+  // issued by the signing instructor.
+  const radioCert = renewal
+    ? {
+        studentName: u.name,
+        sahpaNumber: sp?.sahpaNumber ?? null,
+        issuedAt: input.signedOffAt,
+        ref: `DTO0012/${ymd(input.signedOffAt)}/RF`,
+        issuerName: ins.name,
+        issuerLine: input.instructorRatingLine || (ins.role === "cfi" ? "Chief Flight Instructor (CFI)" : "Flight Instructor"),
+        issuerCaaNo: input.instructorLicenceNumber || null,
+        issuerSignature: instructorSignature,
+        heldLicenceOnFile: true,
+        refresher: true,
+      }
+    : await gatherRadioCert(studentUserId);
   if (!radioCert) warnings.push("No passed radio exam (or verified held radio licence) - no radio certificate in the pack.");
 
   // DTO certificate reference: DTO012/yyyymmdd/n, n = order among that day's sign-offs.
@@ -149,6 +167,7 @@ export async function gatherPackData(studentUserId: string, input: SignoffInput)
     examCopies,
     radioCert,
     trainingType: input.trainingType,
+    renewal,
     signedOffAt: input.signedOffAt,
     dtoName: DTO_NAME,
     dtoNumber: sp?.dtoNumber ?? "SACAA-0012DTO",

@@ -46,7 +46,10 @@ export function SignoffForm(props: {
   hasId: boolean;
   instructorCaaNo: string;
   examinerName: string;
+  /** Batch 98: renewal / refresher course (the gold button). */
+  renewal?: boolean;
 }) {
+  const renewal = !!props.renewal;
   const [state, action, pending] = useActionState(signOffStudent, undefined);
   const checks = [
     { ok: props.hasPhoto, text: "Profile picture (passport photo)" },
@@ -57,6 +60,15 @@ export function SignoffForm(props: {
   return (
     <form action={action} className="space-y-4">
       <input type="hidden" name="studentId" value={props.studentId} />
+      {renewal && <input type="hidden" name="renewal" value="1" />}
+      {renewal && (
+        <p className="rounded-md border border-amber-300 bg-amber-50 p-2 text-sm text-amber-900">
+          Renewal / refresher course: builds the SACAA renewal pack. CA 62-16 is marked <strong>Renewal</strong> (flights,
+          hours and licence type left blank), CA 62-15 <strong>Revalidation or renewal</strong>, the radio certificate says{" "}
+          <strong>Refresher radio course done</strong> and the DTO certificate <strong>Renewal skill test signed off</strong>. No
+          Solo wings.
+        </p>
+      )}
       <ul className="space-y-1 text-sm">
         {checks.map((c) => (
           <li key={c.text} className={c.ok ? "text-green-700" : "text-amber-700"}>{c.ok ? "✓" : "!"} {c.text}</li>
@@ -76,9 +88,9 @@ export function SignoffForm(props: {
         <label className="text-sm">Rating line on the DTO certificate
           <input name="instructorRatingLine" placeholder="e.g. CFI-Grade A PPG, PPT, PPC / Grade B PG" className={input} />
         </label>
-        <label className="text-sm">Radio examiner (CA 62-16 C)<input name="radioExaminerName" defaultValue={props.examinerName} className={input} /></label>
-        <label className="text-sm">Examiner licence no.<input name="radioExaminerLicence" defaultValue="RA-RTE013" className={input} /></label>
-        {[1, 2, 3].map((n) => (
+        {!renewal && <label className="text-sm">Radio examiner (CA 62-16 C)<input name="radioExaminerName" defaultValue={props.examinerName} className={input} /></label>}
+        {!renewal && <label className="text-sm">Examiner licence no.<input name="radioExaminerLicence" defaultValue="RA-RTE013" className={input} /></label>}
+        {!renewal && [1, 2, 3].map((n) => (
           <label key={n} className="text-sm">Call sign choice {n}{props.callSignChoices?.[n - 1] ? " (student's choice, radio exam)" : ""}
             <input
               name={`callSign${n}`}
@@ -107,10 +119,20 @@ export function SignoffForm(props: {
         </label>
       </fieldset>
       <Messages state={state} />
-      <button disabled={pending} className="rounded-md bg-blue-700 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-800 disabled:opacity-50">
-        {pending ? "Signing off and building pack..." : "Sign off student - award Solo wings"}
+      <button
+        disabled={pending}
+        className={
+          renewal
+            ? "rounded-md bg-gradient-to-b from-amber-300 to-amber-500 px-4 py-2 text-sm font-bold text-amber-950 shadow ring-1 ring-amber-600 hover:from-amber-400 hover:to-amber-600 disabled:opacity-50"
+            : "rounded-md bg-blue-700 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-800 disabled:opacity-50"
+        }
+      >
+        {pending ? "Signing off and building pack..." : renewal ? "Sign off renewal - build SACAA renewal pack" : "Sign off student - award Solo wings"}
       </button>
-      <p className="text-xs text-slate-500">The student stays on the Student list until his CAA licence is submitted. This builds the SAHPA/CAA submission pack.</p>
+      <p className="text-xs text-slate-500">
+        The student stays on the Student list until his CAA licence is submitted. This builds the{" "}
+        {renewal ? "SACAA renewal pack" : "SAHPA/CAA submission pack"}.
+      </p>
     </form>
   );
 }

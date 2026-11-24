@@ -237,6 +237,8 @@ export const studentProfiles = sqliteTable("student_profiles", {
   // Batch 95 (Riaan, 9 Nov 2026): ticked "I'd like to discuss payment first -
   // please contact me" at sign-up, so he could submit without a POP.
   paymentDiscussFirst: integer("payment_discuss_first", { mode: "boolean" }).notNull().default(false),
+  // Batch 97 (Riaan, 24 Nov 2026): the instructor the student picked at sign-up.
+  chosenInstructorId: text("chosen_instructor_id").references(() => users.id, { onDelete: "set null" }),
   // 19 Oct 2026 (Riaan): "PG/PPG Intro training" -- a student who signs up
   // for Phase 1 only. "intro": Phase 1 folio + logbook only; Phase 2 and
   // theory sections, study notes and exams are shown but locked, until the
@@ -1063,9 +1065,28 @@ export const studentSignoffs = sqliteTable(
     // Pack zip: filename under data/uploads/<studentUserId>/
     packFile: text("pack_file"),
     packGeneratedAt: integer("pack_generated_at", { mode: "timestamp" }),
+    // Batch 98 (Riaan, 24 Nov 2026): "initial" (Solo wings) or "renewal"
+    // (renewal/refresher course -- SACAA renewal pack, no wings).
+    kind: text("kind").notNull().default("initial"),
     createdAt: integer("created_at", { mode: "timestamp" })
       .notNull()
       .default(sql`(unixepoch())`),
   },
   (t) => [uniqueIndex("student_signoff_unique").on(t.studentUserId, t.trainingType)]
 );
+
+/** Batch 97 (Riaan, 24 Nov 2026): "keep a LOG of changes, who logs in, who did
+ * what and who signs off". One row per event; written by logActivity(). */
+export const activityLog = sqliteTable("activity_log", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  at: integer("at", { mode: "timestamp_ms" }).notNull(),
+  actorId: text("actor_id").references(() => users.id, { onDelete: "set null" }),
+  actorName: text("actor_name"),
+  actorRole: text("actor_role"),
+  action: text("action").notNull(), // see ACTIVITY_LABELS in lib/activity-log
+  targetUserId: text("target_user_id").references(() => users.id, { onDelete: "set null" }),
+  targetName: text("target_name"),
+  details: text("details"),
+});

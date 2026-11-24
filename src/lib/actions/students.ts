@@ -5,8 +5,9 @@ import { eq, and } from "drizzle-orm";
 import * as z from "zod";
 import { revalidatePath } from "next/cache";
 import { db } from "@/db";
-import { users, studentProfiles, studentExerciseProgress } from "@/db/schema";
-import { requireInstructor, requireCFI, requireAdminOrCFI } from "@/lib/auth/dal";
+import { users, studentProfiles, studentExerciseProgress, exercises } from "@/db/schema";
+import { requireInstructor, requireCFI, requireStudentReviewer } from "@/lib/auth/dal";
+import { logActivity } from "@/lib/activity-log";
 import { getBaseUrl } from "@/lib/base-url";
 import { INTRO_TRAINING_TYPES } from "@/lib/intro-course";
 import { formatTrainingTypes } from "@/lib/exams";
@@ -124,7 +125,8 @@ export async function resendInvite(studentUserId: string) {
 /** Archives a student: hides them from the main roster without deleting
  * their data (logbook, sign-offs, etc. are all kept). Reversible. */
 export async function archiveStudent(studentUserId: string) {
-  await requireCFI();
+  const cfi = await requireCFI();
+  await logActivity(cfi, "archive_student", studentUserId);
 
   await db
     .update(studentProfiles)
@@ -136,7 +138,8 @@ export async function archiveStudent(studentUserId: string) {
 
 /** Restores a previously-archived student back to "active". */
 export async function restoreStudent(studentUserId: string) {
-  await requireCFI();
+  const cfi = await requireCFI();
+  await logActivity(cfi, "restore_student", studentUserId);
 
   await db
     .update(studentProfiles)
@@ -151,7 +154,9 @@ export async function restoreStudent(studentUserId: string) {
  * delete along with the user row. Not reversible; the UI should confirm
  * before calling this. */
 export async function deleteStudent(studentUserId: string) {
-  await requireCFI();
+  const cfi = await requireCFI();
+  // Log before the delete (the target row disappears; its name stays in the log).
+  await logActivity(cfi, "delete_student", studentUserId);
 
   // Guard the role too, not just the id -- this action should never be able
   // to delete an instructor account even if called with a bad id.
@@ -209,6 +214,9 @@ export async function setExerciseStatus(
     });
   }
 
+  const [ex] = await db.select({ code: exercises.code, title: exercises.title }).from(exercises).where(eq(exercises.id, exerciseId)).limit(1);
+  await logActivity(instructor, "exercise", studentId, `${ex ? `${ex.code} ${ex.title}` : "Exercise"}: ${status.replace("_", " ")}`);
+
   revalidatePath(`/instructor/students/${studentId}`);
   revalidatePath("/student/exercises");
   revalidatePath("/student");
@@ -236,7 +244,21 @@ export async function updateStudentDetails(
     trainingType?: ("pg" | "ppg" | "ppt")[];
   }
 ) {
-  await requireCFI();
+  // Batch 97: instructors edit student details too (logged).
+  const staff = await requireStudentReviewer();
+  await logActivity(
+    staff,
+    "edit_student_details",
+    studentUserId,
+    [
+      details.callSign && `call sign ${details.callSign.trim().toUpperCase()}`,
+      details.sahpaNumber && `SAHPA ${details.sahpaNumber.trim()}`,
+      details.sacaaNumber && `SACAA ${details.sacaaNumber.trim()}`,
+      details.trainingType && `training ${details.trainingType.join("/").toUpperCase()}`,
+    ]
+      .filter(Boolean)
+      .join(", ") || null
+  );
 
   await db
     .update(studentProfiles)
@@ -274,7 +296,8 @@ export async function setStudentSignUpDate(
   studentUserId: string,
   signUpDate: string
 ): Promise<SignUpDateState> {
-  await requireAdminOrCFI();
+  const staff = await requireStudentReviewer();
+  await logActivity(staff, "edit_signup_date", studentUserId, signUpDate);
 
   if (!signUpDate) {
     return { error: "Enter a valid date." };

@@ -199,7 +199,7 @@ export default async function PilotDashboard() {
       {signoff && (
         <div className="rounded-lg border border-amber-300 bg-amber-50 p-4">
           <p className="text-base font-semibold text-amber-900">
-            🪽 Solo wings awarded {signoff.signedOffAt.toLocaleDateString()}
+            {signoff.kind === "renewal" ? "★ Renewal skill test signed off" : "🪽 Solo wings awarded"} {signoff.signedOffAt.toLocaleDateString()}
           </p>
           {profile?.awaitingCaaLicenceSince && (
             <p className="mt-1 text-sm text-amber-900">
@@ -207,7 +207,7 @@ export default async function PilotDashboard() {
             </p>
           )}
           {profile?.awaitingCaaLicenceSince && <CaaLicenceForm defaultSacaa={profile.sacaaNumber ?? ""} />}
-          <div className="mt-2 flex flex-wrap gap-2">
+          <div className={`mt-2 flex flex-wrap gap-2 ${signoff.kind === "renewal" ? "hidden" : ""}`}>
             <a href={`/api/signoff-certificate/${user.id}`} className="rounded-md border border-amber-400 bg-white px-3 py-1.5 text-xs font-semibold text-amber-900 hover:bg-amber-100">
               Solo wings certificate (PDF)
             </a>

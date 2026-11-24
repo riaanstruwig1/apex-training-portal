@@ -8,6 +8,7 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/db";
 import { flightLogEntries, users } from "@/db/schema";
 import { requireStudentOrPilot, requireInstructor } from "@/lib/auth/dal";
+import { logActivity } from "@/lib/activity-log";
 import { WIND_DIRECTIONS, WIND_SPEEDS, composeAircraft } from "@/lib/logbook-format";
 
 /** The logbook lives at a different URL for a student vs. a pilot-side
@@ -309,6 +310,8 @@ export async function verifyLogbookEntry(
       instructorComment: comment?.trim() || null,
     })
     .where(eq(flightLogEntries.id, entryId));
+  const [fl] = await db.select({ date: flightLogEntries.date, site: flightLogEntries.site }).from(flightLogEntries).where(eq(flightLogEntries.id, entryId)).limit(1);
+  await logActivity(instructor, "logbook_countersign", studentId, fl ? `Flight ${fl.date.toLocaleDateString("en-ZA")} at ${fl.site}` : null);
 
   revalidatePath(`/instructor/students/${studentId}`);
   // The owning account could be a student or a pilot-side one -- revalidate

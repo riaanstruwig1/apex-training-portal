@@ -1,7 +1,10 @@
 import Link from "next/link";
 import SignupForm from "./signup-form";
+import { getSignupInstructors } from "@/lib/signup-instructors";
 
-export default function SignupPage() {
+export default async function SignupPage() {
+  // Batch 97: the student picks his instructor at sign-up.
+  const instructors = await getSignupInstructors();
   return (
     <main className="flex min-h-screen flex-1 justify-center px-4 py-10">
       <div className="w-full max-w-2xl">
@@ -14,7 +17,7 @@ export default function SignupPage() {
           </p>
         </div>
         <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-          <SignupForm />
+          <SignupForm instructors={instructors} />
         </div>
         <p className="mt-4 text-center text-sm text-slate-500">
           Already have an account?{" "}

@@ -407,6 +407,20 @@
       "when": 1794234410038,
       "tag": "0057_payment_discuss_first",
       "breakpoints": true
+    },
+    {
+      "idx": 58,
+      "version": "6",
+      "when": 1795511679911,
+      "tag": "0058_activity_log_chosen_instructor",
+      "breakpoints": true
+    },
+    {
+      "idx": 59,
+      "version": "6",
+      "when": 1795512286696,
+      "tag": "0059_signoff_kind",
+      "breakpoints": true
     }
   ]
 }

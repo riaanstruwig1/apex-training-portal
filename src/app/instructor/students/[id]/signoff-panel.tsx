@@ -14,10 +14,12 @@ export default async function SignoffPanel({
   isCFI,
 }: {
   student: typeof users.$inferSelect;
-  profile: { trainingType: string | null; callSign: string | null } | undefined;
+  profile: { trainingType: string | null; callSign: string | null; chosenInstructorId?: string | null } | undefined;
   staffId: string;
   isCFI: boolean;
 }) {
+  const [viewer] = await db.select({ role: users.role }).from(users).where(eq(users.id, staffId)).limit(1);
+  const isCFIUser = viewer?.role === "cfi";
   const [so] = await db.select().from(studentSignoffs).where(eq(studentSignoffs.studentUserId, student.id)).orderBy(desc(studentSignoffs.signedOffAt)).limit(1);
 
   if (so) {
@@ -30,15 +32,17 @@ export default async function SignoffPanel({
       .limit(1);
     const awaiting = student.role === "student" && !!pp?.awaiting;
     return (
-      <section id="signoff" className="scroll-mt-20 rounded-lg border border-green-300 bg-green-50 p-4">
-        <h2 className="text-base font-semibold text-green-900">Signed off - Solo wings awarded</h2>
+      <section id="signoff" className={`scroll-mt-20 rounded-lg border p-4 ${so.kind === "renewal" ? "border-amber-400 bg-amber-50" : "border-green-300 bg-green-50"}`}>
+        <h2 className="text-base font-semibold text-green-900">
+          {so.kind === "renewal" ? "Renewal skill test signed off - SACAA renewal pack" : "Signed off - Solo wings awarded"}
+        </h2>
         <p className="text-sm text-green-900">
           {TRAINING_LABEL[so.trainingType]} · {so.signedOffAt.toLocaleDateString()}
           {student.role === "student" && " · stays on the Student list until the CAA licence is submitted"}
         </p>
         <div className="mt-3 flex flex-wrap items-start gap-3">
           <a href={`/api/signoff-pack/${student.id}`} className="rounded-md bg-blue-700 px-3 py-1.5 text-sm font-semibold text-white hover:bg-blue-800">
-            Download submission pack (.zip)
+            {so.kind === "renewal" ? "Download renewal pack (.zip)" : "Download submission pack (.zip)"}
           </a>
           {canRegen && <RegenerateForm studentId={student.id} trainingType={so.trainingType} />}
           {canRegen && student.signatureFile && (
@@ -54,7 +58,7 @@ export default async function SignoffPanel({
           <div className="mt-4 rounded-md border border-amber-300 bg-amber-50 p-3">
             <p className="text-sm font-semibold text-amber-900">Awaiting SACAA licence</p>
             <p className="text-sm text-amber-900">
-              Pack printed, Solo wings and certificate given. When the SACAA licence is added (by the student on their
+              {so.kind === "renewal" ? "Renewal pack printed." : "Pack printed, Solo wings and certificate given."} When the SACAA licence is added (by the student on their
               dashboard, or by you below), they move to the Pilots list.
             </p>
             <CaaLicenceForm defaultSacaa={pp?.sacaa ?? ""} studentId={student.id} studentName={student.name} />
@@ -71,7 +75,25 @@ export default async function SignoffPanel({
   // The instructor's own CAA number (027...) lives on their linked pilot profile.
   const [staffPilot] = await db.select({ sacaa: pilotProfiles.sacaaNumber }).from(pilotProfiles).where(eq(pilotProfiles.userId, staffId)).limit(1);
   const [staffUser] = await db.select({ name: users.name }).from(users).where(eq(users.id, staffId)).limit(1);
+  const formProps = {
+    instructorCaaNo: staffPilot?.sacaa ?? "",
+    examinerName: staffUser?.name ?? "",
+    studentId: student.id,
+    trainingType: trainingType as "pg" | "ppg" | "ppt",
+    surname: parts.length > 1 ? parts[parts.length - 1] : student.name,
+    firstNames: parts.length > 1 ? parts.slice(0, -1).join(" ") : "",
+    callSign: profile?.callSign ?? "",
+    unverifiedCount: unverified,
+    hasSignature: !!student.signatureFile,
+    signatureConsent: (student.signatureFormsConsentAt ? "yes" : student.signatureFormsConsentDeclinedAt ? "no" : null) as "yes" | "no" | null,
+    hasPhoto: !!student.profilePictureFile,
+    hasId: !!student.idPassportFile,
+  };
+  // Batch 98 (Riaan, 24 Nov 2026): gold renewal / refresher button -- his
+  // selected instructor or the CFI (any instructor if none was selected).
+  const canRenew = isCFIUser || !profile?.chosenInstructorId || profile.chosenInstructorId === staffId;
   return (
+    <div className="space-y-3">
     <details className="group rounded-lg border border-slate-300 bg-white">
       <summary className="flex cursor-pointer list-none items-center justify-between rounded-lg bg-blue-700 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-800">
         <span>Sign off student - award Solo wings</span>
@@ -96,5 +118,18 @@ export default async function SignoffPanel({
       />
       </div>
     </details>
+    {canRenew && (
+      <details className="group rounded-lg border-2 border-amber-400 bg-white">
+        <summary className="flex cursor-pointer list-none items-center justify-between rounded-md bg-gradient-to-r from-amber-300 via-yellow-300 to-amber-500 px-4 py-3 text-sm font-bold text-amber-950 shadow-inner hover:from-amber-400 hover:to-amber-600">
+          <span>&#9733; Renewal / refresher course - SACAA renewal pack</span>
+          <span className="text-xs font-normal opacity-80 group-open:hidden">Click to open</span>
+          <span className="hidden text-xs font-normal opacity-80 group-open:inline">Click to close</span>
+        </summary>
+        <div className="p-4">
+          <SignoffForm {...formProps} renewal />
+        </div>
+      </details>
+    )}
+    </div>
   );
 }

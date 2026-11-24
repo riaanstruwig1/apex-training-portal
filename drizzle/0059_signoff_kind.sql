@@ -1,0 +1,1 @@
+ALTER TABLE `student_signoffs` ADD `kind` text DEFAULT 'initial' NOT NULL;

@@ -4,7 +4,8 @@ import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { db } from "@/db";
 import { studentProfiles, users } from "@/db/schema";
-import { requireCFI, requireStudent } from "@/lib/auth/dal";
+import { requireInstructor, requireStudent } from "@/lib/auth/dal";
+import { logActivity } from "@/lib/activity-log";
 import { formatTrainingTypes, parseTrainingTypes, type TrainingType } from "@/lib/training-types";
 import { isIntroCourse } from "@/lib/intro-course";
 import { HUB_URL, normalizePhone } from "@/lib/invite-message";
@@ -88,7 +89,8 @@ export async function approvePhase2(
   _prev: Phase2State,
   formData: FormData
 ): Promise<Phase2State> {
-  const cfi = await requireCFI();
+  // Batch 97: instructors approve Phase 2 too (logged).
+  const cfi = await requireInstructor();
   const types = typesFrom(formData);
   if (types.length === 0) return { error: "Tick at least one course (PG, PPG or PPT/PPC)." };
 
@@ -114,6 +116,7 @@ export async function approvePhase2(
       phase2DeclineReason: null,
     })
     .where(eq(studentProfiles.id, row.profile.id));
+  await logActivity(cfi, "phase2_approve", studentUserId, typesText(types));
 
   const first = row.name.trim().split(/\s+/)[0] || "there";
   const sent = await sendTo(
@@ -137,9 +140,10 @@ export async function declinePhase2(
   _prev: Phase2State,
   formData: FormData
 ): Promise<Phase2State> {
-  await requireCFI();
+  const staff = await requireInstructor();
   const reason = String(formData.get("reason") ?? "").trim();
   if (!reason) return { error: "Add a short reason (the student will see it)." };
+  await logActivity(staff, "phase2_decline", studentUserId, reason);
   await db
     .update(studentProfiles)
     .set({

@@ -416,7 +416,7 @@ export default async function InstructorDashboard() {
   const staff = await requireInstructor();
   const isCFI = staff.role === "cfi";
 
-  const [allStudents, pendingExamsByStudent, examStatusByStudent, pendingApplicants, studentInvites, awaitingLicence] =
+  const [allStudents, pendingExamsByStudent, examStatusByStudent, allPendingApplicants, studentInvites, awaitingLicence] =
     await Promise.all([
       getAllStudentsWithSummary(),
       getPendingExamVerifications(),
@@ -428,6 +428,8 @@ export default async function InstructorDashboard() {
       isCFI ? getPendingInvites("student") : Promise.resolve([]),
       getAwaitingLicence(),
     ]);
+  // Batch 97: instructors approve student sign-ups (pilots stay CFI/Admin).
+  const pendingApplicants = isCFI ? allPendingApplicants : allPendingApplicants.filter((a) => a.role === "student");
   const activeStudents = allStudents.filter((s) => s.status !== "archived");
   const archivedStudents = allStudents.filter((s) => s.status === "archived");
 

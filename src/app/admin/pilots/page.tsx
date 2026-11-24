@@ -4,7 +4,8 @@ import { getPendingInvites } from "@/lib/invites";
 import { isWhatsAppConfigured } from "@/lib/whatsapp";
 import InvitesBlock from "./invites-block";
 import PilotRowActions from "./pilot-row-actions";
-import { getCurrentUser } from "@/lib/auth/dal";
+import ResetPasswordButton from "@/components/reset-password-button";
+import { getCurrentUser, requireAdminOrCFI } from "@/lib/auth/dal";
 
 const roleLabel: Record<string, string> = {
   pilot: "Pilot",
@@ -52,6 +53,7 @@ function licenceStatus(
 }
 
 export default async function PilotsPage() {
+  await requireAdminOrCFI(); // batch 97: instructors can reach /admin, pilots stay CFI/Admin
   const [pilots, invites, archivedPilots, me] = await Promise.all([
     getAllPilotsWithSummary(),
     getPendingInvites("pilot"),
@@ -145,6 +147,7 @@ export default async function PilotsPage() {
                 {isCFI && p.role === "pilot" && (
                   <div className="mt-3">
                     <PilotRowActions pilotId={p.id} archived={false} details={{ callSign: p.callSign, sacaaNumber: p.sacaaNumber, sahpaNumber: p.sahpaNumber, sahpaExpiryDate: p.sahpaExpiryDate ? p.sahpaExpiryDate.toISOString().slice(0, 10) : null }} />
+                    <div className="mt-2 text-xs"><ResetPasswordButton userId={p.id} name={p.name} compact /></div>
                   </div>
                 )}
               </div>
@@ -197,6 +200,8 @@ export default async function PilotsPage() {
                     {isCFI && (
                       <td className="px-4 py-3">
                         {p.role === "pilot" && <PilotRowActions pilotId={p.id} archived={false} details={{ callSign: p.callSign, sacaaNumber: p.sacaaNumber, sahpaNumber: p.sahpaNumber, sahpaExpiryDate: p.sahpaExpiryDate ? p.sahpaExpiryDate.toISOString().slice(0, 10) : null }} />}
+                        {/* Batch 98: CFI resets a pilot's password, new one by WhatsApp. */}
+                        <div className="mt-1 text-xs"><ResetPasswordButton userId={p.id} name={p.name} compact /></div>
                       </td>
                     )}
                   </tr>

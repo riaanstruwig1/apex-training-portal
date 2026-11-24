@@ -18,11 +18,11 @@ export default async function InstructorLayout({
   // "My Portfolio" link and clickable profile name always work, not just
   // for staff who happened to already have one.
   const [pendingCount, pendingPilotCount, pendingRenewalCount, pendingResetCount, phase2Count] = await Promise.all([
-    isCFI ? countPendingApplicants() : Promise.resolve(0),
+    countPendingApplicants(!isCFI),
     isCFI ? countPendingPilotEndorsements() : Promise.resolve(0),
     isCFI ? countPendingLicenceRenewals() : Promise.resolve(0),
     isCFI ? countPasswordResetRequests() : Promise.resolve(0),
-    isCFI ? countPhase2Requests() : Promise.resolve(0),
+    countPhase2Requests(),
     ensurePilotProfile(staff.id),
   ]);
   const cfiOnlyLinks = [
@@ -38,9 +38,16 @@ export default async function InstructorLayout({
     { href: "/admin/pilots", label: "Pilots", badge: pendingPilotCount + pendingRenewalCount },
     { href: "/admin/password-resets", label: "Password resets", badge: pendingResetCount },
     { href: "/instructor/settings", label: "Settings" },
+    { href: "/instructor/activity", label: "Activity log" },
+  ];
+  // Batch 97 (Riaan, 24 Nov 2026): instructors review sign-ups and open
+  // student profiles the same as the CFI.
+  const instructorReviewLinks = [
+    { href: "/admin", label: "Verification queue", badge: pendingCount + phase2Count },
+    { href: "/admin/students", label: "Student profiles" },
   ];
   const pilotLinks = [{ href: "/pilot", label: "My Portfolio" }];
-  const links = [...staffLinks, ...pilotLinks, ...(isCFI ? cfiOnlyLinks : [])];
+  const links = [...staffLinks, ...pilotLinks, ...(isCFI ? cfiOnlyLinks : instructorReviewLinks)];
 
   return (
     <div className="flex min-h-screen flex-col">

@@ -35,7 +35,7 @@ export default async function StudentLayout({
   // Second hard gate (15 Oct 2026, Riaan): no SAHPA number, no logbook / folio.
   // Signed off but CAA licence not yet submitted: he stays a student and sees
   // the licence upload here until it is in (then he moves to Pilots).
-  const [signoff] = await db.select({ at: studentSignoffs.signedOffAt }).from(studentSignoffs).where(eq(studentSignoffs.studentUserId, user.id)).limit(1);
+  const [signoff] = await db.select({ at: studentSignoffs.signedOffAt, kind: studentSignoffs.kind }).from(studentSignoffs).where(eq(studentSignoffs.studentUserId, user.id)).limit(1);
   const [pp] = await db.select({ awaiting: pilotProfiles.awaitingCaaLicenceSince, sacaa: pilotProfiles.sacaaNumber }).from(pilotProfiles).where(eq(pilotProfiles.userId, user.id)).limit(1);
   const awaitingLicence = !!signoff && !!pp?.awaiting;
 
@@ -63,7 +63,7 @@ export default async function StudentLayout({
             {awaitingLicence && (
               <div className="mb-6 rounded-lg border border-amber-300 bg-amber-50 p-4">
                 <p className="text-base font-semibold text-amber-900">
-                  🪽 Solo wings awarded {signoff.at.toLocaleDateString()}
+                  {signoff.kind === "renewal" ? "★ Renewal skill test signed off" : "🪽 Solo wings awarded"} {signoff.at.toLocaleDateString()}
                 </p>
                 <p className="mt-1 text-sm text-amber-900">
                   Status: <strong>Pending upload of licence from CAA</strong>. When your licence arrives, enter your SACAA No. and upload it below.

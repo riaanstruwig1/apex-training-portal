@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { requireAdminOrCFI } from "@/lib/auth/dal";
+import { requireStudentReviewer } from "@/lib/auth/dal";
 import { getAdminStudentList, type AdminStudentRow } from "@/lib/admin-students";
 import { parseTrainingTypes } from "@/lib/exams";
 import Avatar from "@/components/avatar";
@@ -64,7 +64,8 @@ function Actions({ id }: { id: string }) {
  * same profile page the verification queue and Pilots list use
  * (/admin/applicants/[id]), which has the edit form, or its print view. */
 export default async function AdminStudentsPage() {
-  await requireAdminOrCFI();
+  // Batch 97: instructors open student profiles from here too (no invites).
+  const viewer = await requireStudentReviewer();
   const [students, invites] = await Promise.all([
     getAdminStudentList(),
     getPendingInvites("student"),
@@ -184,7 +185,9 @@ export default async function AdminStudentsPage() {
         </>
       )}
 
-      <InvitesBlock audience="student" invites={invites} configured={isWhatsAppConfigured()} />
+      {viewer.role !== "instructor" && (
+        <InvitesBlock audience="student" invites={invites} configured={isWhatsAppConfigured()} />
+      )}
     </div>
   );
 }

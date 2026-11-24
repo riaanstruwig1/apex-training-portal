@@ -41,12 +41,14 @@ export default async function AdminVerificationQueue({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const [applicants, sp, phase2Requests, viewer] = await Promise.all([
+  const [allApplicants, sp, phase2Requests, viewer] = await Promise.all([
     getPendingApplicants(),
     searchParams,
     getPhase2Requests(),
     getCurrentUser(),
   ]);
+  // Batch 97: an instructor reviews STUDENT sign-ups (pilots stay CFI/Admin).
+  const applicants = viewer?.role === "instructor" ? allApplicants.filter((a) => a.role === "student") : allApplicants;
   // Set by ApplicantReviewActions after an approval (30 Sep 2026) -- shows
   // whether the "you can now log in" WhatsApp went out.
   const banner =
@@ -92,7 +94,7 @@ export default async function AdminVerificationQueue({
                   PG/PPG Intro → {(r.requestedTypes ?? "").toUpperCase().split(",").join(" + ")}
                   {r.requestedAt ? `, requested ${r.requestedAt.toLocaleDateString()}` : ""}
                 </span>
-                {viewer?.role === "cfi" ? (
+                {viewer?.role === "cfi" || viewer?.role === "instructor" ? (
                   <Link
                     href={`/instructor/students/${r.userId}#phase2`}
                     className="rounded-md bg-red-600 px-2 py-0.5 text-xs font-semibold text-white hover:bg-red-700"
@@ -136,6 +138,9 @@ export default async function AdminVerificationQueue({
                     {roleLabel[a.role]}{a.introCourse ? " -- PG/PPG Intro (Phase 1)" : ""}
                   </span>
                 </div>
+                {a.chosenInstructorName && (
+                  <p className="mb-2 text-xs text-slate-600">Instructor chosen: <span className="font-semibold">{a.chosenInstructorName}</span></p>
+                )}
                 <dl className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-sm">
                   <div>
                     <dt className="text-xs text-slate-400">Apex No.</dt>
@@ -192,6 +197,9 @@ export default async function AdminVerificationQueue({
                       <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-700">
                         {roleLabel[a.role]}{a.introCourse ? " -- PG/PPG Intro (Phase 1)" : ""}
                       </span>
+                      {a.chosenInstructorName && (
+                        <div className="mt-1 text-xs text-slate-600">Instructor: <span className="font-semibold">{a.chosenInstructorName}</span></div>
+                      )}
                     </td>
                     <td className="px-4 py-3 text-slate-600">{a.apexNumber ?? "—"}</td>
                     <td className="px-4 py-3 text-slate-600">{a.email}</td>

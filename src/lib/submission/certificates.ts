@@ -116,11 +116,21 @@ export async function buildDtoCertificate(d: PackData): Promise<Uint8Array> {
   centre(c, "Certificate of Completion", H - 108, 30, c.bold, TITLE);
   centre(c, "This certifies that", H - 160, 13, c.italicBold);
   centre(c, d.student.fullName, H - 218, 32, c.regular, rgb(0, 0, 0));
-  centre(c, `Has successfully completed ${COURSE_LONG[d.trainingType]}`, H - 262, 13, c.italicBold);
-  centre(c, "Course Endorsement Applicable with", H - 290, 13, c.italicBold);
-  centre(c, `${d.dtoName} .`, H - 318, 13, c.italicBold);
-  centre(c, "Tested and founded proficient to exercise the privileges of the applicable licence", H - 372, 10.5, c.italic);
-  centre(c, COURSE_NAME[d.trainingType], H - 440, 24, c.italicBold, rgb(0, 0, 0));
+  if (d.renewal) {
+    // Batch 98 (Riaan, 24 Nov 2026): renewal / refresher course.
+    centre(c, `Has successfully completed ${COURSE_LONG[d.trainingType]} Renewal / Refresher Course`, H - 262, 13, c.italicBold);
+    centre(c, "and the Renewal Skill Test with", H - 290, 13, c.italicBold);
+    centre(c, `${d.dtoName} .`, H - 318, 13, c.italicBold);
+    centre(c, "Renewal skill test signed off - tested and found proficient to exercise the privileges of the applicable licence", H - 372, 10.5, c.italic);
+    centre(c, COURSE_NAME[d.trainingType], H - 420, 24, c.italicBold, rgb(0, 0, 0));
+    centre(c, "Renewal Skill Test Signed Off", H - 446, 15, c.italicBold, rgb(0, 0, 0));
+  } else {
+    centre(c, `Has successfully completed ${COURSE_LONG[d.trainingType]}`, H - 262, 13, c.italicBold);
+    centre(c, "Course Endorsement Applicable with", H - 290, 13, c.italicBold);
+    centre(c, `${d.dtoName} .`, H - 318, 13, c.italicBold);
+    centre(c, "Tested and founded proficient to exercise the privileges of the applicable licence", H - 372, 10.5, c.italic);
+    centre(c, COURSE_NAME[d.trainingType], H - 440, 24, c.italicBold, rgb(0, 0, 0));
+  }
   centre(c, `#${d.dtoCertRef}`, H - 468, 14, c.regular);
   centre(c, "SACAA 0012/DTO", H - 510, 14, c.regular);
   await signatureBlock(c, {
@@ -140,14 +150,23 @@ export async function buildRadioCertificate(r: RadioCertData, dtoName: string): 
   centre(c, "Certificate of Completion", H - 108, 30, c.bold, TITLE);
   centre(c, r.studentName, H - 175, 34, c.italicBold, rgb(0, 0, 0));
   if (r.sahpaNumber) centre(c, `SAHPA SPL ${r.sahpaNumber}`, H - 222, 24, c.regular);
-  centre(c, "Has successfully completed an Aeronautical Restricted", H - 268, 13, c.italicBold);
-  centre(c, "SAHPA Endorsement Radio Licenses", H - 296, 13, c.italicBold);
-  centre(c, `${dtoName} .`, H - 324, 13, c.italicBold);
-  centre(c, "Tested and founded proficient to exercise the privileges of the relevant", H - 368, 10.5, c.italic);
-  centre(c, "Aeronautical Radio License.", H - 384, 10.5, c.italic);
-  centre(c, "Restricted Endorsement certificate", H - 436, 28, c.italicBold, rgb(0, 0, 0));
-  centre(c, `#${r.ref}`, H - 470, 15, c.regular);
-  centre(c, r.heldLicenceOnFile ? "(Restricted Radio License on file at SACAA)" : "(Restricted Radio License to be held on file at SACAA)", H - 490, 13, c.regular);
+  if (r.refresher) {
+    // Batch 98 (Riaan, 24 Nov 2026): renewal pack -- "Refresher radio course done".
+    centre(c, "Has completed a Refresher Radio Course", H - 268, 13, c.italicBold);
+    centre(c, "(Aeronautical Restricted SAHPA Endorsement Radio)", H - 296, 13, c.italicBold);
+    centre(c, `${dtoName} .`, H - 324, 13, c.italicBold);
+    centre(c, "Refresher Radio Course Done", H - 436, 28, c.italicBold, rgb(0, 0, 0));
+    centre(c, `#${r.ref}`, H - 470, 15, c.regular);
+  } else {
+    centre(c, "Has successfully completed an Aeronautical Restricted", H - 268, 13, c.italicBold);
+    centre(c, "SAHPA Endorsement Radio Licenses", H - 296, 13, c.italicBold);
+    centre(c, `${dtoName} .`, H - 324, 13, c.italicBold);
+    centre(c, "Tested and founded proficient to exercise the privileges of the relevant", H - 368, 10.5, c.italic);
+    centre(c, "Aeronautical Radio License.", H - 384, 10.5, c.italic);
+    centre(c, "Restricted Endorsement certificate", H - 436, 28, c.italicBold, rgb(0, 0, 0));
+    centre(c, `#${r.ref}`, H - 470, 15, c.regular);
+    centre(c, r.heldLicenceOnFile ? "(Restricted Radio License on file at SACAA)" : "(Restricted Radio License to be held on file at SACAA)", H - 490, 13, c.regular);
+  }
   centre(c, "Radio Theory and Practical Test", H - 522, 10.5, c.regular);
   centre(c, "Emergency Procedures", H - 546, 10.5, c.regular);
   centre(c, "Phonetic Alphabet", H - 570, 10.5, c.regular);

@@ -15,8 +15,9 @@ export async function buildChecklistPdf(d: PackData, files: PackFileInfo[], sign
     page.drawText(safeText(t), { x, y, size, font: bold ? fonts.bold : fonts.regular, color });
     y -= size + 5;
   };
-  line("SAHPA / CAA SUBMISSION PACK - CHECKLIST", 15, true, rgb(0, 0, 0));
-  line(`${d.student.fullName} - ${TRAINING_LABEL[d.trainingType]} - signed off ${fmtDate(d.signedOffAt)} by ${d.instructor.fullName}`, 9);
+  line(d.renewal ? "SACAA RENEWAL PACK - CHECKLIST" : "SAHPA / CAA SUBMISSION PACK - CHECKLIST", 15, true, rgb(0, 0, 0));
+  line(`${d.student.fullName} - ${TRAINING_LABEL[d.trainingType]} - ${d.renewal ? "RENEWAL skill test signed off" : "signed off"} ${fmtDate(d.signedOffAt)} by ${d.instructor.fullName}`, 9);
+  if (d.renewal) line("Renewal: CA 62-16 marked Renewal; flights, hours and licence type left blank; CA 62-15 marked Revalidation or renewal.", 9);
   y -= 8;
   line("Contents", 11, true);
   for (const f of files) line(`[ ]  ${f.name}  -  ${f.what}`, 9);

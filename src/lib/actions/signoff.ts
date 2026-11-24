@@ -10,6 +10,7 @@ import { getCurrentUser, requireInstructor } from "@/lib/auth/dal";
 import { gatherPackData, SignoffInput } from "@/lib/submission/gather-pack-data";
 import { buildSubmissionPack } from "@/lib/submission/pack";
 import { sendWhatsAppText } from "@/lib/whatsapp";
+import { logActivity } from "@/lib/activity-log";
 import { HUB_URL, normalizePhone } from "@/lib/invite-message";
 import { getRadioCallSignChoices } from "@/lib/exams";
 import { Grade, SignoffTrainingType, SkillGrades, TRAINING_LABEL } from "@/lib/submission/types";
@@ -62,7 +63,7 @@ function parseInput(formData: FormData, instructorUserId: string, trainingType: 
 
 /** WhatsApp to the student, the signing instructor and every CFI (Riaan, 14 Oct 2026).
  * Best effort: the sign-off never fails because a message could not be sent. */
-async function notifySignoff(studentId: string, staffId: string, studentName: string, instructorName: string, programme: string): Promise<string> {
+async function notifySignoff(studentId: string, staffId: string, studentName: string, instructorName: string, programme: string, renewal = false): Promise<string> {
   const people = await db.select({ id: users.id, role: users.role, phone: users.phone }).from(users);
   const [sp] = await db.select({ phone: studentProfiles.phone }).from(studentProfiles).where(eq(studentProfiles.userId, studentId)).limit(1);
   const targets = new Map<string, string>(); // phone -> message
@@ -71,8 +72,15 @@ async function notifySignoff(studentId: string, staffId: string, studentName: st
     if (n && !targets.has(n)) targets.set(n, msg);
   };
   const first = studentName.split(" ")[0];
-  add(people.find((p) => p.id === studentId)?.phone ?? sp?.phone, `Hi ${first}, congratulations! ${instructorName} has signed you off and awarded your Solo wings (${programme}). Your SAHPA/CAA submission pack is being prepared. Your Apex Flight Hub status is now "Pending upload of licence from CAA" - upload your licence in the Hub once it arrives: ${HUB_URL}/login - Team Apex`);
-  const staffMsg = `Apex Flight Hub: ${instructorName} signed off ${studentName} (${programme}) and awarded Solo wings. The SAHPA/CAA submission pack is ready on the student's folio. Status: Pending upload of licence from CAA.`;
+  add(
+    people.find((p) => p.id === studentId)?.phone ?? sp?.phone,
+    renewal
+      ? `Hi ${first}, well done! ${instructorName} has signed off your renewal skill test (${programme}). Your SACAA renewal pack is being prepared. Upload your renewed licence in the Apex Flight Hub once it arrives: ${HUB_URL}/login - Team Apex`
+      : `Hi ${first}, congratulations! ${instructorName} has signed you off and awarded your Solo wings (${programme}). Your SAHPA/CAA submission pack is being prepared. Your Apex Flight Hub status is now "Pending upload of licence from CAA" - upload your licence in the Hub once it arrives: ${HUB_URL}/login - Team Apex`
+  );
+  const staffMsg = renewal
+    ? `Apex Flight Hub: ${instructorName} signed off the RENEWAL skill test of ${studentName} (${programme}). The SACAA renewal pack is ready on the student's folio. Status: Pending upload of licence from CAA.`
+    : `Apex Flight Hub: ${instructorName} signed off ${studentName} (${programme}) and awarded Solo wings. The SAHPA/CAA submission pack is ready on the student's folio. Status: Pending upload of licence from CAA.`;
   add(people.find((p) => p.id === staffId)?.phone, staffMsg);
   for (const p of people) if (p.role === "cfi") add(p.phone, staffMsg);
   let sent = 0;
@@ -101,10 +109,19 @@ export async function signOffStudent(_prev: SignoffState, formData: FormData): P
     return { error: `${student.name} has a saved signature but has not answered the Yes / No consent question yet. Ask him to open Edit profile, answer it under Saved signature and Save - then sign him off.` };
   }
 
+  // Batch 98 (Riaan, 24 Nov 2026): renewal / refresher course -- the gold
+  // button. His selected instructor or the CFI (any instructor if he has none).
+  const renewal = str(formData, "renewal") === "1";
+  if (renewal && staff.role !== "cfi") {
+    const [sp0] = await db.select({ chosen: studentProfiles.chosenInstructorId }).from(studentProfiles).where(eq(studentProfiles.userId, studentId)).limit(1);
+    if (sp0?.chosen && sp0.chosen !== staff.id) return { error: "Only the student's selected instructor or the CFI can sign off his renewal." };
+  }
+
   const input = parseInput(formData, staff.id, trainingType);
   if (typeof input === "string") return { error: input };
+  input.renewal = renewal;
   // Batch 90: call signs left blank -> the student's own choices from the radio exam.
-  if (!input.callSignChoices.some(Boolean)) input.callSignChoices = await getRadioCallSignChoices(studentId);
+  if (!renewal && !input.callSignChoices.some(Boolean)) input.callSignChoices = await getRadioCallSignChoices(studentId);
 
   let packFile: string;
   let data;
@@ -145,6 +162,7 @@ export async function signOffStudent(_prev: SignoffState, formData: FormData): P
     medicalSignatureApplied: !!data.studentSignature && data.medicalSignatureAllowed,
     packFile,
     packGeneratedAt: now,
+    kind: renewal ? "renewal" : "initial",
   });
 
   // The student stays on the Student list (and can be re-signed / the pack resubmitted)
@@ -166,8 +184,14 @@ export async function signOffStudent(_prev: SignoffState, formData: FormData): P
   revalidatePath("/instructor");
   revalidatePath(`/instructor/students/${studentId}`);
   revalidatePath("/instructor/pilots");
-  const wa = await notifySignoff(studentId, staff.id, student.name, staff.name, TRAINING_LABEL[trainingType]).catch(() => "WhatsApp could not be sent.");
-  return { success: `${student.name} is signed off and awarded Solo wings. He stays on the Student list until his CAA licence is submitted. ${wa}`, warnings };
+  await logActivity(staff, renewal ? "renewal_signoff" : "signoff", studentId, TRAINING_LABEL[trainingType]);
+  const wa = await notifySignoff(studentId, staff.id, student.name, staff.name, TRAINING_LABEL[trainingType], renewal).catch(() => "WhatsApp could not be sent.");
+  return {
+    success: renewal
+      ? `${student.name}'s renewal skill test is signed off and the SACAA renewal pack is built. He stays on the Student list until his CAA licence is submitted. ${wa}`
+      : `${student.name} is signed off and awarded Solo wings. He stays on the Student list until his CAA licence is submitted. ${wa}`,
+    warnings,
+  };
 }
 
 /** Rebuilds the pack (e.g. after the student adds a signature or photo). Staff only. */
@@ -177,12 +201,14 @@ export async function regenerateSubmissionPack(_prev: SignoffState, formData: Fo
   const trainingType = str(formData, "trainingType") as SignoffTrainingType;
   const [so] = await db.select().from(studentSignoffs).where(and(eq(studentSignoffs.studentUserId, studentId), eq(studentSignoffs.trainingType, trainingType))).limit(1);
   if (!so) return { error: "No sign-off found." };
-  if (staff.role !== "cfi" && so.signedOffByUserId !== staff.id) return { error: "Only the signing instructor or the CFI can regenerate the pack." };
+  // Batch 97: any instructor may regenerate (instructors sign off the same as the CFI).
   // Batch 90 (Riaan, 3 Nov 2026): "Regenerate without student signature".
   const withoutStudentSignature = str(formData, "withoutStudentSignature") === "1";
+  await logActivity(staff, "regenerate_pack", studentId, `${TRAINING_LABEL[trainingType]}${withoutStudentSignature ? ", without student signature" : ""}`);
   try {
     const data = await gatherPackData(studentId, {
       omitStudentSignature: withoutStudentSignature,
+      renewal: so.kind === "renewal",
       trainingType,
       signedOffAt: so.signedOffAt,
       instructorUserId: so.signedOffByUserId,
@@ -192,7 +218,7 @@ export async function regenerateSubmissionPack(_prev: SignoffState, formData: Fo
       remedialAction: so.remedialAction ?? "",
       radioExaminerName: so.radioExaminerName ?? "",
       radioExaminerLicence: so.radioExaminerLicence ?? "",
-      callSignChoices: (so.callSignChoices ?? "").replace(/\|/g, "").trim()
+      callSignChoices: so.kind === "renewal" || (so.callSignChoices ?? "").replace(/\|/g, "").trim()
         ? ((so.callSignChoices ?? "||").split("|").slice(0, 3) as [string, string, string])
         : await getRadioCallSignChoices(studentId),
     });

@@ -12,6 +12,10 @@
 
 export const VERSION = "v21";
 
+/** Batch 97 (Riaan, 13 Nov 2026): the batch number shown under the header.
+ * Bump it in every batch. */
+export const BATCH = 98;
+
 export const DEPLOYED_AT = new Date();
 
 // Railway sets this automatically at build time; falls back to "local" for

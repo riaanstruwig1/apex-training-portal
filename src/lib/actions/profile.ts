@@ -3,11 +3,12 @@
 import { eq } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 import * as z from "zod";
-import { randomBytes } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { db } from "@/db";
 import { users, studentProfiles, pilotProfiles } from "@/db/schema";
-import { getCurrentUser, requireAdminOrCFI } from "@/lib/auth/dal";
+import { getCurrentUser, requireAdminOrCFI, requireStudentReviewer } from "@/lib/auth/dal";
+import { logActivity } from "@/lib/activity-log";
+import { resetPasswordByWhatsApp, type PasswordWhatsApp } from "@/lib/password-whatsapp";
 import { saveUpload, UploadError } from "@/lib/uploads";
 import { promoteIfLicenceSubmitted } from "@/lib/promote";
 import { drawnSignatureFile } from "@/lib/signature-drawn";
@@ -286,7 +287,7 @@ export async function adminUpdateProfile(
   _prevState: AdminProfileState,
   formData: FormData
 ): Promise<AdminProfileState> {
-  await requireAdminOrCFI();
+  const staff = await requireStudentReviewer();
 
   const [target] = await db
     .select({ id: users.id, role: users.role })
@@ -294,6 +295,11 @@ export async function adminUpdateProfile(
     .where(eq(users.id, targetUserId))
     .limit(1);
   if (!target) return { error: "Applicant not found." };
+  // Batch 97: an instructor may edit a STUDENT's profile; pilots and staff stay CFI/Admin.
+  if (staff.role === "instructor" && target.role !== "student") {
+    return { error: "Only the CFI or Admin can edit this profile." };
+  }
+  await logActivity(staff, "edit_profile", targetUserId);
 
   const parsed = AdminProfileSchema.safeParse({
     name: formData.get("name") || undefined,
@@ -449,8 +455,11 @@ export async function adminUpdateProfile(
  */
 export async function adminResetPassword(
   targetUserId: string
-): Promise<{ error: string; tempPassword?: never } | { error?: never; tempPassword: string }> {
-  await requireAdminOrCFI();
+): Promise<
+  | { error: string; tempPassword?: never; whatsapp?: never }
+  | { error?: never; tempPassword: string; whatsapp: PasswordWhatsApp }
+> {
+  const staff = await requireAdminOrCFI();
 
   const [target] = await db
     .select({ id: users.id })
@@ -459,16 +468,11 @@ export async function adminResetPassword(
     .limit(1);
   if (!target) return { error: "Account not found." };
 
-  // 10 random base32-ish characters -- easy to read/type over a phone call,
-  // long enough not to be guessable.
-  const tempPassword = randomBytes(8)
-    .toString("base64")
-    .replace(/[^A-Za-z0-9]/g, "")
-    .slice(0, 10);
-  const passwordHash = await bcrypt.hash(tempPassword, 12);
-  await db.update(users).set({ passwordHash }).where(eq(users.id, targetUserId));
-
-  return { tempPassword };
+  // Batch 98 (Riaan, 24 Nov 2026): the new password goes to him by WhatsApp.
+  const r = await resetPasswordByWhatsApp(targetUserId, { always: true });
+  if (!r.tempPassword) return { error: "Could not reset the password." };
+  await logActivity(staff, "reset_password", targetUserId, `WhatsApp: ${r.whatsapp.replace("_", " ")}`);
+  return { tempPassword: r.tempPassword, whatsapp: r.whatsapp };
 }
 
 /** Student self-editing their own profile -- same shared fields as
@@ -544,6 +548,7 @@ export async function submitCaaLicence(_prev: CaaLicenceState, formData: FormDat
     })
     .where(eq(pilotProfiles.id, pp.id));
   await promoteIfLicenceSubmitted(user.id, !byStaff);
+  await logActivity(me, "caa_licence", user.id, byStaff ? "Added by staff" : "Uploaded by the pilot");
   revalidatePath("/student");
   revalidatePath("/instructor");
   revalidatePath(`/instructor/students/${user.id}`);

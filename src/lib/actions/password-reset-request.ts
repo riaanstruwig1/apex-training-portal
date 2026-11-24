@@ -9,6 +9,8 @@ import { users } from "@/db/schema";
 import { requireAdminOrCFI } from "@/lib/auth/dal";
 import { sendEmail } from "@/lib/email";
 import { getBaseUrl } from "@/lib/base-url";
+import { resetPasswordByWhatsApp } from "@/lib/password-whatsapp";
+import { logActivity } from "@/lib/activity-log";
 
 const RequestSchema = z.object({
   email: z.string().trim().toLowerCase().email({ error: "Enter a valid email address." }),
@@ -52,6 +54,19 @@ export async function requestPasswordReset(
     .limit(1);
 
   if (match) {
+    // Batch 98 (Riaan, 24 Nov 2026): a new password straight to his WhatsApp
+    // (cell number on file). Falls back to the emailed link when there's no
+    // number or WhatsApp isn't connected.
+    const wa = await resetPasswordByWhatsApp(match.id);
+    if (wa.tempPassword) {
+      await logActivity({ id: match.id }, "reset_password", match.id, `Requested on the login page - new password by WhatsApp (${wa.whatsapp.replace("_", " ")})`);
+      if (wa.whatsapp === "sent") return { success: true };
+      // Password changed but the message failed: flag it for the CFI/Admin.
+      await db.update(users).set({ passwordResetRequestedAt: new Date() }).where(eq(users.id, match.id));
+      revalidatePath("/admin/password-resets");
+      return { success: true };
+    }
+
     const token = randomBytes(32).toString("base64url");
     const resetUrl = `${getBaseUrl()}/reset-password/${token}`;
 

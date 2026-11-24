@@ -1,6 +1,8 @@
 "use server";
 
 import { drawnSignatureFile } from "@/lib/signature-drawn";
+import { getSignupInstructors, notifyNewStudentSignup } from "@/lib/signup-instructors";
+import { logActivity } from "@/lib/activity-log";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 import * as z from "zod";
@@ -152,6 +154,17 @@ export async function submitSignup(
   const companyName = String(formData.get("invoiceCompanyName") ?? "").trim();
   // Batch 95: he may submit without a POP if he wants to discuss payment first.
   const discussFirst = formData.get("paymentDiscussFirst") === "1";
+  // Batch 97 (Riaan, 24 Nov 2026): the instructor the student picked.
+  const chosenRaw = String(formData.get("chosenInstructorId") ?? "").trim();
+  let chosenInstructorId: string | null = null;
+  if (data.accountType === "student") {
+    if (!chosenRaw) return { error: "Select your instructor (or \"Not sure yet\")." };
+    if (chosenRaw !== "none") {
+      const valid = (await getSignupInstructors()).some((i) => i.id === chosenRaw);
+      if (!valid) return { error: "Select your instructor from the list." };
+      chosenInstructorId = chosenRaw;
+    }
+  }
   if (data.accountType === "student") {
     if (!payOpt) return { error: "Choose a payment option." };
     if (invoiceTo === "company" && !companyName) return { error: "Enter the company name for the invoice." };
@@ -244,6 +257,7 @@ export async function submitSignup(
         invoiceCompanyAddress:
           invoiceTo === "company" ? String(formData.get("invoiceCompanyAddress") ?? "").trim() || null : null,
         paymentDiscussFirst: discussFirst,
+        chosenInstructorId,
         ...(popFileInput instanceof File && popFileInput.size > 0
           ? { popFile: await saveUpload(user.id, "pop", popFileInput), popUploadedAt: new Date() }
           : {}),
@@ -282,6 +296,16 @@ export async function submitSignup(
       return { error: err.message };
     }
     throw err;
+  }
+
+  if (data.accountType === "student") {
+    await logActivity({ id: user.id, name: user.name, role: "student" }, "signup", user.id, chosenInstructorId ? "Chose an instructor" : "No instructor chosen");
+    await notifyNewStudentSignup(
+      user.id,
+      user.name,
+      formData.get("introCourse") === "1" ? "PG/PPG Intro training" : (data.trainingTypes ?? []).map((t) => (t === "ppt" ? "PPT/PPC" : t.toUpperCase())).join(" + ") || "training not ticked",
+      chosenInstructorId
+    );
   }
 
   redirect("/signup/pending");

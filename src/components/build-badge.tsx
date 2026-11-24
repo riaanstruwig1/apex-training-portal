@@ -1,4 +1,4 @@
-import { VERSION, DEPLOYED_AT, COMMIT } from "@/lib/build-info";
+import { VERSION, BATCH, DEPLOYED_AT, COMMIT } from "@/lib/build-info";
 
 export function BuildBadge({ className = "" }: { className?: string }) {
   const dateStr = DEPLOYED_AT.toLocaleString("en-ZA", {
@@ -10,7 +10,7 @@ export function BuildBadge({ className = "" }: { className?: string }) {
   });
   return (
     <p className={`text-center text-xs text-slate-400 ${className}`}>
-      {VERSION} &middot; deployed {dateStr} &middot; {COMMIT}
+      {VERSION} &middot; Batch {BATCH} &middot; deployed {dateStr} &middot; {COMMIT}
     </p>
   );
 }

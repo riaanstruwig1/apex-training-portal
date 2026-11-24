@@ -69,7 +69,11 @@ function Field({
   );
 }
 
-export default function SignupForm() {
+export default function SignupForm({
+  instructors = [],
+}: {
+  instructors?: { id: string; name: string; role: "cfi" | "instructor" }[];
+}) {
   const [state, action, pending] = useActionState<SignupState, FormData>(
     submitSignup,
     undefined
@@ -83,6 +87,8 @@ export default function SignupForm() {
   const [introCourse, setIntroCourse] = useState(false);
   // V24 item 72: only for students who started with Apex before the Hub.
   const [initialSignUpDate, setInitialSignUpDate] = useState("");
+  // Batch 97 (Riaan, 24 Nov 2026): the student picks his instructor.
+  const [chosenInstructorId, setChosenInstructorId] = useState("");
   // Everything except the file inputs is controlled from here, so a failed
   // submission (e.g. "email already exists") never wipes what the applicant
   // already typed -- only the email/password need fixing, not the whole form.
@@ -213,6 +219,30 @@ export default function SignupForm() {
               </span>
             </label>
           </fieldset>
+          <Field id="chosenInstructorId" label="Your instructor" required>
+            <select
+              id="chosenInstructorId"
+              name="chosenInstructorId"
+              required
+              value={chosenInstructorId}
+              onChange={(e) => setChosenInstructorId(e.target.value)}
+              className={inputClass}
+            >
+              <option value="" disabled>
+                Select your instructor...
+              </option>
+              {instructors.map((i) => (
+                <option key={i.id} value={i.id}>
+                  {i.name}
+                  {i.role === "cfi" ? " (CFI)" : ""}
+                </option>
+              ))}
+              <option value="none">Not sure yet</option>
+            </select>
+            <p className="mt-1 text-xs text-slate-500">
+              The instructor you train with. He and the CFI get a message to review your sign-up.
+            </p>
+          </Field>
           <SahpaSignupNote />
           <div className="grid grid-cols-2 gap-4">
             <Field id="sahpaNumber" label="SAHPA Membership No. (needed before you can log flights)">

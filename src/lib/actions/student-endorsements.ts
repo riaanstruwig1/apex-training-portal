@@ -4,7 +4,8 @@ import { eq, and } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { db } from "@/db";
 import { studentProfiles, studentEndorsements } from "@/db/schema";
-import { requireAdminOrCFI } from "@/lib/auth/dal";
+import { requireStudentReviewer } from "@/lib/auth/dal";
+import { logActivity } from "@/lib/activity-log";
 import { STUDENT_ENDORSEMENT_OPTIONS } from "@/lib/pilot-endorsements";
 
 /**
@@ -19,8 +20,9 @@ export async function grantStudentEndorsement(
   studentUserId: string,
   key: string
 ) {
-  const reviewer = await requireAdminOrCFI();
+  const reviewer = await requireStudentReviewer();
   if (!STUDENT_ENDORSEMENT_OPTIONS.some((o) => o.key === key)) return;
+  await logActivity(reviewer, "endorsement", studentUserId, `Granted ${STUDENT_ENDORSEMENT_OPTIONS.find((o) => o.key === key)?.label ?? key}`);
 
   const [profile] = await db
     .select()
@@ -59,7 +61,8 @@ export async function revokeStudentEndorsement(
   studentUserId: string,
   key: string
 ) {
-  await requireAdminOrCFI();
+  const reviewer = await requireStudentReviewer();
+  await logActivity(reviewer, "endorsement", studentUserId, `Revoked ${STUDENT_ENDORSEMENT_OPTIONS.find((o) => o.key === key)?.label ?? key}`);
 
   const [profile] = await db
     .select()
