@@ -129,6 +129,10 @@ export async function submitSignup(
 
   const idPassportFileInput = formData.get("idPassportFile");
   const profilePictureFileInput = formData.get("profilePictureFile");
+  // Batch 107 (Riaan, 25 Nov 2026): the passport-type photo is compulsory.
+  if (!(profilePictureFileInput instanceof File) || profilePictureFileInput.size === 0) {
+    return { error: "Upload a profile photo (passport type, plain white background)." };
+  }
   const caaLicenceFileInput = formData.get("caaLicenceFile");
   // Optional -- uploaded by the applicant, for the applicant, at the birth
   // of their own account. Same "each person, their own only" rule as the

@@ -51,6 +51,8 @@ export default async function StudentLayout({
         apexNumber={user.apexNumber}
         sacaaNumber={profile?.sacaaNumber}
         profileHref={locked ? null : "/student/profile"}
+        profileLinks={locked ? undefined : [{ href: "/student/profile", label: "👤 Profile" }]}
+        homeHref="/student"
       />
       {!locked && <StudentNoticeBanner notice={studentNotice} />}
       <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8">

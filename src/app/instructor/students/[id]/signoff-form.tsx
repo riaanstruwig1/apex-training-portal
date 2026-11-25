@@ -7,7 +7,7 @@ const GRADE_ITEMS: { key: string; label: string; ppOnly?: boolean }[] = [
   { key: "takeoff", label: "Good take-off" },
   { key: "landing", label: "Landing ability" },
   { key: "turns360", label: "Consecutive 360 turns" },
-  { key: "ridge", label: "Ridge soaring" },
+  { key: "ridge", label: "Ridge soaring (PG) / Thermalling (PPG, PPT/PPC)" },
   { key: "spot", label: "Spot landing" },
   { key: "engine", label: "Engine & power management", ppOnly: true },
   { key: "weather", label: "Theory: weather" },

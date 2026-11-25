@@ -36,6 +36,42 @@ async function getAwaitingLicence(): Promise<Map<string, Date>> {
   return new Map(rows.map((r) => [r.id, r.at]));
 }
 
+/** Batch 107 (Riaan, 25 Nov 2026): "Student profiles" merged into Students --
+ * Apex No., cell and sign-up date, consent status, and the full profile /
+ * print links now live on this roster. */
+function ContactLine({ s }: { s: StudentSummary }) {
+  const parts = [
+    s.apexNumber ? `Apex No. ${s.apexNumber}` : null,
+    s.phone,
+    `Signed up ${s.signUpDate.toLocaleDateString("en-ZA")}${s.signUpDateConfirmed ? "" : "*"}`,
+  ].filter(Boolean);
+  return <div className="mt-0.5 text-xs text-slate-400">{parts.join(" · ")}</div>;
+}
+
+function ProfileLinks({ id }: { id: string }) {
+  return (
+    <div className="flex items-center gap-3 text-xs font-medium">
+      <Link href={`/admin/applicants/${id}`} className="text-slate-700 hover:text-red-600">
+        Profile
+      </Link>
+      <Link href={`/admin/applicants/${id}/print`} className="text-slate-500 hover:text-red-600">
+        Print
+      </Link>
+    </div>
+  );
+}
+
+function ConsentChip({ id }: { id: string }) {
+  return (
+    <Link
+      href={`/admin/applicants/${id}`}
+      className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800 hover:bg-amber-200"
+    >
+      Consent not signed
+    </Link>
+  );
+}
+
 /** Batch 95: signed up (with a payment option) but no proof of payment yet. */
 function NoPopChip({ s }: { s: StudentSummary }) {
   return (
@@ -197,6 +233,7 @@ function StudentCard({
             </Link>
             <TrainingChip s={s} />
             <div className="text-xs text-slate-500">{s.email}</div>
+            <ContactLine s={s} />
           </div>
         </div>
         {s.status === "active" ? (
@@ -228,8 +265,9 @@ function StudentCard({
       <div className="mt-2">
         <ExamBadges statuses={examStatusByStudent.get(s.id)} trainingType={s.trainingType} />
       </div>
-      {!archived && (pendingLogbook || pendingExams || awaiting || s.popMissing) && (
+      {!archived && (pendingLogbook || pendingExams || awaiting || s.popMissing || !s.consentComplete) && (
         <div className="mt-2 flex flex-wrap gap-1">
+          {!s.consentComplete && <ConsentChip id={s.id} />}
           {s.popMissing && <NoPopChip s={s} />}
           {awaiting && <AwaitingLicenceChip id={s.id} since={awaiting} />}
           {pendingLogbook && (
@@ -250,12 +288,11 @@ function StudentCard({
           )}
         </div>
       )}
-      {isCFI && (
-        <div className="mt-3 flex items-center gap-3 border-t border-slate-100 pt-3">
-          {!archived && s.status === "invited" && <InviteLinkButton studentId={s.id} />}
-          <StudentRowActions studentId={s.id} archived={archived} />
-        </div>
-      )}
+      <div className="mt-3 flex flex-wrap items-center gap-3 border-t border-slate-100 pt-3">
+        <ProfileLinks id={s.id} />
+        {isCFI && !archived && s.status === "invited" && <InviteLinkButton studentId={s.id} />}
+        {isCFI && <StudentRowActions studentId={s.id} archived={archived} />}
+      </div>
     </div>
   );
 }
@@ -304,7 +341,7 @@ function StudentTable({
             <th className="px-4 py-3">Expiry date</th>
             <th className="px-4 py-3">Exams</th>
             {!archived && <th className="px-4 py-3">Needs attention</th>}
-            {isCFI && <th className="px-4 py-3"></th>}
+            <th className="px-4 py-3"></th>
           </tr>
         </thead>
         <tbody className="divide-y divide-slate-100">
@@ -324,7 +361,10 @@ function StudentTable({
                   </div>
                 </div>
               </td>
-              <td className="px-4 py-3 text-slate-600">{s.email}</td>
+              <td className="px-4 py-3 text-slate-600">
+                {s.email}
+                <ContactLine s={s} />
+              </td>
               <td className="px-4 py-3">
                 {s.status === "active" ? (
                   <TrainingProgress signedOff={s.signedOffCount} total={s.totalCount} />
@@ -364,6 +404,7 @@ function StudentTable({
               {!archived && (
                 <td className="px-4 py-3">
                   <div className="flex flex-col items-start gap-1">
+                    {!s.consentComplete && <ConsentChip id={s.id} />}
                     {s.popMissing && <NoPopChip s={s} />}
                     {awaitingLicence.get(s.id) && <AwaitingLicenceChip id={s.id} since={awaitingLicence.get(s.id)!} />}
                     {s.pendingLogbookCount > 0 && (
@@ -387,22 +428,24 @@ function StudentTable({
                     {s.pendingLogbookCount === 0 &&
                       (pendingExamsByStudent.get(s.id) ?? 0) === 0 &&
                       !awaitingLicence.get(s.id) &&
+                      s.consentComplete &&
                       !s.popMissing && (
                         <span className="text-xs text-slate-300">—</span>
                       )}
                   </div>
                 </td>
               )}
-              {isCFI && (
-                <td className="px-4 py-3">
-                  <div className="flex items-center gap-3">
-                    {!archived && s.status === "invited" && (
-                      <InviteLinkButton studentId={s.id} />
-                    )}
-                    <StudentRowActions studentId={s.id} archived={archived} />
-                  </div>
-                </td>
-              )}
+              <td className="px-4 py-3">
+                <div className="flex flex-col items-start gap-1.5">
+                  <ProfileLinks id={s.id} />
+                  {isCFI && (
+                    <div className="flex items-center gap-3">
+                      {!archived && s.status === "invited" && <InviteLinkButton studentId={s.id} />}
+                      <StudentRowActions studentId={s.id} archived={archived} />
+                    </div>
+                  )}
+                </div>
+              </td>
             </tr>
           ))}
         </tbody>
@@ -488,6 +531,9 @@ export default async function InstructorDashboard() {
           awaitingLicence={awaitingLicence}
         />
       )}
+      <p className="mt-2 text-xs text-slate-400">
+        * account creation date -- the real sign-up date hasn&apos;t been set yet (set it on the student&apos;s profile).
+      </p>
 
       {/* Batch 104: instructors see the archived section too (Restore/Delete stay CFI). */}
       {archivedStudents.length > 0 && (

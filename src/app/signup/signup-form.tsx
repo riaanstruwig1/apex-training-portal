@@ -3,6 +3,7 @@
 import { useActionState, useState } from "react";
 import SahpaSignupNote from "@/components/sahpa-signup-note";
 import PaymentBlock from "./payment-block";
+import PhotoCheck from "@/components/photo-check";
 import { submitSignup, type SignupState } from "@/lib/actions/signup";
 import { ENDORSEMENT_OPTIONS } from "@/lib/pilot-endorsements";
 import PasswordInput from "@/components/password-input";
@@ -389,12 +390,9 @@ export default function SignupForm({
             className={`${inputClass} file:mr-3 file:rounded file:border-0 file:bg-slate-100 file:px-3 file:py-1.5 file:text-sm`}
           />
         </Field>
-        <Field id="profilePictureFile" label="Profile picture (optional)">
-          <input
-            id="profilePictureFile"
-            name="profilePictureFile"
-            type="file"
-            accept="image/jpeg,image/png,image/webp"
+        <Field id="profilePictureFile" label="Profile photo (passport type)" required>
+          <PhotoCheck
+            required
             className={`${inputClass} file:mr-3 file:rounded file:border-0 file:bg-slate-100 file:px-3 file:py-1.5 file:text-sm`}
           />
         </Field>

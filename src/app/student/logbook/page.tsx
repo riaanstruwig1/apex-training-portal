@@ -33,6 +33,18 @@ export default async function StudentLogbookPage() {
           defaultSite={lastEntry?.site}
           defaultWing={lastEntry ? splitAircraft(lastEntry).wing : undefined}
           defaultMotor={lastEntry ? splitAircraft(lastEntry).motor : undefined}
+          lastFlight={
+            lastEntry
+              ? {
+                  windDirection: lastEntry.windDirection ?? undefined,
+                  windSpeed: lastEntry.windSpeed ?? undefined,
+                  flightType: lastEntry.flightType,
+                  durationMinutes: lastEntry.durationMinutes,
+                  launches: lastEntry.launches,
+                  instructorUserId: lastEntry.instructorUserId ?? undefined,
+                }
+              : undefined
+          }
           aircraftOptions={aircraftOptionsFrom(entries)}
           instructors={instructors}
         />

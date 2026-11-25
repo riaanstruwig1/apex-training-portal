@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { logout } from "@/lib/actions/auth";
 import { BuildBadge } from "@/components/build-badge";
+import BackButton from "@/components/back-button";
 
 function NavBadge({ count }: { count: number }) {
   if (count <= 0) return null;
@@ -19,6 +20,8 @@ export default function NavHeader({
   apexNumber,
   sacaaNumber,
   profileHref,
+  profileLinks,
+  homeHref = "/",
 }: {
   name: string;
   roleLabel: string;
@@ -29,6 +32,10 @@ export default function NavHeader({
    * own editable profile page. Left out entirely (e.g. staff with no linked
    * pilot profile) means the block is plain text, not a dead-looking link. */
   profileHref?: string | null;
+  /** Batch 107: small links under the name on the right (e.g. "👤 Profile"). */
+  profileLinks?: { href: string; label: string; badge?: number }[];
+  /** Where Back goes when there's no history. */
+  homeHref?: string;
 }) {
   // Shown compact on every screen, per Riaan's request (20 Sep 2026) --
   // Apex No. and SACAA No. specifically; SAHPA No. and Call Sign have their
@@ -49,6 +56,17 @@ export default function NavHeader({
       </div>
     </div>
   );
+  const profileRow =
+    profileLinks && profileLinks.length > 0 ? (
+      <div className="flex flex-wrap justify-end gap-3 text-xs">
+        {profileLinks.map((l) => (
+          <Link key={l.href} href={l.href} className="flex items-center font-medium text-slate-600 hover:text-red-600">
+            {l.label}
+            <NavBadge count={l.badge ?? 0} />
+          </Link>
+        ))}
+      </div>
+    ) : null;
   return (
     <header className="border-b border-slate-200 bg-white">
       <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-2 px-4 py-3">
@@ -66,7 +84,8 @@ export default function NavHeader({
               Apex Flight Hub
             </span>
           </Link>
-          <nav className="hidden flex-wrap gap-4 sm:flex">
+          <nav className="hidden flex-wrap items-center gap-4 sm:flex">
+            {links.length > 0 && <BackButton home={homeHref} />}
             {links.map((link) => (
               <Link
                 key={link.href}
@@ -92,13 +111,16 @@ export default function NavHeader({
             height={400}
             className="hidden h-8 w-auto rounded sm:block"
           />
-          {profileHref ? (
-            <Link href={profileHref} className="hover:opacity-80" title="Edit your profile">
-              {identityBlock}
-            </Link>
-          ) : (
-            identityBlock
-          )}
+          <div className="flex flex-col items-end gap-0.5">
+            {profileHref ? (
+              <Link href={profileHref} className="hover:opacity-80" title="Edit your profile">
+                {identityBlock}
+              </Link>
+            ) : (
+              identityBlock
+            )}
+            {profileRow}
+          </div>
           <form action={logout}>
             <button
               type="submit"
@@ -109,7 +131,8 @@ export default function NavHeader({
           </form>
         </div>
       </div>
-      <nav className="flex flex-wrap gap-4 border-t border-slate-100 px-4 py-2 sm:hidden">
+      <nav className="flex flex-wrap items-center gap-4 border-t border-slate-100 px-4 py-2 sm:hidden">
+        {links.length > 0 && <BackButton home={homeHref} />}
         {links.map((link) => (
           <Link
             key={link.href}

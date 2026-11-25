@@ -167,6 +167,12 @@ export type StudentSummary = {
   /** Batch 95: signed up with a payment option (batch 92+) but no POP on file. */
   popMissing: boolean;
   paymentDiscussFirst: boolean;
+  /** Batch 107: from the old "Student profiles" list, now on Students. */
+  apexNumber: string | null;
+  phone: string | null;
+  signUpDate: Date;
+  signUpDateConfirmed: boolean;
+  consentComplete: boolean;
 };
 
 /** Roster view for the instructor dashboard: one row per student, with a
@@ -199,6 +205,13 @@ export async function getAllStudentsWithSummary(): Promise<StudentSummary[]> {
       paymentOption: studentProfiles.paymentOption,
       popFile: studentProfiles.popFile,
       paymentDiscussFirst: studentProfiles.paymentDiscussFirst,
+      // Only one table's phone / created_at is selected (same-name trap).
+      apexNumber: users.apexNumber,
+      phone: users.phone,
+      createdAt: users.createdAt,
+      signUpDate: studentProfiles.signUpDate,
+      consentSigned: users.consentSigned,
+      indemnitySigned: users.indemnitySigned,
     })
     .from(users)
     .innerJoin(studentProfiles, eq(studentProfiles.userId, users.id))
@@ -260,6 +273,9 @@ export async function getAllStudentsWithSummary(): Promise<StudentSummary[]> {
     pendingLogbookCount: pendingByStudent.get(s.id) ?? 0,
     popMissing: !!s.paymentOption && !s.popFile,
     paymentDiscussFirst: !!s.paymentDiscussFirst,
+    signUpDate: s.signUpDate ?? s.createdAt,
+    signUpDateConfirmed: !!s.signUpDate,
+    consentComplete: !!s.consentSigned && !!s.indemnitySigned,
     };
   });
 }

@@ -4,6 +4,7 @@ import { countPendingApplicants } from "@/lib/verification";
 import { countPendingPilotEndorsements, countPendingLicenceRenewals } from "@/lib/pilots";
 import { countPasswordResetRequests } from "@/lib/password-resets";
 import { countPhase2Requests } from "@/lib/intro-course-server";
+import { getStaffNavLinks, STAFF_PROFILE_LINKS } from "@/lib/staff-nav";
 
 export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
   const user = await requireStudentReviewer();
@@ -22,27 +23,20 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
     { href: "/admin/password-resets", label: "Password resets", badge: pendingResetCount },
   ];
 
-  // Batch 97 (Riaan, 24 Nov 2026): instructors review student sign-ups and
-  // student profiles here too; pilots, forms and password resets stay CFI/Admin.
-  const instructorLinks = [
-    { href: "/instructor", label: "Instructor Portal" },
-    { href: "/admin/pilots", label: "Pilots" },
-    { href: "/admin", label: "Verification queue", badge: pendingCount + phase2Count },
-    { href: "/admin/students", label: "Student profiles" },
-  ];
+  // Batch 107 (Riaan, 25 Nov 2026): CFI and instructors get exactly the same
+  // menu here as on the /instructor screens (lib/staff-nav.ts).
+  const isStaff = user.role === "cfi" || user.role === "instructor";
+  const staffLinks = isStaff ? await getStaffNavLinks(user.role) : [];
 
   return (
     <div className="flex min-h-screen flex-col">
       <NavHeader
         name={user.name}
         roleLabel={user.role === "cfi" ? "Chief Flight Instructor" : user.role === "instructor" ? "Instructor" : "Office Manager"}
-        links={
-          user.role === "cfi"
-            ? [{ href: "/instructor", label: "Instructor Portal" }, ...sharedLinks]
-            : user.role === "instructor"
-              ? instructorLinks
-              : sharedLinks
-        }
+        links={isStaff ? staffLinks : sharedLinks}
+        profileHref={isStaff ? "/pilot/profile" : null}
+        profileLinks={isStaff ? STAFF_PROFILE_LINKS : undefined}
+        homeHref={isStaff ? "/instructor" : "/admin"}
       />
       <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8">{children}</main>
     </div>

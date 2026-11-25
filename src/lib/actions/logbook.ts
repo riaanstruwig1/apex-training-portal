@@ -1,6 +1,8 @@
 "use server";
 
 import { eq, and, inArray } from "drizzle-orm";
+import { LOGBOOK_EXERCISES } from "@/lib/logbook-exercises";
+const REVERSE_LAUNCH_CODES = new Set(LOGBOOK_EXERCISES.filter((e) => /reverse launch/i.test(e.label)).map((e) => e.code));
 import * as z from "zod";
 import Papa from "papaparse";
 import * as XLSX from "xlsx";
@@ -44,7 +46,10 @@ export async function addLogbookEntry(
 
   // Exercises covered is a checklist (multiple checkboxes share this name),
   // not a single field -- collect every checked value.
-  const checkedCodes = formData.getAll("exerciseCodesCovered") as string[];
+  // Batch 107: no "Reverse launch" (exercise 2) on a PPT/PPC flight.
+  const checkedCodes = (formData.getAll("exerciseCodesCovered") as string[]).filter(
+    (c) => !(formData.get("flightType") === "ppt" && REVERSE_LAUNCH_CODES.has(c))
+  );
 
   const parsed = LogEntrySchema.safeParse({
     date: formData.get("date"),
@@ -139,7 +144,10 @@ export async function updateLogbookEntry(
     return { error: "That flight isn't on your logbook." };
   }
 
-  const checkedCodes = formData.getAll("exerciseCodesCovered") as string[];
+  // Batch 107: no "Reverse launch" (exercise 2) on a PPT/PPC flight.
+  const checkedCodes = (formData.getAll("exerciseCodesCovered") as string[]).filter(
+    (c) => !(formData.get("flightType") === "ppt" && REVERSE_LAUNCH_CODES.has(c))
+  );
   const parsed = LogEntrySchema.safeParse({
     date: formData.get("date"),
     site: formData.get("site"),
@@ -227,7 +235,10 @@ export async function adminUpdateLogbookEntry(
 ): Promise<LogEntryState> {
   await requireInstructor();
 
-  const checkedCodes = formData.getAll("exerciseCodesCovered") as string[];
+  // Batch 107: no "Reverse launch" (exercise 2) on a PPT/PPC flight.
+  const checkedCodes = (formData.getAll("exerciseCodesCovered") as string[]).filter(
+    (c) => !(formData.get("flightType") === "ppt" && REVERSE_LAUNCH_CODES.has(c))
+  );
   const parsed = LogEntrySchema.safeParse({
     date: formData.get("date"),
     site: formData.get("site"),

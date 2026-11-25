@@ -4,12 +4,9 @@ import { pilotEndorsements } from "@/db/schema";
 import { requirePilot } from "@/lib/auth/dal";
 import NavHeader from "@/components/nav-header";
 import ConsentGate from "@/components/consent-gate";
+import { getStaffNavLinks, STAFF_PROFILE_LINKS } from "@/lib/staff-nav";
 import LicenceExpiredGate from "@/components/licence-expired-gate";
 
-// A CFI/instructor viewing their own pilot side (Notes4 item 24) needs a
-// way back to their staff dashboard -- they didn't stop being staff just
-// because they're looking at their pilot profile.
-const staffBackLink = [{ href: "/instructor", label: "Back to Instructor" }];
 
 export default async function PilotLayout({ children }: LayoutProps<"/pilot">) {
   const { user, profile } = await requirePilot();
@@ -54,7 +51,9 @@ export default async function PilotLayout({ children }: LayoutProps<"/pilot">) {
     { href: "/pilot/logbook", label: "Logbook" },
     { href: "/pilot/forms-procedures", label: "Forms & procedures" },
   ];
-  const links = isStaff ? [...staffBackLink, ...pilotOnlyLinks] : pilotOnlyLinks;
+  // Batch 107: staff keep their normal staff menu here too; their portfolio
+  // and logbook are under their name on the right.
+  const links = isStaff ? await getStaffNavLinks(user.role) : pilotOnlyLinks;
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -65,6 +64,14 @@ export default async function PilotLayout({ children }: LayoutProps<"/pilot">) {
         apexNumber={user.apexNumber}
         sacaaNumber={profile?.sacaaNumber}
         profileHref={needsConsent || needsLicenceReview ? null : "/pilot/profile"}
+        profileLinks={
+          needsConsent || needsLicenceReview
+            ? undefined
+            : isStaff
+              ? STAFF_PROFILE_LINKS
+              : [{ href: "/pilot/profile", label: "👤 Profile" }]
+        }
+        homeHref={isStaff ? "/instructor" : "/pilot"}
       />
       <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8">
         {needsConsent ? (

@@ -298,6 +298,13 @@ export async function fillCA6215(d: PackData): Promise<Uint8Array> {
     cellText(p1, fonts, fmtDate(d.signedOffAt), c(378, 538, 518, 551), { size: 9, align: "center" });
   }
 
+  // Batch 107 (Riaan, 25 Nov 2026): "Ridge soaring" is PG only -- for
+  // PPG / PPT / PPC that row is the thermalling item.
+  if (!isPG) {
+    p1.drawRectangle({ x: 61, y: p1.getHeight() - 704, width: 120, height: 12, color: rgb(1, 1, 1) });
+    p1.drawText("Thermalling (PPG / PPT / PPC)", { x: 62.4, y: p1.getHeight() - 701.5, size: 9, font: fonts.regular, color: rgb(0, 0, 0) });
+  }
+
   // Grades: circle the chosen word on its row.
   const g = d.skillGrades;
   const rowsP1: [keyof typeof g, number, number][] = [

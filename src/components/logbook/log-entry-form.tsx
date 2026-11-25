@@ -11,6 +11,7 @@ export default function LogEntryForm({
   defaultSite,
   defaultWing,
   defaultMotor,
+  lastFlight,
   aircraftOptions,
   instructors,
 }: {
@@ -21,6 +22,15 @@ export default function LogEntryForm({
   defaultSite?: string;
   defaultWing?: string;
   defaultMotor?: string;
+  /** Batch 107: the last flight's values, filled in lighter on the new entry. */
+  lastFlight?: {
+    windDirection?: string;
+    windSpeed?: string;
+    flightType?: string;
+    durationMinutes?: number;
+    launches?: number;
+    instructorUserId?: string;
+  };
   aircraftOptions?: { wings: string[]; motors: string[] };
   instructors: { id: string; name: string }[];
 }) {
@@ -37,7 +47,14 @@ export default function LogEntryForm({
         showChecklistCode={mode === "student"}
         instructors={instructors}
         aircraftOptions={aircraftOptions}
-        defaultValues={{ site: defaultSite, wing: defaultWing, motor: defaultMotor }}
+        prefilled={!!(defaultSite || lastFlight)}
+        defaultValues={{
+          date: new Date().toLocaleDateString("en-CA"),
+          site: defaultSite,
+          wing: defaultWing,
+          motor: defaultMotor,
+          ...lastFlight,
+        }}
       />
 
       {state?.error && (

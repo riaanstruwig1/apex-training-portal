@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import Link from "next/link";
 import { requireStudentReviewer } from "@/lib/auth/dal";
 import { getAdminStudentList, type AdminStudentRow } from "@/lib/admin-students";
@@ -168,6 +169,8 @@ function StudentList({ list }: { list: AdminStudentRow[] }) {
 export default async function AdminStudentsPage() {
   // Batch 97: instructors open student profiles from here too (no invites).
   const viewer = await requireStudentReviewer();
+  // Batch 107: for CFI / instructors this list is merged into Students.
+  if (viewer.role === "cfi" || viewer.role === "instructor") redirect("/instructor");
   const [students, invites] = await Promise.all([
     getAdminStudentList(),
     getPendingInvites("student"),
@@ -206,9 +209,7 @@ export default async function AdminStudentsPage() {
         </details>
       )}
 
-      {viewer.role !== "instructor" && (
-        <InvitesBlock audience="student" invites={invites} configured={isWhatsAppConfigured()} />
-      )}
+      <InvitesBlock audience="student" invites={invites} configured={isWhatsAppConfigured()} />
     </div>
   );
 }

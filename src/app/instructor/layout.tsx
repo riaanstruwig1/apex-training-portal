@@ -1,55 +1,18 @@
 import { requireInstructor } from "@/lib/auth/dal";
 import NavHeader from "@/components/nav-header";
-import { countPendingApplicants } from "@/lib/verification";
-import { countPendingPilotEndorsements, countPendingLicenceRenewals, ensurePilotProfile } from "@/lib/pilots";
-import { countPasswordResetRequests } from "@/lib/password-resets";
-import { countPhase2Requests } from "@/lib/intro-course-server";
-
-const staffLinks = [{ href: "/instructor", label: "Students" }];
+import { ensurePilotProfile } from "@/lib/pilots";
+import { getStaffNavLinks, STAFF_PROFILE_LINKS } from "@/lib/staff-nav";
 
 export default async function InstructorLayout({
   children,
 }: LayoutProps<"/instructor">) {
   const staff = await requireInstructor();
   const isCFI = staff.role === "cfi";
-  // A CFI/instructor is very often also a pilot (Notes4 item 24, flagged
-  // MAJOR) -- every staff account is now guaranteed a pilot_profiles row
-  // (created on first visit here if it didn't already exist), so the
-  // "My Portfolio" link and clickable profile name always work, not just
-  // for staff who happened to already have one.
-  const [pendingCount, pendingPilotCount, pendingRenewalCount, pendingResetCount, phase2Count] = await Promise.all([
-    countPendingApplicants(!isCFI),
-    isCFI ? countPendingPilotEndorsements() : Promise.resolve(0),
-    isCFI ? countPendingLicenceRenewals() : Promise.resolve(0),
-    isCFI ? countPasswordResetRequests() : Promise.resolve(0),
-    countPhase2Requests(),
-    ensurePilotProfile(staff.id),
-  ]);
-  const cfiOnlyLinks = [
-    { href: "/instructor/students/new", label: "Add student" },
-    { href: "/admin/students", label: "Student profiles" },
-    { href: "/instructor/team", label: "Instructors" },
-    { href: "/instructor/syllabus", label: "Manage syllabus" },
-    { href: "/instructor/ratings", label: "Rating requirements" },
-    { href: "/instructor/exams", label: "Exam content" },
-    { href: "/instructor/study-material", label: "Study material" },
-    { href: "/admin/forms-procedures", label: "Forms & procedures" },
-    { href: "/admin", label: "Verification queue", badge: pendingCount + phase2Count },
-    { href: "/admin/pilots", label: "Pilots", badge: pendingPilotCount + pendingRenewalCount },
-    { href: "/admin/password-resets", label: "Password resets", badge: pendingResetCount },
-    { href: "/instructor/settings", label: "Settings" },
-    { href: "/instructor/activity", label: "Activity log" },
-  ];
-  // Batch 97 (Riaan, 24 Nov 2026): instructors review sign-ups and open
-  // student profiles the same as the CFI.
-  const instructorReviewLinks = [
-    { href: "/admin/pilots", label: "Pilots" },
-    { href: "/admin", label: "Verification queue", badge: pendingCount + phase2Count },
-    { href: "/admin/students", label: "Student profiles" },
-    { href: "/instructor/study-material", label: "Study material" },
-  ];
-  const pilotLinks = [{ href: "/pilot", label: "My Portfolio" }];
-  const links = [...staffLinks, ...pilotLinks, ...(isCFI ? cfiOnlyLinks : instructorReviewLinks)];
+  // A CFI/instructor is very often also a pilot (Notes4 item 24) -- every
+  // staff account is guaranteed a pilot_profiles row (created here if
+  // missing), so "My profile" (their pilot portfolio) always works.
+  // Batch 107: the same menu on every staff screen (lib/staff-nav.ts).
+  const [links] = await Promise.all([getStaffNavLinks(staff.role), ensurePilotProfile(staff.id)]);
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -58,6 +21,8 @@ export default async function InstructorLayout({
         roleLabel={isCFI ? "Chief Flight Instructor" : "Instructor"}
         links={links}
         profileHref="/pilot/profile"
+        profileLinks={STAFF_PROFILE_LINKS}
+        homeHref="/instructor"
       />
       <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8">
         {children}

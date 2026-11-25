@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import PhotoCheck from "@/components/photo-check";
 import Avatar from "@/components/avatar";
 import SignaturePad from "@/components/signature-pad";
 import PasswordInput from "@/components/password-input";
@@ -136,11 +137,7 @@ export default function ProfileEditForm({
             <label htmlFor="profilePictureFile" className={labelClass}>
               Profile picture
             </label>
-            <input
-              id="profilePictureFile"
-              name="profilePictureFile"
-              type="file"
-              accept="image/png,image/jpeg,image/webp"
+            <PhotoCheck
               className="mt-1 block w-full text-sm text-slate-600 file:mr-3 file:rounded-md file:border-0 file:bg-slate-100 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-slate-700 hover:file:bg-slate-200"
             />
           </div>
