@@ -22,7 +22,7 @@ export default async function InstructorLayout({
         links={links}
         profileHref="/pilot/profile"
         profileLinks={STAFF_PROFILE_LINKS}
-        homeHref="/instructor"
+        homeHref="/instructor/dashboard"
       />
       <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8">
         {children}

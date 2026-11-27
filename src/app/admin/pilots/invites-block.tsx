@@ -182,7 +182,7 @@ export default function InvitesBlock({
   const [open, setOpen] = useState(false);
 
   return (
-    <section className="mt-10">
+    <section id="invites" className="mt-10 scroll-mt-24">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <div>
           <h2 className="text-lg font-semibold text-slate-900">

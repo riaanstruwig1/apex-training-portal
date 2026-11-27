@@ -86,7 +86,7 @@ export async function login(
         ? "/pilot"
         : user.role === "admin"
           ? "/admin"
-          : "/instructor"
+          : "/instructor/dashboard" // batch 110: staff dashboard
   );
 }
 

@@ -22,9 +22,12 @@ export async function getStaffNavLinks(role: string): Promise<NavLink[]> {
     isCFI ? countPasswordResetRequests() : Promise.resolve(0),
   ]);
   const students: NavLink = { href: "/instructor", label: "Students" };
+  // Batch 110: staff dashboard is the home page and the first menu item.
+  const dashboard: NavLink = { href: "/instructor/dashboard", label: "Dashboard" };
   const queue: NavLink = { href: "/admin", label: "Verification queue", badge: pendingCount + phase2Count };
   if (!isCFI) {
     return [
+      dashboard,
       students,
       { href: "/admin/pilots", label: "Pilots" },
       queue,
@@ -33,6 +36,7 @@ export async function getStaffNavLinks(role: string): Promise<NavLink[]> {
     ];
   }
   return [
+    dashboard,
     students,
     { href: "/instructor/students/new", label: "Add student" },
     { href: "/instructor/team", label: "Instructors" },
@@ -49,6 +53,7 @@ export async function getStaffNavLinks(role: string): Promise<NavLink[]> {
     { href: "/instructor/activity", label: "Activity log" },
   ];
 }
+
 
 /** Links shown on the right, under the name (batch 107). */
 export const STAFF_PROFILE_LINKS: NavLink[] = [

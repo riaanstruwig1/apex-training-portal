@@ -10,5 +10,5 @@ export default async function Home() {
   if (session.role === "student") redirect("/student");
   if (session.role === "pilot") redirect("/pilot");
   if (session.role === "admin") redirect("/admin");
-  redirect("/instructor"); // cfi, instructor
+  redirect("/instructor/dashboard"); // cfi, instructor (batch 110)
 }

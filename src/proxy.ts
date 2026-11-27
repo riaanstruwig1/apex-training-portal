@@ -20,7 +20,7 @@ function homeFor(role: string): string {
   if (role === "student") return "/student";
   if (role === "pilot") return "/pilot";
   if (role === "admin") return "/admin";
-  return "/instructor"; // cfi, instructor
+  return "/instructor/dashboard"; // cfi, instructor (batch 110: staff dashboard)
 }
 
 export default async function proxy(req: NextRequest) {

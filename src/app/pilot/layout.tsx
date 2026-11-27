@@ -71,7 +71,7 @@ export default async function PilotLayout({ children }: LayoutProps<"/pilot">) {
               ? STAFF_PROFILE_LINKS
               : [{ href: "/pilot/profile", label: "👤 Profile" }]
         }
-        homeHref={isStaff ? "/instructor" : "/pilot"}
+        homeHref={isStaff ? "/instructor/dashboard" : "/pilot"}
       />
       <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8">
         {needsConsent ? (

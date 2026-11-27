@@ -36,7 +36,7 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
         links={isStaff ? staffLinks : sharedLinks}
         profileHref={isStaff ? "/pilot/profile" : null}
         profileLinks={isStaff ? STAFF_PROFILE_LINKS : undefined}
-        homeHref={isStaff ? "/instructor" : "/admin"}
+        homeHref={isStaff ? "/instructor/dashboard" : "/admin"}
       />
       <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8">{children}</main>
     </div>

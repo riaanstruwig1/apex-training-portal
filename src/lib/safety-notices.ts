@@ -8,7 +8,7 @@ import { sendWhatsAppText } from "@/lib/whatsapp";
 export type SafetyNotice = typeof safetyNotices.$inferSelect;
 
 export function homeFor(role: string) {
-  return role === "student" ? "/student" : role === "pilot" ? "/pilot" : role === "admin" ? "/admin" : "/instructor";
+  return role === "student" ? "/student" : role === "pilot" ? "/pilot" : role === "admin" ? "/admin" : "/instructor/dashboard";
 }
 
 export const snRef = (n: number) => `SN-${String(n).padStart(3, "0")}`;
