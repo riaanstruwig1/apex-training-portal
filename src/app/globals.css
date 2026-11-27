@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f8fafc;
+  --background: #e0f2fe; /* batch 111: light blue (was #f8fafc, near-white) */
   --foreground: #0f172a;
 }
 
@@ -32,6 +32,7 @@ body {
   }
   body {
     background-image: none;
+    background-color: #fff;
   }
   .print-hide {
     display: none !important;
