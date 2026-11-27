@@ -1,4 +1,5 @@
 import Link from "next/link";
+import SafetyNoticeBanner from "@/components/safety-notice-banner";
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { studentProfiles, studentEndorsements } from "@/db/schema";
@@ -318,6 +319,9 @@ export default async function StudentDashboard() {
       >
         + Log a flight
       </Link>
+
+      {/* Batch 108: latest safety notice + all notices. */}
+      <SafetyNoticeBanner />
 
       {(examRows.length > 0 || uncategorisedExams.length > 0) && (
         <section>

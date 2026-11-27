@@ -80,7 +80,7 @@ export default async function proxy(req: NextRequest) {
     if (isLoginRoute) {
       // Batch 105: already signed in and following a shared study-note link.
       const next = req.nextUrl.searchParams.get("next");
-      if (next && /^\/study\/\d{1,2}$/.test(next)) return NextResponse.redirect(new URL(next, req.nextUrl));
+      if (next && (/^\/study\/\d{1,2}$/.test(next) || /^\/safety(\/\d{1,4})?$/.test(next))) return NextResponse.redirect(new URL(next, req.nextUrl));
       return NextResponse.redirect(new URL(homeFor(role), req.nextUrl));
     }
   }

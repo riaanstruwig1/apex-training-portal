@@ -605,6 +605,9 @@ export const siteSettings = sqliteTable("site_settings", {
   // Batch 92: WhatsApp to the accounts person (Henna) when a CFI/Admin
   // verifies a new student -- "load him on both accounting systems" + details.
   accountsWhatsappTo: text("accounts_whatsapp_to").default("0725614474"),
+  // Batch 108 (Riaan, 27 Nov 2026): the Safety Officer (staff member) who may
+  // send safety notices, together with the CFI.
+  safetyOfficerUserId: text("safety_officer_user_id"),
   updatedAt: integer("updated_at", { mode: "timestamp" })
     .notNull()
     .default(sql`(unixepoch())`),
@@ -1089,4 +1092,26 @@ export const activityLog = sqliteTable("activity_log", {
   targetUserId: text("target_user_id").references(() => users.id, { onDelete: "set null" }),
   targetName: text("target_name"),
   details: text("details"),
+});
+
+/** Batch 108 (Riaan, 27 Nov 2026): numbered safety notices (SN-001...) sent
+ * by the CFI or the Safety Officer to every student and pilot by WhatsApp,
+ * shown under "Log a flight" on the dashboards. */
+export const safetyNotices = sqliteTable("safety_notices", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  number: integer("number").notNull().unique(),
+  title: text("title").notNull(),
+  subject: text("subject").notNull(),
+  description: text("description").notNull(),
+  file: text("file"), // under data/uploads/safety-notices/
+  fileOriginalName: text("file_original_name"),
+  createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
+  createdByUserId: text("created_by_user_id").references(() => users.id, { onDelete: "set null" }),
+  createdByName: text("created_by_name"),
+  recipients: integer("recipients").notNull().default(0),
+  sentOk: integer("sent_ok").notNull().default(0),
+  sentFailed: integer("sent_failed").notNull().default(0),
+  sendDone: integer("send_done", { mode: "boolean" }).notNull().default(false),
 });

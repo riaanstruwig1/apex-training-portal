@@ -1,4 +1,5 @@
 import { requirePilot } from "@/lib/auth/dal";
+import SafetyNoticeBanner from "@/components/safety-notice-banner";
 import { groupEndorsementItems, ENDORSEMENT_OPTIONS, isLadderTierKey } from "@/lib/pilot-endorsements";
 import { computeLadder, EQUIPMENT_LABELS, type Equipment } from "@/lib/pilot-progress";
 import LadderTiers from "@/components/ladder-tiers";
@@ -196,6 +197,9 @@ export default async function PilotDashboard() {
           Action needed: answer the Yes / No question about using your saved signature on your SAHPA / CAA forms (Edit profile → Saved signature).
         </a>
       )}
+      {/* Batch 108: latest safety notice. */}
+      <SafetyNoticeBanner />
+
       {signoff && (
         <div className="rounded-lg border border-amber-300 bg-amber-50 p-4">
           <p className="text-base font-semibold text-amber-900">

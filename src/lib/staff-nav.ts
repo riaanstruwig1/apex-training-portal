@@ -29,6 +29,7 @@ export async function getStaffNavLinks(role: string): Promise<NavLink[]> {
       { href: "/admin/pilots", label: "Pilots" },
       queue,
       { href: "/instructor/study-material", label: "Study material" },
+      { href: "/instructor/safety", label: "Safety notices" },
     ];
   }
   return [
@@ -43,6 +44,7 @@ export async function getStaffNavLinks(role: string): Promise<NavLink[]> {
     queue,
     { href: "/admin/pilots", label: "Pilots", badge: pendingPilotCount + pendingRenewalCount },
     { href: "/admin/password-resets", label: "Password resets", badge: pendingResetCount },
+    { href: "/instructor/safety", label: "Safety notices" },
     { href: "/instructor/settings", label: "Settings" },
     { href: "/instructor/activity", label: "Activity log" },
   ];

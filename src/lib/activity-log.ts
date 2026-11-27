@@ -30,6 +30,8 @@ export const ACTIVITY_LABELS: Record<string, string> = {
   caa_licence: "Added SACAA licence",
   pop_upload: "Uploaded proof of payment",
   endorsement: "Student endorsement",
+  safety_notice: "Sent safety notice",
+  safety_officer: "Safety Officer changed",
   phase2_approve: "Approved Phase 2",
   phase2_decline: "Declined Phase 2",
   archive_student: "Archived student",

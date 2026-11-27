@@ -1,3 +1,7 @@
+import { and, eq, inArray } from "drizzle-orm";
+import { users } from "@/db/schema";
+import { getSafetyOfficerId } from "@/lib/safety-notices";
+import SafetyOfficerForm from "./safety-officer-form";
 import { requireCFI } from "@/lib/auth/dal";
 import { getRadioCallScript, getStudentNotice } from "@/lib/settings";
 import RadioScriptForm from "./radio-script-form";
@@ -11,6 +15,15 @@ import { fmtMinute, getBirthdaySettings, getTodaysGroupWishPlan, getUpcomingBirt
 import { isWhatsAppConfigured } from "@/lib/whatsapp";
 
 export default async function InstructorSettingsPage() {
+  // Batch 108: Safety Officer picker.
+  const [safetyOfficerId, safetyStaff] = await Promise.all([
+    getSafetyOfficerId(),
+    db
+      .select({ id: users.id, name: users.name, email: users.email })
+      .from(users)
+      .where(and(inArray(users.role, ["cfi", "instructor"]), eq(users.accountStatus, "active")))
+      .then((r) => r.filter((u) => !u.email.endsWith("@apexhub.demo")).sort((a, b) => a.name.localeCompare(b.name))),
+  ]);
   await requireCFI();
 
   const [accRow] = await db.select({ to: siteSettings.accountsWhatsappTo }).from(siteSettings).limit(1);
@@ -41,6 +54,15 @@ export default async function InstructorSettingsPage() {
           message and, optionally, a renameable button linking to a document or a web address.
         </p>
         <NoticeForm initial={studentNotice} />
+      </section>
+
+      <section className="rounded-xl border border-slate-200 bg-white p-4">
+        <h2 className="mb-1 text-sm font-semibold text-slate-900">Safety Officer</h2>
+        <p className="mb-3 text-sm text-slate-500">
+          The Safety Officer can send safety notices (menu: Safety notices) together with you. Every student and pilot gets
+          each notice by WhatsApp.
+        </p>
+        <SafetyOfficerForm current={safetyOfficerId} staff={safetyStaff} />
       </section>
 
       <section className="rounded-xl border border-slate-200 bg-white p-4">

@@ -421,6 +421,13 @@
       "when": 1795512286696,
       "tag": "0059_signoff_kind",
       "breakpoints": true
+    },
+    {
+      "idx": 60,
+      "version": "6",
+      "when": 1795762652385,
+      "tag": "0060_safety_notices",
+      "breakpoints": true
     }
   ]
 }

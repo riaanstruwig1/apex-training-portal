@@ -4,6 +4,7 @@ export function safeNext(raw: unknown): string | null {
   if (typeof raw !== "string") return null;
   const v = raw.trim();
   if (!v.startsWith("/") || v.startsWith("//") || v.startsWith("/\\")) return null;
-  if (!/^\/study\/\d{1,2}$/.test(v)) return null; // shared study-note links only
+  // shared study-note and safety-notice links only (batch 105 / 108)
+  if (!/^\/study\/\d{1,2}$/.test(v) && !/^\/safety(\/\d{1,4})?$/.test(v)) return null;
   return v;
 }
