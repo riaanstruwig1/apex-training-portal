@@ -31,6 +31,8 @@ export const ACTIVITY_LABELS: Record<string, string> = {
   pop_upload: "Uploaded proof of payment",
   endorsement: "Student endorsement",
   safety_notice: "Sent safety notice",
+  safety_notice_saved: "Saved safety notice (no WhatsApp)",
+  safety_notice_whatsapp: "Sent safety notice WhatsApps",
   safety_officer: "Safety Officer changed",
   phase2_approve: "Approved Phase 2",
   phase2_decline: "Declined Phase 2",

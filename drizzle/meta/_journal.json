@@ -428,6 +428,13 @@
       "when": 1795762652385,
       "tag": "0060_safety_notices",
       "breakpoints": true
+    },
+    {
+      "idx": 61,
+      "version": "6",
+      "when": 1795763708840,
+      "tag": "0061_safety_notice_save_only",
+      "breakpoints": true
     }
   ]
 }

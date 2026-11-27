@@ -1114,4 +1114,6 @@ export const safetyNotices = sqliteTable("safety_notices", {
   sentOk: integer("sent_ok").notNull().default(0),
   sentFailed: integer("sent_failed").notNull().default(0),
   sendDone: integer("send_done", { mode: "boolean" }).notNull().default(false),
+  // Batch 109: "Save only" -- on everyone's screen, no WhatsApp (can be sent later).
+  whatsappSkipped: integer("whatsapp_skipped", { mode: "boolean" }).notNull().default(false),
 });

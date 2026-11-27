@@ -1,0 +1,1 @@
+ALTER TABLE `safety_notices` ADD `whatsapp_skipped` integer DEFAULT false NOT NULL;
