@@ -2,6 +2,8 @@ import { and, eq, inArray } from "drizzle-orm";
 import { users } from "@/db/schema";
 import { getSafetyOfficerId } from "@/lib/safety-notices";
 import SafetyOfficerForm from "./safety-officer-form";
+import { QualityPersonForm } from "@/components/sq-forms";
+import { getQualityPersonId } from "@/lib/sq";
 import { requireCFI } from "@/lib/auth/dal";
 import { getRadioCallScript, getStudentNotice } from "@/lib/settings";
 import RadioScriptForm from "./radio-script-form";
@@ -16,8 +18,9 @@ import { isWhatsAppConfigured } from "@/lib/whatsapp";
 
 export default async function InstructorSettingsPage() {
   // Batch 108: Safety Officer picker.
-  const [safetyOfficerId, safetyStaff] = await Promise.all([
+  const [safetyOfficerId, qualityPersonId, safetyStaff] = await Promise.all([
     getSafetyOfficerId(),
+    getQualityPersonId(),
     db
       .select({ id: users.id, name: users.name, email: users.email })
       .from(users)
@@ -63,6 +66,10 @@ export default async function InstructorSettingsPage() {
           each notice by WhatsApp.
         </p>
         <SafetyOfficerForm current={safetyOfficerId} staff={safetyStaff} />
+        <div className="mt-4 border-t border-slate-200 pt-4">
+          <p className="mb-2 text-xs text-slate-500">The Quality (QA) person is a separate function: does the audits and signs off audit findings (Safety &amp; Quality).</p>
+          <QualityPersonForm current={qualityPersonId} staff={safetyStaff.map((u) => ({ id: u.id, name: u.name }))} />
+        </div>
       </section>
 
       <section className="rounded-xl border border-slate-200 bg-white p-4">

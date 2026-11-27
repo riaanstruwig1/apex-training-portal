@@ -435,6 +435,13 @@
       "when": 1795763708840,
       "tag": "0061_safety_notice_save_only",
       "breakpoints": true
+    },
+    {
+      "idx": 62,
+      "version": "6",
+      "when": 1795770593863,
+      "tag": "0062_sq_modules",
+      "breakpoints": true
     }
   ]
 }

@@ -1,5 +1,6 @@
 import "server-only";
 import { countPendingApplicants } from "@/lib/verification";
+import { countWaiting } from "@/lib/sq";
 import { countPendingPilotEndorsements, countPendingLicenceRenewals } from "@/lib/pilots";
 import { countPasswordResetRequests } from "@/lib/password-resets";
 import { countPhase2Requests } from "@/lib/intro-course-server";
@@ -12,14 +13,15 @@ export type NavLink = { href: string; label: string; badge?: number };
  * /admin and /pilot screens alike. "Student profiles" is merged into
  * "Students"; "My Portfolio" moved to the right, under the name.
  */
-export async function getStaffNavLinks(role: string): Promise<NavLink[]> {
+export async function getStaffNavLinks(role: string, userId?: string): Promise<NavLink[]> {
   const isCFI = role === "cfi";
-  const [pendingCount, phase2Count, pendingPilotCount, pendingRenewalCount, pendingResetCount] = await Promise.all([
+  const [pendingCount, phase2Count, pendingPilotCount, pendingRenewalCount, pendingResetCount, sqWaiting] = await Promise.all([
     countPendingApplicants(!isCFI),
     countPhase2Requests(),
     isCFI ? countPendingPilotEndorsements() : Promise.resolve(0),
     isCFI ? countPendingLicenceRenewals() : Promise.resolve(0),
     isCFI ? countPasswordResetRequests() : Promise.resolve(0),
+    userId ? countWaiting({ id: userId, role }) : Promise.resolve(0),
   ]);
   const students: NavLink = { href: "/instructor", label: "Students" };
   // Batch 110: staff dashboard is the home page and the first menu item.
@@ -32,6 +34,7 @@ export async function getStaffNavLinks(role: string): Promise<NavLink[]> {
       { href: "/admin/pilots", label: "Pilots" },
       queue,
       { href: "/instructor/study-material", label: "Study material" },
+      { href: "/instructor/sq", label: "Safety & Quality", badge: sqWaiting },
       { href: "/instructor/safety", label: "Safety notices" },
     ];
   }
@@ -48,6 +51,7 @@ export async function getStaffNavLinks(role: string): Promise<NavLink[]> {
     queue,
     { href: "/admin/pilots", label: "Pilots", badge: pendingPilotCount + pendingRenewalCount },
     { href: "/admin/password-resets", label: "Password resets", badge: pendingResetCount },
+    { href: "/instructor/sq", label: "Safety & Quality", badge: sqWaiting },
     { href: "/instructor/safety", label: "Safety notices" },
     { href: "/instructor/settings", label: "Settings" },
     { href: "/instructor/activity", label: "Activity log" },

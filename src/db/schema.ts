@@ -608,6 +608,9 @@ export const siteSettings = sqliteTable("site_settings", {
   // Batch 108 (Riaan, 27 Nov 2026): the Safety Officer (staff member) who may
   // send safety notices, together with the CFI.
   safetyOfficerUserId: text("safety_officer_user_id"),
+  // Batch 111 (Riaan, 27 Nov 2026): the Quality (QA) person -- a separate
+  // function from the Safety Officer. Does the audits; signs off quality findings.
+  qualityPersonUserId: text("quality_person_user_id"),
   updatedAt: integer("updated_at", { mode: "timestamp" })
     .notNull()
     .default(sql`(unixepoch())`),
@@ -1116,4 +1119,126 @@ export const safetyNotices = sqliteTable("safety_notices", {
   sendDone: integer("send_done", { mode: "boolean" }).notNull().default(false),
   // Batch 109: "Save only" -- on everyone's screen, no WhatsApp (can be sent later).
   whatsappSkipped: integer("whatsapp_skipped", { mode: "boolean" }).notNull().default(false),
+});
+
+
+// ---------------------------------------------------------------------------
+// Batch 111 (Riaan, 27 Nov 2026): Safety (SO) and Quality (QA) modules, from
+// the DTO Procedures Manual (MOP) sections 13 and 14. Two separate functions
+// -- Safety Officer and Quality person -- that share one action flow:
+// SO/QA raise -> CFI completes and submits -> SO/QA signs off -> logged in the
+// Single Integrated Reporting System Log (SIRSL, MOP 14.4).
+// ---------------------------------------------------------------------------
+
+export const sirslEntries = sqliteTable("sirsl_entries", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  number: integer("number").notNull().unique(),
+  entryDate: integer("entry_date", { mode: "timestamp" }).notNull(),
+  area: text("area", { enum: ["safety", "quality", "general"] }).notNull().default("general"),
+  event: text("event").notNull(),
+  action: text("action"),
+  completedAt: integer("completed_at", { mode: "timestamp" }),
+  comments: text("comments"),
+  byName: text("by_name"),
+  byUserId: text("by_user_id"),
+  refType: text("ref_type"),
+  refId: text("ref_id"),
+  createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
+});
+
+export const occurrenceReports = sqliteTable("occurrence_reports", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  number: integer("number").notNull().unique(),
+  type: text("type").notNull(), // accident | incident | near_miss | hazard | equipment | other
+  occurredAt: integer("occurred_at", { mode: "timestamp" }).notNull(),
+  site: text("site"),
+  equipment: text("equipment"),
+  people: text("people"),
+  description: text("description").notNull(),
+  injuries: text("injuries").notNull().default("none"), // none | minor | serious | fatal
+  damage: text("damage"),
+  weather: text("weather"),
+  immediateAction: text("immediate_action"),
+  confidential: integer("confidential", { mode: "boolean" }).notNull().default(false),
+  reporterUserId: text("reporter_user_id"),
+  reporterName: text("reporter_name"),
+  status: text("status").notNull().default("new"), // new | action | closed
+  soNotes: text("so_notes"),
+  externalReportedAt: text("external_reported_at"), // free text: when / to whom (SAHPA, AIID...)
+  closedAt: integer("closed_at", { mode: "timestamp" }),
+  closedByName: text("closed_by_name"),
+  createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
+});
+
+/** A safety action (area safety) or a quality finding (area quality). */
+export const qsActions = sqliteTable("qs_actions", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  number: integer("number").notNull(),
+  area: text("area", { enum: ["safety", "quality"] }).notNull(),
+  level: integer("level"), // quality findings: 1 or 2
+  title: text("title").notNull(),
+  description: text("description"),
+  reference: text("reference"),
+  sourceType: text("source_type"), // occurrence | audit | manual
+  sourceId: text("source_id"),
+  raisedByUserId: text("raised_by_user_id"),
+  raisedByName: text("raised_by_name"),
+  raisedAt: integer("raised_at", { mode: "timestamp" }).notNull(),
+  dueDate: integer("due_date", { mode: "timestamp" }),
+  // draft (audit not completed yet) | with_cfi | submitted | closed
+  status: text("status").notNull().default("with_cfi"),
+  cfiResponse: text("cfi_response"),
+  cfiUserId: text("cfi_user_id"),
+  cfiName: text("cfi_name"),
+  cfiSubmittedAt: integer("cfi_submitted_at", { mode: "timestamp" }),
+  returnComment: text("return_comment"),
+  signedOffByUserId: text("signed_off_by_user_id"),
+  signedOffByName: text("signed_off_by_name"),
+  signedOffAt: integer("signed_off_at", { mode: "timestamp" }),
+  signOffComment: text("sign_off_comment"),
+});
+
+export const auditChecklists = sqliteTable("audit_checklists", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  key: text("key").notNull().unique(),
+  title: text("title").notNull(),
+  reference: text("reference"),
+  sortOrder: integer("sort_order").notNull().default(0),
+  active: integer("active", { mode: "boolean" }).notNull().default(true),
+});
+
+export const auditChecklistItems = sqliteTable("audit_checklist_items", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  checklistId: text("checklist_id").notNull().references(() => auditChecklists.id, { onDelete: "cascade" }),
+  position: integer("position").notNull(),
+  question: text("question").notNull(),
+  reference: text("reference"),
+});
+
+export const audits = sqliteTable("audits", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  number: integer("number").notNull().unique(),
+  checklistId: text("checklist_id").notNull(),
+  checklistTitle: text("checklist_title").notNull(),
+  scope: text("scope"),
+  auditDate: integer("audit_date", { mode: "timestamp" }).notNull(),
+  auditorUserId: text("auditor_user_id").notNull(),
+  auditorName: text("auditor_name").notNull(),
+  status: text("status").notNull().default("in_progress"), // in_progress | completed
+  conclusion: text("conclusion"),
+  completedAt: integer("completed_at", { mode: "timestamp" }),
+  createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
+});
+
+export const auditResults = sqliteTable("audit_results", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  auditId: text("audit_id").notNull().references(() => audits.id, { onDelete: "cascade" }),
+  position: integer("position").notNull(),
+  question: text("question").notNull(), // snapshot: the item as it was asked
+  reference: text("reference"),
+  result: text("result"), // compliant | non_compliant | observation | na
+  comment: text("comment"),
+  evidence: text("evidence"),
+  findingLevel: integer("finding_level"),
+  actionId: text("action_id"),
 });

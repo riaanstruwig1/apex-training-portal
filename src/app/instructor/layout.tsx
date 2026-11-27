@@ -12,7 +12,7 @@ export default async function InstructorLayout({
   // staff account is guaranteed a pilot_profiles row (created here if
   // missing), so "My profile" (their pilot portfolio) always works.
   // Batch 107: the same menu on every staff screen (lib/staff-nav.ts).
-  const [links] = await Promise.all([getStaffNavLinks(staff.role), ensurePilotProfile(staff.id)]);
+  const [links] = await Promise.all([getStaffNavLinks(staff.role, staff.id), ensurePilotProfile(staff.id)]);
 
   return (
     <div className="flex min-h-screen flex-col">

@@ -26,7 +26,7 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
   // Batch 107 (Riaan, 25 Nov 2026): CFI and instructors get exactly the same
   // menu here as on the /instructor screens (lib/staff-nav.ts).
   const isStaff = user.role === "cfi" || user.role === "instructor";
-  const staffLinks = isStaff ? await getStaffNavLinks(user.role) : [];
+  const staffLinks = isStaff ? await getStaffNavLinks(user.role, user.id) : [];
 
   return (
     <div className="flex min-h-screen flex-col">

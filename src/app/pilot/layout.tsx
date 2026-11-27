@@ -53,7 +53,7 @@ export default async function PilotLayout({ children }: LayoutProps<"/pilot">) {
   ];
   // Batch 107: staff keep their normal staff menu here too; their portfolio
   // and logbook are under their name on the right.
-  const links = isStaff ? await getStaffNavLinks(user.role) : pilotOnlyLinks;
+  const links = isStaff ? await getStaffNavLinks(user.role, user.id) : pilotOnlyLinks;
 
   return (
     <div className="flex min-h-screen flex-col">
